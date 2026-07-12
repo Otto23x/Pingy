@@ -203,54 +203,39 @@
             <div class="card"><h2>⚔️ Testa a Testa</h2><div style="display:flex; gap:10px; margin-bottom:15px;"><select id="vsP1" onchange="renderVS()"></select><span style="font-weight:900; align-self:center;">VS</span><select id="vsP2" onchange="renderVS()"></select></div><div id="vsResults" style="text-align:center; padding:10px;">Seleziona due atleti.</div></div>
         </div>
     </div>
-<!-- CLOUD E IMPOSTAZIONI -->
-    <div id="backup" class="section">
-        <div class="sub-nav">
-            <button class="active" onclick="showSubTab('backup', 'sub-impo-sys', this)">Sistema</button>
-            <button onclick="showSubTab('backup', 'sub-impo-ach', this)">Trofei</button>
-        </div>
-<!-- IMPOSTAZIONI E GUIDE -->
-    <div id="backup" class="section">
-        <div class="sub-nav">
-            <button class="active" onclick="showSubTab('backup', 'sub-impo-sys', this)">Sistema</button>
-            <button onclick="showSubTab('backup', 'sub-impo-ach', this)">Trofei</button>
-            <button onclick="showSubTab('backup', 'sub-impo-guide', this)">Guida 📚</button>
-        </div>
 
-        <!-- SCHEDA GUIDA -->
-        <div id="sub-impo-guide" class="sub-section">
+    <!-- CLOUD E IMPOSTAZIONI -->
+    <div id="backup" class="section">
+        <div class="sub-nav"><button class="active" onclick="showSubTab('backup', 'sub-impo-sys', this)">Sistema</button><button onclick="showSubTab('backup', 'sub-impo-ach', this)">Trofei</button></div>
+        <div id="sub-impo-sys" class="sub-section active">
             <div class="card">
-                <h2>📚 Guida Ufficiale a Pingy</h2>
-                
-                <div style="background: rgba(0,0,0,0.05); border-left: 4px solid var(--primary); padding: 15px; margin-bottom: 15px; border-radius: 0 8px 8px 0; font-size: 0.9rem;">
-                    <h3 style="color: var(--primary); margin-bottom: 5px; font-size: 1.1rem;">🎙️ I Comandi Vocali</h3>
-                    <p>Premi la barra del microfono. Dì sempre <strong>"Pingy"</strong> (o "Pingi") prima del comando e usa i <strong>nomi veri</strong> degli atleti in campo.</p>
-                    <ul style="margin-left: 20px; margin-top: 10px;">
-                        <li><em>"Pingy, punto a Lorenzo"</em> -> (Punto normale)</li>
-                        <li><em>"Pingy, punto a Marco di nastro!"</em> -> (Aggiunge Fortuna)</li>
-                        <li><em>"Pingy, Ace di Lorenzo!"</em> -> (Shot Tracker: Ace)</li>
-                        <li><em>"Pingy, dritto vincente di Marco"</em> -> (Shot Tracker: Dritto)</li>
-                        <li><em>"Pingy, grande difesa di Marco"</em> -> (Shot Tracker: Difesa)</li>
-                        <li><em>"Pingy, punto in attacco per Lorenzo"</em> -> (Shot Tracker: Attacco)</li>
-                        <li><em>"Pingy, punto a Lorenzo per errore"</em> -> (Assegna Errore Non Forzato a Marco)</li>
-                        <li><em>"Pingy, apri la V.A.R."</em> -> (Apre la moviola)</li>
-                        <li><em>"Pingy, annulla"</em> -> (Torna indietro)</li>
-                    </ul>
-                </div>
-
-                <div style="background: rgba(0,0,0,0.05); border-left: 4px solid var(--secondary); padding: 15px; margin-bottom: 15px; border-radius: 0 8px 8px 0; font-size: 0.9rem;">
-                    <h3 style="color: var(--secondary); margin-bottom: 5px; font-size: 1.1rem;">📹 La Moviola (V.A.R.)</h3>
-                    <p>Seleziona l'apposita spunta quando crei la partita. La fotocamera registrerà a ciclo continuo scartando i vecchi frame. Quando chiami il V.A.R. (a voce o col tasto giallo), <strong>il timer della partita si mette in pausa da solo</strong>. Hai a disposizione gli ultimi 30 secondi: usa il tasto 0.25x per il super slow-motion. Quando chiudi la V.A.R., la partita riprende.</p>
-                </div>
-
-                <div style="background: rgba(0,0,0,0.05); border-left: 4px solid var(--ai-color); padding: 15px; border-radius: 0 8px 8px 0; font-size: 0.9rem;">
-                    <h3 style="color: var(--ai-color); margin-bottom: 5px; font-size: 1.1rem;">📈 La Sabermetrica</h3>
-                    <p><strong>Clutch (Freddezza):</strong> % di punti vinti quando si è ai vantaggi o oltre l'8-8.</p>
-                    <p><strong>MP Salvati:</strong> Punti vinti quando l'avversario era a un punto dalla vittoria del set/match.</p>
-                    <p><strong>Stamina (Media P.to):</strong> Quanti secondi di orologio passano in media prima che l'atleta vinca uno scambio. Utile per capire chi fa scambi lunghi e chi fa scambi brevi.</p>
+                <h2>🎨 Estetica e Audio</h2>
+                <div class="setup-grid">
+                    <select id="cfgTheme" onchange="saveSettings()"><option value="dark">Midnight Dark</option><option value="ittf">Verde ITTF</option><option value="olympic">Blu Olimpico</option></select>
+                    <button id="btnToggleSfx" class="btn" style="background:var(--secondary); color:#1e272e;" onclick="toggleSfxBtn()">🎵 SFX: ON</button>
                 </div>
             </div>
+            <div class="card"><h2>🤖 API Key Gemini</h2><input type="password" id="cfgGeminiKey" placeholder="Incolla API Key"><button class="btn" style="background:#575fcf;" onclick="saveSettings()">Salva</button></div>
+            <div class="card text-center">
+                <h2>🗑️ Dati & Backup</h2>
+                <button class="btn" style="background:#ff3f34; margin-bottom: 10px;" onclick="deleteDataByPeriod()">⚠️ Hard Reset (Svuota Tutto)</button>
+                <button class="btn" style="background:#3c40c6; margin-bottom:10px;" onclick="exportData()">⬇️ Esporta Dati</button>
+                <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
+                <button class="btn" style="background:#fa8231;" onclick="document.getElementById('importFile').click()">⬆️ Importa Dati</button>
+            </div>
         </div>
+        <div id="sub-impo-ach" class="sub-section">
+            <div class="card">
+                <h2>🏅 Crea Trofeo</h2>
+                <div class="grid-3"><select id="achIcon"><option value="🥇">🥇 Oro</option><option value="🥈">🥈 Argento</option><option value="🏅">🏅 Medaglia</option><option value="🏆">🏆 Coppa</option><option value="🔥">🔥 Fuoco</option><option value="🎯">🎯 Bersaglio</option><option value="🧱">🧱 Muro</option><option value="☄️">☄️ Cometa</option></select><input type="text" id="achName" placeholder="Nome" style="grid-column: span 2;"></div>
+                <div class="grid-3"><select id="achMetric" style="grid-column: span 2;"><option value="wins">Vittorie Totali</option><option value="luckyPts">Punti Fortuna</option><option value="mpSaved">Match Point Salvati</option><option value="aces">Ace al Servizio</option><option value="comebacks">Recuperi Epici</option></select><input type="number" id="achThreshold" placeholder="Soglia"></div>
+                <button class="btn btn-green" onclick="createAchievement()">Crea</button>
+            </div>
+            <div class="card"><h2>🏆 Trofei Attivi</h2><div id="achievementsList"></div></div>
+        </div>
+    </div>
+</div>
+
 <!-- EDIT PLAYER MODAL -->
 <div id="editPlayerModal">
     <div class="edit-box card">
