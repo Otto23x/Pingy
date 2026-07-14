@@ -369,65 +369,40 @@ video{width:100%;max-height:48vh;border-radius:14px;background:#000;margin-botto
       <button onclick="gtGuide('gg3',this)">Stats</button>
       <button onclick="gtGuide('gg4',this)">IA & Sistema</button>
     </div>
-
-    <div id="gg1" class="gsec act">
+<div id="gg1" class="gsec act">
       <div class="cd">
         <h2>🏓 Come funziona una partita</h2>
         <div class="gd"><h3>1. Setup match</h3><p>In "Gioca → Partita Libera" scegli i due atleti, il formato (1/3/5 set), il punteggio (11 o 21), ogni quanti punti cambia il servizio (2 o 5) e se la partita è <b>Amichevole</b> (non tocca l'ELO) o <b>Ufficiale</b> (fa media per la classifica).</p></div>
         <div class="gd"><h3>2. Cambio battuta ai vantaggi</h3><p>Il turno di servizio segue le tue impostazioni fino al 10-10 (set a 11) o 20-20 (set a 21): da quel momento il cambio scatta automaticamente a ogni punto, come da regolamento ITTF ufficiale, ed è annunciato a voce.</p></div>
-        <div class="gd"><h3>3. Il tracker in campo</h3><p>Prima di premere <b>+1 SX</b> o <b>+1 DX</b> puoi (facoltativo) toccare un tasto colpo (Ace, Dritto, Rovescio, Speciale, Smash, Errore NF, Errore FO): il bottone si evidenzia per farti capire cosa hai selezionato, e verrà abbinato al punto successivo che assegni. "Nastro"/"Bordo" segnano un punto fortuna allo stesso modo. "Annulla" toglie l'ultimo punto (anche riaprendo un set appena chiuso per errore).</p></div>
-        <div class="gd"><h3>3bis. A chi va la statistica del colpo?</h3><p>I colpi <b>vincenti</b> (Ace, Dritto, Rovescio, Speciale, Smash) vengono accreditati a chi <b>segna</b> il punto. Gli <b>errori</b> (Non Forzato o Forzato) vanno invece a chi <b>sbaglia</b>, cioè all'avversario di chi segna: se assegni il punto a Papo taggandolo come "Errore Non Forzato", è Lorenzo (l'avversario) a incassare la statistica dell'errore, perché è lui che ha sbagliato — anche se il punto in classifica resta di Papo.</p></div>
+        <div class="gd"><h3>3. Il tracker in campo</h3><p>Prima di premere <b>+1 SX</b> o <b>+1 DX</b> puoi (facoltativo) toccare un tasto colpo (Servizio, Dritto, Rovescio, Speciale, Schiacciata, Errore NF, Errore FO): il bottone si evidenzia per farti capire cosa hai selezionato, e verrà abbinato al punto successivo che assegni. "Nastro"/"Bordo" segnano un punto fortuna allo stesso modo. "Annulla" toglie l'ultimo punto.</p></div>
+        <div class="gd"><h3>3bis. A chi va la statistica del colpo?</h3><p>I colpi <b>vincenti</b> (Servizio, Dritto, Rovescio, Speciale, Schiacciata) vengono accreditati a chi <b>segna</b> il punto. Gli <b>errori</b> vanno invece a chi <b>sbaglia</b>, cioè all'avversario di chi segna.</p></div>
         <div class="gd"><h3>3ter. Regole per scegliere la dicitura giusta</h3><ul>
-          <li><b>Ace</b>: il punto è chiuso dal servizio stesso — l'avversario non tocca la palla o non riesce a rimandarla in modo valido.</li>
-          <li><b>Dritto Vincente / Rovescio Vincente</b>: lo scambio è concluso da un normale colpo di dritto o di rovescio che l'avversario non riesce a rimandare; non è un servizio (altrimenti è Ace) né una schiacciata di potenza (altrimenti è Smash).</li>
-          <li><b>Smash</b>: il punto è chiuso con una schiacciata o un colpo di potenza decisivo su palla alta/comoda, a prescindere che sia dato di dritto o di rovescio.</li>
-          <li><b>Speciale</b>: colpi fuori dagli schemi classici — tocchi a rete, effetti particolari, soluzioni fantasiose — che non rientrano nelle altre categorie.</li>
-          <li><b>Errore Non Forzato</b>: l'avversario sbaglia un colpo gestibile, senza essere stato messo sotto pressione da un tuo colpo particolarmente difficile (es. manda in rete o fuori un pallone comodo).</li>
-          <li><b>Errore Forzato</b>: l'avversario sbaglia perché costretto da un tuo colpo aggressivo o difficile da gestire (angolo stretto, velocità, effetto): il merito è per metà tuo.</li>
-          <li><b>Nastro / Bordo</b>: il punto è deciso da un tocco fortuito, indipendentemente dall'intenzione dei giocatori — non è merito né colpa di nessuno dei due.</li>
-        </ul><p>Nel dubbio tra Dritto/Rovescio Vincente ed Errore Non Forzato (spesso è opinabile se il merito sia di chi ha attaccato o il demerito di chi ha sbagliato), usa questo criterio pratico: se il colpo che ha chiuso il punto era comunque ben giocato e difficile da rimandare, tagga il colpo vincente; se il colpo che ha chiuso il punto era gestibile e l'avversario ha semplicemente sbagliato, tagga l'errore.</p></div>
-        <div class="gd"><h3>4. Partite incomplete</h3><p>Dal tasto "Fine/Salva" puoi interrompere e salvare un match a metà: viene segnato con il tag <span class="inc-tag">INC</span>, non modifica l'ELO e non fa avanzare i tornei, ma le statistiche sui colpi restano comunque registrate per la Sabermetrica.</p></div>
-        <div class="gd"><h3>5. Overall (OVR) delle Player Card</h3><p>L'OVR non è la media delle 8 statistiche: parte da <b>50</b> quando l'ELO è al valore base (1200) e sale o scende di 1 punto ogni 14 punti ELO di differenza, tra un minimo di 30 e un massimo di 99. Così un atleta con tutte le statistiche a 50 (appena iniziato) ha anche OVR 50, non un numero gonfiato: puoi avere colpi fortissimi, ma se perdi spesso l'OVR non sale, conta il risultato.</p></div>
-        <div class="gd"><h3>5bis. Come sono calcolate le 8 statistiche</h3><p>Ogni statistica parte da una base di <b>50</b> e sale (o scende) in base ai dati registrati, con tre correttivi:</p>
-        <p><b>Fattore di crescita</b>: finché un atleta ha giocato poche partite, i suoi numeri contano solo in parte — servono 10 partite per arrivare al 100% dell'effetto (con 3 partite conta solo il 30%, per esempio). Sotto le 10 partite le statistiche restano quindi vicine a 50: è normale, non è un errore, semplicemente non c'è ancora abbastanza storico per giudicare.</p>
-        <p><b>Tetto per statistica</b>: ogni formula può aggiungere al massimo <b>45 punti</b> oltre la base 50 (cioè non si supera mai 95 tramite questa componente): superata una certa quantità di colpi, aggiungerne altri non fa più salire il numero.</p>
-        <p><b>Decadimento</b>: le 8 statistiche della card <u>non</u> guardano ai totali a vita, ma a un contatore separato che si riduce del 10% a ogni nuova partita giocata (da chiunque la giochi), prima che i punti di quella partita si aggiungano. Un colpo che facevi spesso mesi fa e non fai più conta sempre meno, un po' come in FIFA gli attributi di un giocatore calano se non li conferma più in campo — la tecnica non è scolpita nella pietra. I totali a vita restano comunque intatti e visibili in Matrice Tecnica Colpi, Sabermetrica e nei Trofei: quelli sono un archivio storico che non deve sparire mai.</p>
-        <ul>
-          <li><b>Dritto</b> = vincenti di dritto (recenti) × 1.8 (tetto raggiunto a 25 vincenti)</li>
-          <li><b>Rovescio</b> = vincenti di rovescio (recenti) × 1.8 (tetto a 25 vincenti)</li>
-          <li><b>Smash</b> = smash×2 + ace×1.2 (recenti)</li>
-          <li><b>Speciale</b> = colpi speciali (recenti) × 2.2</li>
-          <li><b>Fortuna</b> = punti nastro/bordo (recenti) × 3</li>
-          <li><b>Difesa</b> = MP Salvati×2.5 − Errori Forzati×0.3 (recenti)</li>
-          <li><b>Focus</b> = vittorie×2 − errori totali×0.5 (recenti)</li>
-          <li><b>Mentalità</b> = rimonte×4 + Freddezza%×30 − errori totali×0.4 (recenti)</li>
+          <li><b>Servizio Vincente</b>: il punto è chiuso dal servizio stesso (ex "Ace") — l'avversario non tocca la palla o non la rimanda in modo valido.</li>
+          <li><b>Dritto / Rovescio Vincente</b>: lo scambio è concluso da un normale colpo che l'avversario non riesce a rimandare; non è un servizio né una schiacciata di potenza.</li>
+          <li><b>Schiacciata</b>: il punto è chiuso con un colpo di potenza decisivo su palla alta/comoda.</li>
+          <li><b>Speciale</b>: colpi fuori dagli schemi classici (tocchi a rete, effetti particolari).</li>
+          <li><b>Errore Non Forzato</b>: l'avversario sbaglia un colpo gestibile senza essere stato sotto pressione.</li>
+          <li><b>Errore Forzato</b>: l'avversario sbaglia costretto da un tuo colpo aggressivo o difficile.</li>
+          <li><b>Nastro / Bordo</b>: punto deciso da un tocco fortuito, senza merito né colpa.</li>
         </ul></div>
-        <div class="gd"><h3>6. Tornei</h3><p><b>Eliminazione diretta</b> (4 o 8 atleti): tabellone a turni, il vincitore avanza in automatico. <b>Girone all'italiana</b> (3-6 atleti): tutti contro tutti, classifica per punti (2 a vittoria). Un torneo può essere sospeso e ripreso in un secondo momento dal tasto ⏸️/▶️ sulla sua scheda.</p></div>
-        <div class="gd"><h3>7. Giocatori eliminati dal roster</h3><p>Se elimini un atleta dal Roster, le sue partite passate restano nello storico: l'avversario le vedrà semplicemente giocate contro "Sconosciuto", senza perdere le proprie statistiche.</p></div>
       </div>
     </div>
 
     <div id="gg2" class="gsec">
       <div class="cd">
-        <h2>🎙️ Comandi vocali "Pingy"</h2>
-        <div class="gd"><h3>Come funziona (trascrizione + interpretazione IA)</h3><p>Il flusso è in due passi: <b>1)</b> il browser trascrive quello che dici (Web Speech API); <b>2)</b> la frase trascritta viene passata a <b>Gemini</b>, che capisce a chi va il punto e che colpo è stato — anche con frasi libere ("Pingy, gran smash poi Lorenzo l'ha buttata in rete") e anche se il nome viene trascritto storpiato: l'IA lo interpreta foneticamente. Il risultato lancia il normale comando di assegnazione punto con la dicitura del colpo. <b>Serve la chiave Gemini verificata</b> (Impostazioni → Sistema): se manca la chiave o la rete, l'app ripiega automaticamente sul riconoscimento a parole chiave esatte, più letterale ma sempre funzionante.</p></div>
-        <div class="gd"><h3>Attivazione e permessi</h3><p>All'avvio del tracker l'app <b>chiede esplicitamente il permesso microfono</b>: concedilo alla prima richiesta. La <b>parola chiave è esclusivamente "Pingy"</b>: qualunque cosa detta senza quella parola viene ignorata. Ogni comando riconosciuto mostra una conferma a schermo (con 🤖 se interpretato dall'IA) e viene ripetuto a voce. Se il pallino resta grigio o hai negato il permesso per errore: tocca il lucchetto nella barra indirizzi → Autorizzazioni → Microfono → Consenti, poi tocca la barra del microfono nel tracker per riavviare.</p></div>
-        <div class="gd"><h3>Frasi riconosciute</h3><p>Con l'IA attiva puoi parlare liberamente ("Pingy, punto a Marco che ha chiuso di dritto"). Senza IA valgono le forme fisse:</p><ul>
-          <li>"Pingy, punto a [nome del giocatore]"</li>
-          <li>"Pingy, ace di [nome]" — oppure "dritto", "rovescio", "speciale", "smash", "errore non forzato", "errore forzato" al posto di "ace"</li>
-          <li>"Pingy, nastro [nome]" / "Pingy, bordo [nome]" — punto fortuna</li>
-          <li>"Pingy, apri V.A.R." — richiama subito la moviola</li>
+        <h2>🎙️ Comandi vocali "Arbitro"</h2>
+        <div class="gd"><h3>Come funziona (trascrizione + interpretazione IA)</h3><p>L'app ascolta, trascrive e passa la frase a <b>Gemini</b>, che capisce il colpo anche da frasi libere ("Arbitro, gran schiacciata di Lorenzo"). Il riconoscimento è 100% in italiano.</p></div>
+        <div class="gd"><h3>Attivazione e permessi</h3><p>La <b>parola chiave è esclusivamente "Arbitro"</b>: qualunque cosa detta senza quella parola viene ignorata. Se il pallino resta grigio: consenti il microfono nelle impostazioni del browser.</p></div>
+        <div class="gd"><h3>Frasi riconosciute</h3><p>Con l'IA attiva puoi parlare liberamente ("Arbitro, punto a Marco con un servizio vincente"). Senza IA usa queste forme:</p><ul>
+          <li>"Arbitro, punto a [nome del giocatore]"</li>
+          <li>"Arbitro, servizio vincente di [nome]" — o "dritto", "rovescio", "speciale", "schiacciata", "errore non forzato"</li>
+          <li>"Arbitro, nastro [nome]" / "Arbitro, bordo [nome]"</li>
+          <li>"Arbitro, apri V.A.R." — richiama la moviola</li>
         </ul></div>
-        <div class="gd"><h3>Se non dichiari il colpo</h3><p>Se dici solo "Pingy, punto a [nome]" senza specificare il colpo, Pingy <b>non assegna subito il punto</b>: chiede a voce "Che colpo è stato?" e resta in ascolto della tua risposta (senza bisogno di ripetere "Pingy"). Se non capisce la risposta, o non arriva nulla entro 8 secondi, registra comunque il punto come <b>Errore Non Forzato</b> (il caso più comune), così nessun punto resta senza dicitura e le statistiche restano complete.</p></div>
-        <div class="gd"><h3>Requisiti tecnici (importante)</h3><p>Il riconoscimento vocale del browser <b>invia l'audio a un servizio cloud per trascriverlo</b>: serve quindi connessione internet attiva, il permesso microfono concesso al browser e una pagina servita in <b>https</b> (o aperta da localhost) — su un file aperto direttamente (file://) il browser blocca il microfono a prescindere. Se il pallino accanto alla scritta "In ascolto" resta grigio, tocca la barra del microfono per riavviare il riconoscimento.</p></div>
-        <div class="gd"><h3>Sintesi vocale (l'arbitro che parla)</h3><p>L'app annuncia a voce il punteggio dopo ogni scambio e dichiara Set Point / Match Point / Vantaggi. Si disattiva con il tasto 🔊 in alto nel tracker (diventa 🔇), oppure globalmente da Impostazioni → Sistema → "SFX".</p></div>
-        <h2 style="margin-top:22px;">📼 Sistema V.A.R. (moviola)</h2>
-        <div class="gd"><h3>Come funziona</h3><p>Attivando la spunta "Abilita Moviola V.A.R." prima del match, l'app registra con la <b>fotocamera anteriore</b> (quella dello schermo) in <b>mini-clip da 5 secondi</b>: ne conserva sempre le ultime 6 (30 secondi totali), scartando le più vecchie. Al richiamo, le clip vengono riprodotte in sequenza, dando l'effetto di un unico replay degli ultimi 30 secondi.</p></div>
-        <div class="gd"><h3>Come richiamarlo</h3><p>Tasto 📼 in alto nel tracker, oppure a voce con "Pingy, apri V.A.R.". Il cronometro va in pausa automaticamente. Nel player puoi rallentare a 1x, 0.5x o 0.25x.</p></div>
-        <div class="gd"><h3>Requisiti e limiti</h3><p>Serve permesso fotocamera e una pagina servita in https (stesso discorso della voce). Funziona in modo affidabile su Chrome Android; su alcuni iPhone/Safari la registrazione video in background può non essere supportata: in quel caso la spunta V.A.R. viene disattivata automaticamente e te lo segnaliamo con un avviso.</p></div>
+        <div class="gd"><h3>Se non dichiari il colpo</h3><p>Se dici solo "Arbitro, punto a [nome]", l'app chiede a voce "Che colpo è stato?". Se non rispondi entro 8 secondi, registra "Errore Non Forzato".</p></div>
+        <div class="gd"><h3>Sintesi vocale</h3><p>L'app annuncia a voce il punteggio e si disattiva con il tasto 🔊 in alto nel tracker.</p></div>
       </div>
     </div>
-
     <div id="gg3" class="gsec">
       <div class="cd">
         <h2>📊 Statistiche spiegate</h2>
@@ -507,7 +482,15 @@ video{width:100%;max-height:48vh;border-radius:14px;background:#000;margin-botto
     <button class="mb-btn brd" onclick="markLuck('bordo',this)">🍀 Bordo</button>
     <button class="mb-btn" onclick="undoPoint()">↩️ Annulla</button>
   </div>
-  <div class="mic" onclick="restartVoiceManually()" style="cursor:pointer;"><div class="mic-d" id="micDot"></div><span id="micTxt">Microfono non attivo</span><span style="opacity:0.6;font-size:0.7rem;margin-left:4px;">(tocca per riavviare)</span></div>
+ <div class="mic" onclick="restartVoiceManually()" style="cursor:pointer;"><div class="mic-d" id="micDot"></div><span id="micTxt">Microfono non attivo</span><span style="opacity:0.6;font-size:0.7rem;margin-left:4px;">(tocca per riavviare)</span></div>
+  
+  <div style="text-align:center; opacity:0.7; font-size:0.78rem; font-weight:800; background:rgba(255,255,255,0.05); border-radius:12px; padding:12px; margin-top:10px; line-height:1.4;">
+    💡 <b>Comandi vocali:</b><br>
+    "Arbitro, dritto di nome_giocatore"<br>
+    "Arbitro, schiacciata di nome_giocatore"<br>
+    "Arbitro, servizio vincente di nome_giocatore"<br>
+    "Arbitro, apri V.A.R."
+  </div>
   <div class="lt-foot"><button style="background:var(--muted);" onclick="closeLM()">↙️ Riduci a icona</button><button style="background:var(--s);color:var(--s-ink);" onclick="endMatch()">🏁 Fine / Salva</button></div>
 </div>
 <div class="pause-ov" id="pauseOv"><div style="font-size:3rem;">⏸️</div><div style="font-family:var(--teko);font-size:2rem;">Partita in Pausa</div><button class="btn btn-g" style="max-width:220px;" onclick="pauseMatch()">Riprendi</button></div>
@@ -712,11 +695,11 @@ function rebuildScoreboard(){const p1=pById(LM.p1),p2=pById(LM.p2);
   $('sc1av').style.backgroundImage=p1&&p1.photo?`url(${p1.photo})`:'';$('sc2av').style.backgroundImage=p2&&p2.photo?`url(${p2.photo})`:'';
   renderShotBar();renderScore();}
 function renderShotBar(){$('shotBar').innerHTML=`
-  <button class="mb-btn sht" onclick="pickShot('ace',this)">⚡ Ace</button>
+  <button class="mb-btn sht" onclick="pickShot('ace',this)">⚡ Servizio</button>
   <button class="mb-btn sht" onclick="pickShot('driV',this)">💥 Dritto</button>
   <button class="mb-btn sht" onclick="pickShot('rovV',this)">☄️ Rovescio</button>
   <button class="mb-btn spc" onclick="pickShot('spec',this)">🌟 Speciale</button>
-  <button class="mb-btn sht" onclick="pickShot('smash',this)">💣 Smash</button>
+  <button class="mb-btn sht" onclick="pickShot('smash',this)">💣 Schiacciata</button>
   <button class="mb-btn" onclick="pickShot('errNF',this)">📉 Errore NF</button>
   <button class="mb-btn" onclick="pickShot('errFo',this)">🧯 Errore FO</button>`;
 }
@@ -887,69 +870,153 @@ function rHist(){const l=$('hM');const list=DB.matches.slice().sort((a,b)=>b.dat
   l.innerHTML=list.map(m=>{const p1=pName(m.p1),p2=pName(m.p2);const d=new Date(m.date).toLocaleDateString('it-IT');
     return `<div class="rd"><div><b>${p1}</b> vs <b>${p2}</b> ${m.incomplete?'<span class="inc-tag">INC</span>':''}<div class="p-sub">${d} · ${m.setsWon?m.setsWon.join('-'):'-'} · ${m.cat==='u'?'Ufficiale':'Amichevole'}</div></div></div>`;
   }).join('');}
-
 /* ================= VOCE: SINTESI ================= */
 let speechOn=true;
-function toggleSpeech(){speechOn=!speechOn;$('ltSpk').innerText=speechOn?'🔊':'🔇';}
-function speak(txt){if(!speechOn||!DB.settings.sound||!('speechSynthesis' in window))return;
-  try{const u=new SpeechSynthesisUtterance(txt);u.lang='it-IT';u.rate=1.05;speechSynthesis.cancel();speechSynthesis.speak(u);}catch(e){}}
+let keepAliveUtterances=[]; 
 
-/* ================= VOCE: RICONOSCIMENTO (wake word ESCLUSIVA "Pingy") ================= */
-/* Nota tecnica: il riconoscimento vocale del browser (webkitSpeechRecognition) invia l'audio
-   ai server di Google per la trascrizione: richiede quindi connessione internet, permesso
-   microfono E un "contesto sicuro" (pagina servita in https, o localhost) — su un file aperto
-   direttamente (file://) il browser spesso blocca questa funzione a prescindere dal codice. */
+function toggleSpeech(){speechOn=!speechOn;$('ltSpk').innerText=speechOn?'🔊':'🔇';}
+function speak(txt){
+  if(!speechOn||!DB.settings.sound||!('speechSynthesis' in window))return;
+  try{
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(txt);
+    u.lang='it-IT';
+    u.rate=1.05;
+    
+    keepAliveUtterances.push(u);
+    
+    u.onend = function() {
+      keepAliveUtterances = keepAliveUtterances.filter(utt => utt !== u);
+    };
+    u.onerror = function() {
+      keepAliveUtterances = keepAliveUtterances.filter(utt => utt !== u);
+    };
+    
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+/* ================= VOCE: RICONOSCIMENTO (wake word ESCLUSIVA "Arbitro") ================= */
 let recog=null,recogActive=false;
-const WAKE_RX=/\bpin\s?[gj]?h?[iy]\b/; // tollera "pingy","pinghi","pingi","ping i" — ma SOLO questa parola attiva i comandi
+const WAKE_RX=/\barbitro\b/i; 
+
 async function startVoice(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!SR){$('micTxt').innerText='Riconoscimento vocale non supportato su questo browser';return;}
   if(!window.isSecureContext){$('micTxt').innerText='Serve una pagina https (o localhost): file:// blocca il microfono';return;}
-  /* Richiedo esplicitamente il permesso microfono PRIMA di avviare il riconoscimento:
-     senza questo passaggio, su molte installazioni PWA Android il riconoscimento
-     fallisce in silenzio senza mai mostrare la richiesta di permesso. */
   try{
     if(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia){
       const s=await navigator.mediaDevices.getUserMedia({audio:true});
       s.getTracks().forEach(t=>t.stop());
     }
-  }catch(e){$('micTxt').innerText='Permesso microfono negato — abilitalo dalle impostazioni del sito e tocca qui';return;}
+  }catch(e){$('micTxt').innerText='Permesso microfono negato — abilitalo dalle impostazioni e tocca qui';return;}
   recogActive=true;launchRecog(SR);
 }
 function setVbHeard(t){const el=$('vbHeardEl');if(el)el.innerText=t;}
 function setVbAction(t){const el=$('vbActionEl');if(el)el.innerText=t;}
 function launchRecog(SR){
-  try{recog=new SR();recog.lang='it-IT';recog.continuous=false;recog.interimResults=true;
+  try{recog=new SR();recog.lang='it-IT';
+    recog.continuous=true; 
+    recog.interimResults=true;
     recog.onresult=e=>{
       let interim='',fin='';
       for(let i=e.resultIndex;i<e.results.length;i++){const t=e.results[i][0].transcript;if(e.results[i].isFinal)fin+=t;else interim+=t;}
-      if(interim)setVbHeard('… '+interim.trim()); // trascrizione live mentre parli: se la vedi muoversi, il microfono funziona
+      if(interim)setVbHeard('… '+interim.trim());
       if(fin){const clean=fin.trim();setVbHeard('"'+clean+'"');handleVoice(clean.toLowerCase());}
     };
     recog.onerror=ev=>{$('micDot').classList.remove('ls');
       if(ev.error==='not-allowed'||ev.error==='service-not-allowed'){$('micTxt').innerText='Permesso microfono negato — tocca qui per riprovare';setVbHeard('⚠️ Permesso microfono negato');recogActive=false;}
-      else if(ev.error==='no-speech'||ev.error==='aborted'){} // normale, si riavvia da solo
+      else if(ev.error==='no-speech'||ev.error==='aborted'){} 
       else if(ev.error==='network'){$('micTxt').innerText='Serve connessione internet per la voce';setVbHeard('⚠️ Trascrizione non disponibile senza rete');}
     };
     recog.onend=()=>{if(recogActive){setTimeout(()=>{if(recogActive)launchRecog(SR);},250);}else{$('micDot').classList.remove('ls');}};
-    recog.start();$('micDot').classList.add('ls');$('micTxt').innerText='In ascolto: dì solo "Pingy, ..."';
+    recog.start();$('micDot').classList.add('ls');$('micTxt').innerText='In ascolto: dì solo "Arbitro, ..."';
   }catch(e){$('micTxt').innerText='Microfono non disponibile';}
 }
 function stopVoice(){recogActive=false;if(recog){try{recog.stop();}catch(e){}}$('micDot').classList.remove('ls');}
 function restartVoiceManually(){stopVoice();toast('Riavvio riconoscimento vocale…','🎙️');setTimeout(startVoice,300);}
+
 let awaitingShotFor=null,awaitTimeoutHandle=null;
-const SHOT_LABELS={ace:'ace',driV:'dritto vincente',rovV:'rovescio vincente',spec:'colpo speciale',smash:'smash',errNF:'errore non forzato',errFo:'errore forzato',luck_nastro:'punto fortuna (nastro)',luck_bordo:'punto fortuna (bordo)'};
+const SHOT_LABELS={ace:'servizio vincente',driV:'dritto vincente',rovV:'rovescio vincente',spec:'colpo speciale',smash:'schiacciata',errNF:'errore non forzato',errFo:'errore forzato',luck_nastro:'punto fortuna (nastro)',luck_bordo:'punto fortuna (bordo)'};
+
 function parseShotKeyword(cmd){
-  if(cmd.includes('ace'))return{shot:'ace',label:'ace'};
+  if(cmd.includes('servizio'))return{shot:'ace',label:'servizio vincente'};
   if(cmd.includes('dritto'))return{shot:'driV',label:'dritto vincente'};
   if(cmd.includes('rovescio'))return{shot:'rovV',label:'rovescio vincente'};
   if(cmd.includes('special'))return{shot:'spec',label:'colpo speciale'};
-  if(cmd.includes('smash')||cmd.includes('schiacciata'))return{shot:'smash',label:'smash'};
+  if(cmd.includes('schiacciata'))return{shot:'smash',label:'schiacciata'};
   if(cmd.includes('non forzato')||/\bnf\b/.test(cmd))return{shot:'errNF',label:'errore non forzato'};
   if(cmd.includes('forzato')||/\bfo\b/.test(cmd))return{shot:'errFo',label:'errore forzato'};
   if(cmd.includes('error')||cmd.includes('sbagliat'))return{shot:'errNF',label:'errore non forzato'};
   if(cmd.includes('nastro'))return{shot:'luck_nastro',label:'punto fortuna (nastro)'};
   if(cmd.includes('bordo'))return{shot:'luck_bordo',label:'punto fortuna (bordo)'};
   return null;
+}
+async function aiInterpretVoice(cmd){
+  const p1=pById(LM.p1),p2=pById(LM.p2);
+  const prompt='Sei l\'arbitro vocale di una partita di ping pong. Giocatore lato SINISTRO (side 0): "'+(p1?p1.name:'?')+'". Giocatore lato DESTRO (side 1): "'+(p2?p2.name:'?')+'". Frase pronunciata (completamente in italiano, esamina il contesto logico): "'+cmd+'". Rispondi SOLO con JSON puro, senza markdown ne testo extra, in questo formato: {"side":0 oppure 1 oppure null,"shot":"ace"|"driV"|"rovV"|"spec"|"smash"|"errNF"|"errFo"|"luck_nastro"|"luck_bordo"|"var"|null}. Regole: side = a chi VA il punto (0 sinistro, 1 destro, null se non capisci). shot: "ace"=servizio vincente, "driV"=dritto vincente, "rovV"=rovescio vincente, "spec"=colpo speciale/fantasioso, "smash"=schiacciata, "errNF"=errore non forzato dell\'avversario, "errFo"=errore forzato dell\'avversario, "luck_nastro"/"luck_bordo"=punto di fortuna, "var"=richiesta di aprire la moviola, null=colpo non dichiarato. Se la frase dice che qualcuno HA SBAGLIATO, il punto (side) va all\'ALTRO giocatore e shot e l\'errore.';
+  const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${DB.settings.gemini}`,{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:60,temperature:0}})});
+  const j=await r.json();
+  let txt=j?.candidates?.[0]?.content?.parts?.[0]?.text||'';
+  txt=txt.replace(/```json|```/g,'').trim();
+  const obj=JSON.parse(txt);
+  if(obj&&(obj.side===0||obj.side===1||obj.side===null))return obj;
+  return null;
+}
+function askShotFor(side){
+  awaitingShotFor=side;
+  setVbAction('❓ Punto a '+pName(side===0?LM.p1:LM.p2)+' — che colpo è stato?');
+  speak('Che colpo è stato? Per esempio: errore non forzato.');
+  toast('L\'arbitro aspetta la descrizione del colpo…','🎙️');
+  clearTimeout(awaitTimeoutHandle);
+  awaitTimeoutHandle=setTimeout(()=>{
+    if(awaitingShotFor===side){awaitingShotFor=null;setVbAction('⏱️ Nessuna risposta: registrato come errore non forzato');pendingShot='errNF';addPoint(side);}
+  },8000);
+}
+function execVoiceCommand(side,shot,source){
+  const label=shot?(SHOT_LABELS[shot]||shot):'punto';
+  const who=pName(side===0?LM.p1:LM.p2);
+  setVbAction((source==='ai'?'🤖 ':'🎙️ ')+'→ '+label+' · punto a '+who);
+  toast('Arbitro'+(source==='ai'?' (IA)':'')+': '+label+' per '+who,source==='ai'?'🤖':'🎙️');
+  pendingShot=shot;addPoint(side);
+}
+async function handleVoice(txt){
+  if(awaitingShotFor!=null){
+    clearTimeout(awaitTimeoutHandle);
+    const side=awaitingShotFor;awaitingShotFor=null;
+    const parsed=parseShotKeyword(txt.toLowerCase());
+    const shot=parsed?parsed.shot:'errNF';
+    const label=parsed?parsed.label:'errore non forzato (non ho capito la risposta)';
+    toast('Arbitro: '+label,'🎙️');
+    pendingShot=shot;addPoint(side);
+    return;
+  }
+  if(!WAKE_RX.test(txt)){setVbAction('(ignorato: manca la parola "Arbitro")');return;}
+  const cmd=txt.replace(WAKE_RX,'').trim();
+  $('micTxt').innerText='🎙️ Sentito: "'+cmd+'"';
+  
+  if(DB.settings.gemini&&DB.settings.geminiOk&&navigator.onLine){
+    setVbAction('🤖 Interpretazione IA in corso…');
+    try{
+      const res=await aiInterpretVoice(cmd);
+      if(res){
+        if(res.shot==='var'){setVbAction('📼 Apro il V.A.R.');openVAR();return;}
+        if(res.side===0||res.side===1){
+          if(res.shot){execVoiceCommand(res.side,res.shot,'ai');return;}
+          askShotFor(res.side);return;
+        }
+        setVbAction('🤖 L\'IA non ha capito a chi va il punto: ripeti con il nome');return;
+      }
+    }catch(e){setVbAction('⚠️ IA non raggiungibile: uso il riconoscimento a parole chiave');}
+  }
+  
+  if(cmd.includes('var')){setVbAction('📼 Apro il V.A.R.');openVAR();return;}
+  let side=null,who=null;
+  [[0,LM.p1],[1,LM.p2]].forEach(([s,pid])=>{const p=pById(pid);if(p&&cmd.includes(p.name.toLowerCase())){side=s;who=p;}});
+  if(side===null){setVbAction('❌ Nome del giocatore non riconosciuto: ripeti citando il nome');return;}
+  const parsed=parseShotKeyword(cmd);
+  if(!parsed){askShotFor(side);return;} 
+  execVoiceCommand(side,parsed.shot,'local');
 }
 /* ===== INTERPRETAZIONE IA DELLA FRASE (Gemini) =====
    La trascrizione la fa sempre il browser (Web Speech API). La frase trascritta viene poi
