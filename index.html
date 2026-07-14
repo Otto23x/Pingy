@@ -317,7 +317,8 @@ video{width:100%;max-height:48vh;border-radius:14px;background:#000;margin-botto
     <div class="cd"><h2>🤖 API Gemini</h2>
       <label class="fl">Chiave API (rimane solo su questo dispositivo)</label>
       <input type="password" id="cG" placeholder="Incolla API Key Gemini">
-      <button class="btn" style="background:var(--ai);" onclick="sS()">Registra Chiave</button>
+      <button class="btn" style="background:var(--ai);" onclick="testGeminiKey()">Registra e Verifica Chiave</button>
+      <div id="gStatus" style="display:none;padding:12px;border-radius:10px;background:rgba(0,0,0,0.04);font-weight:800;font-size:0.9rem;"></div>
     </div>
     <div class="cd"><h2>💾 Dati & Backup</h2>
       <label class="fl">Cancellazione</label>
@@ -405,8 +406,9 @@ video{width:100%;max-height:48vh;border-radius:14px;background:#000;margin-botto
     <div id="gg2" class="gsec">
       <div class="cd">
         <h2>🎙️ Comandi vocali "Pingy"</h2>
-        <div class="gd"><h3>Attivazione</h3><p>Il microfono si accende da solo all'avvio del tracker. La <b>parola chiave è esclusivamente "Pingy"</b>: qualunque cosa venga detta senza quella parola viene ignorata. Ogni comando riconosciuto mostra una conferma a schermo (toast) e viene ripetuto a voce, così sai sempre cosa ha capito l'app.</p></div>
-        <div class="gd"><h3>Frasi riconosciute</h3><ul>
+        <div class="gd"><h3>Come funziona (trascrizione + interpretazione IA)</h3><p>Il flusso è in due passi: <b>1)</b> il browser trascrive quello che dici (Web Speech API); <b>2)</b> la frase trascritta viene passata a <b>Gemini</b>, che capisce a chi va il punto e che colpo è stato — anche con frasi libere ("Pingy, gran smash poi Lorenzo l'ha buttata in rete") e anche se il nome viene trascritto storpiato: l'IA lo interpreta foneticamente. Il risultato lancia il normale comando di assegnazione punto con la dicitura del colpo. <b>Serve la chiave Gemini verificata</b> (Impostazioni → Sistema): se manca la chiave o la rete, l'app ripiega automaticamente sul riconoscimento a parole chiave esatte, più letterale ma sempre funzionante.</p></div>
+        <div class="gd"><h3>Attivazione e permessi</h3><p>All'avvio del tracker l'app <b>chiede esplicitamente il permesso microfono</b>: concedilo alla prima richiesta. La <b>parola chiave è esclusivamente "Pingy"</b>: qualunque cosa detta senza quella parola viene ignorata. Ogni comando riconosciuto mostra una conferma a schermo (con 🤖 se interpretato dall'IA) e viene ripetuto a voce. Se il pallino resta grigio o hai negato il permesso per errore: tocca il lucchetto nella barra indirizzi → Autorizzazioni → Microfono → Consenti, poi tocca la barra del microfono nel tracker per riavviare.</p></div>
+        <div class="gd"><h3>Frasi riconosciute</h3><p>Con l'IA attiva puoi parlare liberamente ("Pingy, punto a Marco che ha chiuso di dritto"). Senza IA valgono le forme fisse:</p><ul>
           <li>"Pingy, punto a [nome del giocatore]"</li>
           <li>"Pingy, ace di [nome]" — oppure "dritto", "rovescio", "speciale", "smash", "errore non forzato", "errore forzato" al posto di "ace"</li>
           <li>"Pingy, nastro [nome]" / "Pingy, bordo [nome]" — punto fortuna</li>
@@ -445,7 +447,7 @@ video{width:100%;max-height:48vh;border-radius:14px;background:#000;margin-botto
     <div id="gg4" class="gsec">
       <div class="cd">
         <h2>🧠 Coach IA (Gemini)</h2>
-        <div class="gd"><h3>Come ottenere una API Key</h3><p>Vai su <b>aistudio.google.com</b> con un account Google, crea una chiave gratuita ("Get API key") e incollala in Impostazioni → Sistema → "API Gemini". Google offre una fascia d'uso gratuita con limiti giornalieri.</p></div>
+        <div class="gd"><h3>Come ottenere e verificare la API Key</h3><p>Vai su <b>aistudio.google.com</b> con un account Google, crea una chiave gratuita ("Get API key") e incollala in Impostazioni → Sistema → "API Gemini". Premendo <b>"Registra e Verifica Chiave"</b> l'app esegue un micro-test reale (una richiesta minima a Gemini): se la risposta arriva vedi la spunta ✅ "Chiave verificata e funzionante" e si attivano sia il Coach IA sia l'interpretazione vocale IA; se la chiave è sbagliata o manca la rete, ti viene detto esattamente perché. Google offre una fascia d'uso gratuita con limiti giornalieri.</p></div>
         <div class="gd"><h3>Dove resta la chiave</h3><p>La chiave viene salvata <b>solo sul tuo dispositivo</b> (nello stesso archivio locale di roster e partite): non viene mai inviata a server di Pingy o di terzi, se non direttamente a Google al momento della richiesta di analisi.</p></div>
         <div class="gd"><h3>Cosa fa il Coach</h3><p>In Statistiche → Coach IA scegli un taglio (Tecnico, Psicologico o Roast ironico) e l'app invia a Gemini un riassunto dei dati aggregati di tutti gli atleti (ELO, V-P, colpi, ecc.), chiedendo un report breve in italiano. Serve connessione internet attiva: se manca, l'app te lo segnala invece di restare bloccata.</p></div>
         <h2 style="margin-top:22px;">⚙️ Sistema, Backup e Installazione</h2>
@@ -875,9 +877,18 @@ function speak(txt){if(!speechOn||!DB.settings.sound||!('speechSynthesis' in win
    direttamente (file://) il browser spesso blocca questa funzione a prescindere dal codice. */
 let recog=null,recogActive=false;
 const WAKE_RX=/\bpin\s?[gj]?h?[iy]\b/; // tollera "pingy","pinghi","pingi","ping i" — ma SOLO questa parola attiva i comandi
-function startVoice(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+async function startVoice(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!SR){$('micTxt').innerText='Riconoscimento vocale non supportato su questo browser';return;}
   if(!window.isSecureContext){$('micTxt').innerText='Serve una pagina https (o localhost): file:// blocca il microfono';return;}
+  /* Richiedo esplicitamente il permesso microfono PRIMA di avviare il riconoscimento:
+     senza questo passaggio, su molte installazioni PWA Android il riconoscimento
+     fallisce in silenzio senza mai mostrare la richiesta di permesso. */
+  try{
+    if(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia){
+      const s=await navigator.mediaDevices.getUserMedia({audio:true});
+      s.getTracks().forEach(t=>t.stop());
+    }
+  }catch(e){$('micTxt').innerText='Permesso microfono negato — abilitalo dalle impostazioni del sito e tocca qui';return;}
   recogActive=true;launchRecog(SR);
 }
 function launchRecog(SR){
@@ -895,17 +906,38 @@ function launchRecog(SR){
 function stopVoice(){recogActive=false;if(recog){try{recog.stop();}catch(e){}}$('micDot').classList.remove('ls');}
 function restartVoiceManually(){stopVoice();toast('Riavvio riconoscimento vocale…','🎙️');setTimeout(startVoice,300);}
 let awaitingShotFor=null,awaitTimeoutHandle=null;
+const SHOT_LABELS={ace:'ace',driV:'dritto vincente',rovV:'rovescio vincente',spec:'colpo speciale',smash:'smash',errNF:'errore non forzato',errFo:'errore forzato',luck_nastro:'punto fortuna (nastro)',luck_bordo:'punto fortuna (bordo)'};
 function parseShotKeyword(cmd){
   if(cmd.includes('ace'))return{shot:'ace',label:'ace'};
   if(cmd.includes('dritto'))return{shot:'driV',label:'dritto vincente'};
   if(cmd.includes('rovescio'))return{shot:'rovV',label:'rovescio vincente'};
   if(cmd.includes('special'))return{shot:'spec',label:'colpo speciale'};
-  if(cmd.includes('smash'))return{shot:'smash',label:'smash'};
+  if(cmd.includes('smash')||cmd.includes('schiacciata'))return{shot:'smash',label:'smash'};
   if(cmd.includes('non forzato')||/\bnf\b/.test(cmd))return{shot:'errNF',label:'errore non forzato'};
   if(cmd.includes('forzato')||/\bfo\b/.test(cmd))return{shot:'errFo',label:'errore forzato'};
-  if(cmd.includes('error'))return{shot:'errNF',label:'errore non forzato'};
+  if(cmd.includes('error')||cmd.includes('sbagliat'))return{shot:'errNF',label:'errore non forzato'};
   if(cmd.includes('nastro'))return{shot:'luck_nastro',label:'punto fortuna (nastro)'};
   if(cmd.includes('bordo'))return{shot:'luck_bordo',label:'punto fortuna (bordo)'};
+  return null;
+}
+/* ===== INTERPRETAZIONE IA DELLA FRASE (Gemini) =====
+   La trascrizione la fa sempre il browser (Web Speech API). La frase trascritta viene poi
+   passata a Gemini, che capisce a chi va il punto e che colpo è stato — anche con frasi
+   libere ("Pingy, gran difesa poi Lorenzo l'ha buttata in rete") o nomi trascritti male.
+   Il risultato è un JSON che lancia il normale comando di assegnazione punto con colpo.
+   Se la chiave non c'è, non è verificata o manca la rete, si usa il parser locale a
+   parole chiave: il sistema funziona comunque, solo in modo più letterale. */
+async function aiInterpretVoice(cmd){
+  const p1=pById(LM.p1),p2=pById(LM.p2);
+  const prompt='Sei l\'arbitro vocale di una partita di ping pong. Giocatore lato SINISTRO (side 0): "'+(p1?p1.name:'?')+'". Giocatore lato DESTRO (side 1): "'+(p2?p2.name:'?')+'". Frase pronunciata (trascrizione automatica, i nomi possono essere storpiati: interpretali foneticamente): "'+cmd+'". Rispondi SOLO con JSON puro, senza markdown ne testo extra, in questo formato: {"side":0 oppure 1 oppure null,"shot":"ace"|"driV"|"rovV"|"spec"|"smash"|"errNF"|"errFo"|"luck_nastro"|"luck_bordo"|"var"|null}. Regole: side = a chi VA il punto (0 sinistro, 1 destro, null se non capisci). shot: "ace"=punto diretto dal servizio, "driV"=dritto vincente, "rovV"=rovescio vincente, "spec"=colpo speciale/fantasioso, "smash"=schiacciata, "errNF"=errore non forzato dell\'avversario, "errFo"=errore forzato dell\'avversario, "luck_nastro"/"luck_bordo"=punto di fortuna, "var"=richiesta di aprire la moviola, null=colpo non dichiarato. Se la frase dice che qualcuno HA SBAGLIATO, il punto (side) va all\'ALTRO giocatore e shot e l\'errore.';
+  const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${DB.settings.gemini}`,{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({contents:[{parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:60,temperature:0}})});
+  const j=await r.json();
+  let txt=j?.candidates?.[0]?.content?.parts?.[0]?.text||'';
+  txt=txt.replace(/```json|```/g,'').trim();
+  const obj=JSON.parse(txt);
+  if(obj&&(obj.side===0||obj.side===1||obj.side===null))return obj;
   return null;
 }
 /* Se il punto viene assegnato senza specificare il colpo, Pingy lo chiede a voce.
@@ -920,7 +952,12 @@ function askShotFor(side){
     if(awaitingShotFor===side){awaitingShotFor=null;toast('Nessuna risposta: registro come errore non forzato','🎙️');pendingShot='errNF';addPoint(side);}
   },8000);
 }
-function handleVoice(txt){
+function execVoiceCommand(side,shot,source){
+  const label=shot?(SHOT_LABELS[shot]||shot):'punto';
+  toast('Pingy'+(source==='ai'?' (IA)':'')+': '+label+' per '+pName(side===0?LM.p1:LM.p2),source==='ai'?'🤖':'🎙️');
+  pendingShot=shot;addPoint(side);
+}
+async function handleVoice(txt){
   if(awaitingShotFor!=null){
     clearTimeout(awaitTimeoutHandle);
     const side=awaitingShotFor;awaitingShotFor=null;
@@ -934,14 +971,29 @@ function handleVoice(txt){
   if(!WAKE_RX.test(txt))return; // ignora tutto ciò che non contiene la parola chiave "Pingy"
   const cmd=txt.replace(WAKE_RX,'').trim();
   $('micTxt').innerText='🎙️ Sentito: "'+cmd+'"';
+  /* 1° livello: interpretazione IA (se chiave Gemini verificata e rete disponibile) */
+  if(DB.settings.gemini&&DB.settings.geminiOk&&navigator.onLine){
+    $('micTxt').innerText='🤖 Interpretazione IA: "'+cmd+'"…';
+    try{
+      const res=await aiInterpretVoice(cmd);
+      if(res){
+        if(res.shot==='var'){openVAR();return;}
+        if(res.side===0||res.side===1){
+          if(res.shot){execVoiceCommand(res.side,res.shot,'ai');return;}
+          askShotFor(res.side);return;
+        }
+        toast('L\'IA non ha capito a chi va il punto: ripeti con il nome','🤖');return;
+      }
+    }catch(e){/* IA non disponibile o risposta non valida: passo al parser locale */}
+  }
+  /* 2° livello (fallback): parser locale a parole chiave */
   if(cmd.includes('var')){openVAR();return;}
   let side=null,who=null;
   [[0,LM.p1],[1,LM.p2]].forEach(([s,pid])=>{const p=pById(pid);if(p&&cmd.includes(p.name.toLowerCase())){side=s;who=p;}});
   if(side===null){toast('Pingy non ha riconosciuto il nome del giocatore','🎙️');return;}
   const parsed=parseShotKeyword(cmd);
   if(!parsed){askShotFor(side);return;} // colpo non dichiarato: Pingy lo chiede prima di assegnare il punto
-  toast('Pingy: '+parsed.label+' per '+who.name,'🎙️');
-  pendingShot=parsed.shot;addPoint(side);
+  execVoiceCommand(side,parsed.shot,'local');
 }
 
 /* ================= V.A.R. — buffer a segmenti da 5s (max 6 = 30s) ================= */
@@ -1131,7 +1183,28 @@ async function aG(){if(!DB.settings.gemini){toast('Registra prima la tua API Key
 /* ================= IMPOSTAZIONI ================= */
 function sTheme(){document.body.dataset.theme=$('cT').value;DB.settings.theme=$('cT').value;save();}
 function tS(){DB.settings.sound=!DB.settings.sound;$('bS').innerText='🔊 SFX: '+(DB.settings.sound?'ON':'OFF');save();}
-function sS(){const k=$('cG').value.trim();if(k){DB.settings.gemini=k;save();toast('Chiave API salvata');}}
+/* Verifica della chiave Gemini con micro-test reale: invia una richiesta minima e mostra
+   la spunta solo se l'API risponde davvero. Lo stato "verificata" resta salvato. */
+async function testGeminiKey(){
+  const k=$('cG').value.trim();const st=$('gStatus');st.style.display='block';
+  if(!k){st.innerHTML='⚠️ Incolla prima una chiave.';return;}
+  st.innerHTML='⏳ Verifica in corso: invio richiesta di test a Gemini…';
+  try{
+    const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${k}`,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({contents:[{parts:[{text:'Rispondi esattamente con la sola parola: OK'}]}]})});
+    const j=await r.json();
+    const txt=j?.candidates?.[0]?.content?.parts?.[0]?.text||'';
+    if(r.ok&&txt){
+      DB.settings.gemini=k;DB.settings.geminiOk=true;save();
+      st.innerHTML='✅ <b>Chiave verificata e funzionante.</b> Risposta di test ricevuta: "'+txt.trim().slice(0,20)+'". Coach IA e interpretazione vocale IA sono attivi.';
+      toast('Chiave Gemini verificata','✅');
+    }else{
+      DB.settings.geminiOk=false;save();
+      st.innerHTML='❌ Chiave rifiutata da Google: '+(j?.error?.message||('errore HTTP '+r.status));
+    }
+  }catch(e){DB.settings.geminiOk=false;save();st.innerHTML='❌ Errore di rete: la verifica richiede una connessione internet attiva.';}
+}
 async function dD(){const mode=$('dF').value;const ok=await askConfirm(mode==='a'?'HARD RESET: verranno cancellati TUTTI i dati. Continuare?':'Cancellare solo i dati registrati oggi?');
   if(!ok)return;
   if(mode==='a'){DB={players:[],matches:[],tournaments:[],trophies:[],settings:DB.settings};}
@@ -1192,6 +1265,7 @@ const ICON512M="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAMAAADDpi
 load();
 document.body.dataset.theme=DB.settings.theme||'dark';$('cT').value=DB.settings.theme||'dark';
 $('bS').innerText='🔊 SFX: '+(DB.settings.sound?'ON':'OFF');$('cG').value=DB.settings.gemini||'';
+if(DB.settings.gemini&&DB.settings.geminiOk){$('gStatus').style.display='block';$('gStatus').innerHTML='✅ <b>Chiave verificata</b> (in un test precedente). Coach IA e interpretazione vocale IA attivi. Premi di nuovo il pulsante per riverificarla.';}
 $('varVid').addEventListener('ended',()=>{varQueueIdx++;if(varQueueIdx<varQueue.length)playVarQueueItem();});
 if(!varSupported()){$('mV').checked=false;$('mV').disabled=true;const lb=$('mV').nextElementSibling;if(lb)lb.innerText='V.A.R. non disponibile su questo dispositivo';}
 $('pF').onclick=null; // usa file input standard (galleria); per scatto diretto si può estendere con openCam('pPv')
