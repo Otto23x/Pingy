@@ -453,7 +453,8 @@ video{width:100%;max-height:48vh;border-radius:14px;background:#000;margin-botto
         <div class="gd"><h3>Backup dei dati</h3><p>"Esporta Backup" scarica un file .json con tutto (roster, partite, tornei, trofei, impostazioni); "Importa Backup" lo ricarica su qualsiasi dispositivo. Utile prima di un Hard Reset o per passare l'archivio a un altro telefono.</p></div>
         <div class="gd"><h3>Cancellazione dati</h3><p>Puoi cancellare solo le partite registrate oggi, oppure fare un Hard Reset completo che azzera tutto (atleti, storico, tornei, trofei). Questa azione non è reversibile: fai un backup prima se hai dubbi.</p></div>
         <div class="gd"><h3>Installazione a schermo intero</h3><p>Toccando "Installa" nel banner (o dal menu del browser → "Aggiungi a schermata Home"), Pingy viene installata come una vera app: icona propria sulla Home, si apre <b>a schermo intero senza la barra degli indirizzi di Chrome</b>.</p></div>
-        <div class="gd"><h3>Se compare il simbolo di Chrome sull'icona</h3><p>L'app è un unico file <code>index.html</code>: caricalo sul repository e aprilo da https. Se dopo l'installazione vedi ancora un badge di Chrome sull'icona, significa che il sistema l'ha aggiunta come semplice collegamento: disinstalla l'icona, riapri il sito, attendi un paio di secondi e reinstalla usando il banner "Installa" che compare in basso (non la voce "Aggiungi a schermata Home" del menu). Su iPhone usa Safari → Condividi → "Aggiungi alla schermata Home".</p></div>
+        <div class="gd"><h3>Installazione su Android (importante)</h3><p>Carica sul repository <b>entrambi i file</b> nella stessa cartella: <code>index.html</code> e <code>sw.js</code>. Su Chrome Android il file <code>sw.js</code> è <b>obbligatorio</b>: senza, il telefono mostra "installazione in corso" e poi fallisce, anche se su PC funziona. Su desktop e iPhone l'app si installa comunque anche solo con index.html, ma tenere entrambi i file va bene ovunque.</p></div>
+        <div class="gd"><h3>Se compare il simbolo di Chrome sull'icona</h3><p>Se dopo l'installazione vedi ancora un badge di Chrome, il sistema l'ha aggiunta come semplice collegamento: disinstalla l'icona, chiudi tutte le schede del sito, riaprilo, attendi qualche secondo toccando in giro nella pagina e reinstalla dal banner "Installa" (non dalla voce "Aggiungi a schermata Home" del menu). Su iPhone usa Safari → Condividi → "Aggiungi alla schermata Home".</p></div>
         <div class="gd"><h3>Modalità Offline</h3><p>Tracker, tornei, ELO, roster e foto profilo (salvate come Base64) restano operativi anche senza rete, perché tutto viene salvato localmente sul dispositivo. Coach IA e riconoscimento vocale richiedono internet, il V.A.R. richiede il permesso fotocamera: tutte e tre richiedono anche che la pagina sia servita in https.</p></div>
       </div>
     </div>
@@ -1175,6 +1176,14 @@ const ICON512M="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAYAAAD0eN
   $('instYes').onclick=async()=>{$('instBanner').style.display='none';if(deferredPrompt){deferredPrompt.prompt();try{await deferredPrompt.userChoice;}catch(e){}deferredPrompt=null;}else{toast('Apri il menu del browser e scegli "Aggiungi a schermata Home"','📲');}};
   $('instNo').onclick=()=>{try{localStorage.setItem(KEY,String(Date.now()));}catch(e){}$('instBanner').style.display='none';};
   window.addEventListener('appinstalled',()=>{$('instBanner').style.display='none';try{localStorage.removeItem(KEY);}catch(e){}});
+})();
+/* Service Worker: su Chrome ANDROID è obbligatorio (con un handler fetch) perché l'installazione
+   della PWA vada a buon fine — senza, il telefono mostra "installazione in corso" e poi fallisce,
+   anche se su desktop funziona (lì il SW non è richiesto). Il file sw.js deve stare nella STESSA
+   cartella di index.html sul repository. Se manca non blocca desktop e iPhone. */
+(function(){
+  if(!('serviceWorker' in navigator)||location.protocol==='file:')return;
+  window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});
 })();
 
 
