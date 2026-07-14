@@ -103,7 +103,7 @@ tr:last-child td{border-bottom:none;}
 .setdots span.w{background:var(--a);}
 .mb{display:flex;gap:5px;justify-content:center;margin-top:10px;flex-wrap:wrap;}
 .mb-btn{flex:1;min-width:22%;padding:10px 2px;font-size:0.7rem;font-weight:800;border-radius:9px;border:2px solid rgba(255,255,255,0.16);background:transparent;color:#fff;}
-.mb-btn.act{background:#808e9b;border-color:#808e9b;} .mb-btn.act.nst{background:#0fb9b1;} .mb-btn.act.brd{background:#fa8231;} .mb-btn.act.let{background:#8854d0;} .mb-btn.act.sht{background:var(--ai);} .mb-btn.act.spc{background:var(--a);color:#1e272e;}
+.mb-btn.act{background:#808e9b;border-color:#808e9b;} .mb-btn.act.nst{background:#0fb9b1;} .mb-btn.act.brd{background:#fa8231;} .mb-btn.act.sht{background:var(--ai);} .mb-btn.act.spc{background:var(--a);color:#1e272e;}
 .pts-row{display:flex;gap:8px;margin-top:10px;}
 .pts-row button{flex:1;padding:16px 4px;font-size:1rem;font-weight:900;border-radius:12px;border:none;color:#fff;}
 .mic{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:10px;padding:9px;background:rgba(255,255,255,0.05);border-radius:12px;font-size:0.8rem;font-weight:700;}
@@ -206,26 +206,8 @@ video{width:100%;max-height:48vh;border-radius:14px;background:#000;margin-botto
 </div>
 
 <div class="c">
-<!-- ROSTER -->
-<div id="gio" class="sec act">
-  <div class="cd">
-    <h2>➕ Nuovo Atleta</h2>
-    <label for="pF" class="p-upl"><div id="pPv" class="p-prv">📷</div><span style="font-size:0.82rem;font-weight:800;margin-top:6px;color:var(--muted)">Foto Profilo</span></label>
-    <input type="file" id="pF" accept="image/*" style="display:none;" onchange="upI(this,'pPv')">
-    <label class="fl">Nome / Soprannome</label>
-    <input type="text" id="pN" placeholder="Es. Lorenzo 'Il Muro'">
-    <div class="gr3">
-      <div><label class="fl">Sesso</label><select id="pG"><option value="M">Maschio</option><option value="F">Femmina</option><option value="N">Altro</option></select></div>
-      <div><label class="fl">Nascita</label><input type="date" id="pD"></div>
-      <div><label class="fl">Mano</label><select id="pH"><option value="R">Destro</option><option value="L">Mancino</option></select></div>
-    </div>
-    <button class="btn btn-g" onclick="addP()">Aggiungi al Roster</button>
-  </div>
-  <div class="cd"><h2>👥 Roster Attivo & ELO</h2><div id="pL" class="p-cd-grid"></div></div>
-</div>
-
 <!-- GIOCA -->
-<div id="pla" class="sec">
+<div id="pla" class="sec act">
   <div class="sn"><button class="act" onclick="stb('pla','pm',this)">Partita</button><button onclick="stb('pla','pt',this)">Tornei 🏆</button></div>
   <div id="pm" class="s-sec act">
     <div class="cd">
@@ -275,12 +257,12 @@ video{width:100%;max-height:48vh;border-radius:14px;background:#000;margin-botto
   </div>
   <div id="ss" class="s-sec">
     <div class="cd"><h2>📊 Sabermetrica & Stili</h2>
-      <p style="font-size:0.82rem;color:var(--muted);font-weight:700;margin:-6px 0 14px;line-height:1.4;">"Sabermetrica" è un termine preso in prestito dal baseball: indica l'uso di statistiche avanzate (non solo il punteggio finale) per capire il vero rendimento di un atleta. Vedi la Guida per il significato di ogni colonna.</p>
+      <p style="font-size:0.82rem;color:var(--muted);font-weight:700;margin:-6px 0 14px;line-height:1.4;">"Sabermetrica" è un termine preso in prestito dal baseball: indica l'uso di statistiche avanzate (non solo il punteggio finale) per capire il vero rendimento di un atleta. Vedi la Guida per il significato di ogni riga.</p>
       <label class="fl">Periodo</label>
       <select id="tF" onchange="rSt();rSh();"><option value="a">Sempre</option><option value="t">Oggi</option><option value="w">Ultimi 7 Giorni</option></select>
-      <div class="tb-w"><table id="tS2"><thead><tr><th>Atleta</th><th>Eff.Srv</th><th>Clutch%</th><th>⏱Media</th><th>🛡️MP Salv.</th><th>🍀Fort.</th></tr></thead><tbody></tbody></table></div>
+      <div class="tb-w"><table id="tS2"></table></div>
     </div>
-    <div class="cd"><h2>🎯 Matrice Tecnica Colpi</h2><div class="tb-w"><table id="tS3"><thead><tr><th>Atleta</th><th>⚡Ace</th><th>💥Dri.V</th><th>☄️Rov.V</th><th>🌟Spec</th><th>⚔️Att</th><th>🛡️Dif</th><th>📉Err.NF</th></tr></thead><tbody></tbody></table></div></div>
+    <div class="cd"><h2>🎯 Matrice Tecnica Colpi</h2><div class="tb-w"><table id="tS3"></table></div></div>
     <div class="cd"><h2>📊 Bilancio Colpi</h2><div style="position:relative;height:280px;width:100%;"><canvas id="cR"></canvas></div></div>
   </div>
   <div id="sv" class="s-sec">
@@ -307,8 +289,24 @@ video{width:100%;max-height:48vh;border-radius:14px;background:#000;margin-botto
 
 <!-- IMPOSTAZIONI -->
 <div id="imp" class="sec">
-  <div class="sn"><button class="act" onclick="stb('imp','is',this)">Sistema</button><button onclick="stb('imp','ia',this)">Trofei</button><button onclick="stb('imp','ig',this)">Guida 📚</button></div>
-  <div id="is" class="s-sec act">
+  <div class="sn"><button class="act" onclick="stb('imp','ir',this)">Roster</button><button onclick="stb('imp','is',this)">Sistema</button><button onclick="stb('imp','ia',this)">Trofei</button><button onclick="stb('imp','ig',this)">Guida 📚</button></div>
+  <div id="ir" class="s-sec act">
+    <div class="cd">
+      <h2>➕ Nuovo Atleta</h2>
+      <label for="pF" class="p-upl"><div id="pPv" class="p-prv">📷</div><span style="font-size:0.82rem;font-weight:800;margin-top:6px;color:var(--muted)">Foto Profilo</span></label>
+      <input type="file" id="pF" accept="image/*" style="display:none;" onchange="upI(this,'pPv')">
+      <label class="fl">Nome / Soprannome</label>
+      <input type="text" id="pN" placeholder="Es. Lorenzo 'Il Muro'">
+      <div class="gr3">
+        <div><label class="fl">Sesso</label><select id="pG"><option value="M">Maschio</option><option value="F">Femmina</option><option value="N">Altro</option></select></div>
+        <div><label class="fl">Nascita</label><input type="date" id="pD"></div>
+        <div><label class="fl">Mano</label><select id="pH"><option value="R">Destro</option><option value="L">Mancino</option></select></div>
+      </div>
+      <button class="btn btn-g" onclick="addP()">Aggiungi al Roster</button>
+    </div>
+    <div class="cd"><h2>👥 Roster Attivo & ELO</h2><div id="pL" class="p-cd-grid"></div></div>
+  </div>
+  <div id="is" class="s-sec">
     <div class="cd"><h2>🎨 Tema e Audio</h2>
       <div class="gr2">
         <div><label class="fl">Tema Grafico</label><select id="cT" onchange="sTheme()"><option value="dark">Midnight Dark</option><option value="ittf">Verde ITTF</option><option value="olympic">Blu Olimpico</option></select></div>
@@ -345,7 +343,7 @@ video{width:100%;max-height:48vh;border-radius:14px;background:#000;margin-botto
             <option value="wi">Vittorie</option><option value="los">Sconfitte</option><option value="mch">Partite giocate</option><option value="elo">Punteggio ELO</option>
           </optgroup>
           <optgroup label="Colpi">
-            <option value="ac">Aces</option><option value="dri">Vincenti di Dritto</option><option value="rov">Vincenti di Rovescio</option><option value="spc">Colpi Speciali</option><option value="att">Punti in Attacco</option><option value="def">Punti in Difesa</option><option value="err">Errori non forzati</option>
+            <option value="ac">Aces</option><option value="dri">Vincenti di Dritto</option><option value="rov">Vincenti di Rovescio</option><option value="spc">Colpi Speciali</option><option value="sma">Smash</option><option value="errnf">Errori non forzati</option><option value="errfo">Errori forzati</option>
           </optgroup>
           <optgroup label="Mentalità">
             <option value="cmb">Rimonte</option><option value="mps">Match Point annullati</option><option value="lk">Punti Fortuna (nastro/bordo)</option>
@@ -371,9 +369,33 @@ video{width:100%;max-height:48vh;border-radius:14px;background:#000;margin-botto
         <h2>🏓 Come funziona una partita</h2>
         <div class="gd"><h3>1. Setup match</h3><p>In "Gioca → Partita Libera" scegli i due atleti, il formato (1/3/5 set), il punteggio (11 o 21), ogni quanti punti cambia il servizio (2 o 5) e se la partita è <b>Amichevole</b> (non tocca l'ELO) o <b>Ufficiale</b> (fa media per la classifica).</p></div>
         <div class="gd"><h3>2. Cambio battuta ai vantaggi</h3><p>Il turno di servizio segue le tue impostazioni fino al 10-10 (set a 11) o 20-20 (set a 21): da quel momento il cambio scatta automaticamente a ogni punto, come da regolamento ITTF ufficiale, ed è annunciato a voce.</p></div>
-        <div class="gd"><h3>3. Il tracker in campo</h3><p>Prima di premere <b>+1 SX</b> o <b>+1 DX</b> puoi (facoltativo) toccare un tasto colpo (Ace, Dritto, Rovescio, Speciale, Attacco, Difesa, Errore): verrà abbinato al punto successivo che assegni. "Nastro"/"Bordo" segnano un punto fortuna, "Let" annulla lo scambio mantenendo il servizio, "Annulla" toglie l'ultimo punto (anche riaprendo un set appena chiuso per errore).</p></div>
+        <div class="gd"><h3>3. Il tracker in campo</h3><p>Prima di premere <b>+1 SX</b> o <b>+1 DX</b> puoi (facoltativo) toccare un tasto colpo (Ace, Dritto, Rovescio, Speciale, Smash, Errore NF, Errore FO): il bottone si evidenzia per farti capire cosa hai selezionato, e verrà abbinato al punto successivo che assegni. "Nastro"/"Bordo" segnano un punto fortuna allo stesso modo. "Annulla" toglie l'ultimo punto (anche riaprendo un set appena chiuso per errore).</p></div>
+        <div class="gd"><h3>3bis. A chi va la statistica del colpo?</h3><p>I colpi <b>vincenti</b> (Ace, Dritto, Rovescio, Speciale, Smash) vengono accreditati a chi <b>segna</b> il punto. Gli <b>errori</b> (Non Forzato o Forzato) vanno invece a chi <b>sbaglia</b>, cioè all'avversario di chi segna: se assegni il punto a Papo taggandolo come "Errore Non Forzato", è Lorenzo (l'avversario) a incassare la statistica dell'errore, perché è lui che ha sbagliato — anche se il punto in classifica resta di Papo.</p></div>
+        <div class="gd"><h3>3ter. Regole per scegliere la dicitura giusta</h3><ul>
+          <li><b>Ace</b>: il punto è chiuso dal servizio stesso — l'avversario non tocca la palla o non riesce a rimandarla in modo valido.</li>
+          <li><b>Dritto Vincente / Rovescio Vincente</b>: lo scambio è concluso da un normale colpo di dritto o di rovescio che l'avversario non riesce a rimandare; non è un servizio (altrimenti è Ace) né una schiacciata di potenza (altrimenti è Smash).</li>
+          <li><b>Smash</b>: il punto è chiuso con una schiacciata o un colpo di potenza decisivo su palla alta/comoda, a prescindere che sia dato di dritto o di rovescio.</li>
+          <li><b>Speciale</b>: colpi fuori dagli schemi classici — tocchi a rete, effetti particolari, soluzioni fantasiose — che non rientrano nelle altre categorie.</li>
+          <li><b>Errore Non Forzato</b>: l'avversario sbaglia un colpo gestibile, senza essere stato messo sotto pressione da un tuo colpo particolarmente difficile (es. manda in rete o fuori un pallone comodo).</li>
+          <li><b>Errore Forzato</b>: l'avversario sbaglia perché costretto da un tuo colpo aggressivo o difficile da gestire (angolo stretto, velocità, effetto): il merito è per metà tuo.</li>
+          <li><b>Nastro / Bordo</b>: il punto è deciso da un tocco fortuito, indipendentemente dall'intenzione dei giocatori — non è merito né colpa di nessuno dei due.</li>
+        </ul><p>Nel dubbio tra Dritto/Rovescio Vincente ed Errore Non Forzato (spesso è opinabile se il merito sia di chi ha attaccato o il demerito di chi ha sbagliato), usa questo criterio pratico: se il colpo che ha chiuso il punto era comunque ben giocato e difficile da rimandare, tagga il colpo vincente; se il colpo che ha chiuso il punto era gestibile e l'avversario ha semplicemente sbagliato, tagga l'errore.</p></div>
         <div class="gd"><h3>4. Partite incomplete</h3><p>Dal tasto "Fine/Salva" puoi interrompere e salvare un match a metà: viene segnato con il tag <span class="inc-tag">INC</span>, non modifica l'ELO e non fa avanzare i tornei, ma le statistiche sui colpi restano comunque registrate per la Sabermetrica.</p></div>
-        <div class="gd"><h3>5. Overall (OVR) delle Player Card</h3><p>L'OVR non è la media delle 8 statistiche: è calcolato come <b>ELO ÷ 15</b>, con minimo 40 e massimo 99. Puoi avere colpi fortissimi, ma se perdi spesso l'OVR non sale: conta il risultato.</p></div>
+        <div class="gd"><h3>5. Overall (OVR) delle Player Card</h3><p>L'OVR non è la media delle 8 statistiche: parte da <b>50</b> quando l'ELO è al valore base (1200) e sale o scende di 1 punto ogni 14 punti ELO di differenza, tra un minimo di 30 e un massimo di 99. Così un atleta con tutte le statistiche a 50 (appena iniziato) ha anche OVR 50, non un numero gonfiato: puoi avere colpi fortissimi, ma se perdi spesso l'OVR non sale, conta il risultato.</p></div>
+        <div class="gd"><h3>5bis. Come sono calcolate le 8 statistiche</h3><p>Ogni statistica parte da una base di <b>50</b> e sale (o scende) in base ai dati registrati, con tre correttivi:</p>
+        <p><b>Fattore di crescita</b>: finché un atleta ha giocato poche partite, i suoi numeri contano solo in parte — servono 10 partite per arrivare al 100% dell'effetto (con 3 partite conta solo il 30%, per esempio). Sotto le 10 partite le statistiche restano quindi vicine a 50: è normale, non è un errore, semplicemente non c'è ancora abbastanza storico per giudicare.</p>
+        <p><b>Tetto per statistica</b>: ogni formula può aggiungere al massimo <b>45 punti</b> oltre la base 50 (cioè non si supera mai 95 tramite questa componente): superata una certa quantità di colpi, aggiungerne altri non fa più salire il numero.</p>
+        <p><b>Decadimento</b>: le 8 statistiche della card <u>non</u> guardano ai totali a vita, ma a un contatore separato che si riduce del 10% a ogni nuova partita giocata (da chiunque la giochi), prima che i punti di quella partita si aggiungano. Un colpo che facevi spesso mesi fa e non fai più conta sempre meno, un po' come in FIFA gli attributi di un giocatore calano se non li conferma più in campo — la tecnica non è scolpita nella pietra. I totali a vita restano comunque intatti e visibili in Matrice Tecnica Colpi, Sabermetrica e nei Trofei: quelli sono un archivio storico che non deve sparire mai.</p>
+        <ul>
+          <li><b>Dritto</b> = vincenti di dritto (recenti) × 1.8 (tetto raggiunto a 25 vincenti)</li>
+          <li><b>Rovescio</b> = vincenti di rovescio (recenti) × 1.8 (tetto a 25 vincenti)</li>
+          <li><b>Smash</b> = smash×2 + ace×1.2 (recenti)</li>
+          <li><b>Speciale</b> = colpi speciali (recenti) × 2.2</li>
+          <li><b>Fortuna</b> = punti nastro/bordo (recenti) × 3</li>
+          <li><b>Difesa</b> = MP Salvati×2.5 − Errori Forzati×0.3 (recenti)</li>
+          <li><b>Focus</b> = vittorie×2 − errori totali×0.5 (recenti)</li>
+          <li><b>Mentalità</b> = rimonte×4 + Clutch%×30 − errori totali×0.4 (recenti)</li>
+        </ul></div>
         <div class="gd"><h3>6. Tornei</h3><p><b>Eliminazione diretta</b> (4 o 8 atleti): tabellone a turni, il vincitore avanza in automatico. <b>Girone all'italiana</b> (3-6 atleti): tutti contro tutti, classifica per punti (2 a vittoria). Un torneo può essere sospeso e ripreso in un secondo momento dal tasto ⏸️/▶️ sulla sua scheda.</p></div>
         <div class="gd"><h3>7. Giocatori eliminati dal roster</h3><p>Se elimini un atleta dal Roster, le sue partite passate restano nello storico: l'avversario le vedrà semplicemente giocate contro "Sconosciuto", senza perdere le proprie statistiche.</p></div>
       </div>
@@ -385,17 +407,17 @@ video{width:100%;max-height:48vh;border-radius:14px;background:#000;margin-botto
         <div class="gd"><h3>Attivazione</h3><p>Il microfono si accende da solo all'avvio del tracker. La <b>parola chiave è esclusivamente "Pingy"</b>: qualunque cosa venga detta senza quella parola viene ignorata. Ogni comando riconosciuto mostra una conferma a schermo (toast) e viene ripetuto a voce, così sai sempre cosa ha capito l'app.</p></div>
         <div class="gd"><h3>Frasi riconosciute</h3><ul>
           <li>"Pingy, punto a [nome del giocatore]"</li>
-          <li>"Pingy, ace di [nome]" — oppure "dritto", "rovescio", "speciale", "attacco", "difesa", "errore" al posto di "ace"</li>
-          <li>"Pingy, let" — annulla lo scambio mantenendo il servizio</li>
+          <li>"Pingy, ace di [nome]" — oppure "dritto", "rovescio", "speciale", "smash", "errore non forzato", "errore forzato" al posto di "ace"</li>
           <li>"Pingy, nastro [nome]" / "Pingy, bordo [nome]" — punto fortuna</li>
           <li>"Pingy, apri V.A.R." — richiama subito la moviola</li>
         </ul></div>
-        <div class="gd"><h3>Requisiti tecnici (importante)</h3><p>Il riconoscimento vocale del browser <b>invia l'audio a un servizio cloud per trascriverlo</b>: serve quindi connessione internet attiva e il permesso microfono concesso al browser, anche se il resto dell'app (tracker, tornei, ELO) funziona offline. È supportato da Chrome (Android/desktop) e dai browser basati su Chromium; su alcuni browser/iOS più datati potrebbe non essere disponibile, e l'app te lo segnala nella barra sotto ai pulsanti colpo.</p></div>
+        <div class="gd"><h3>Se non dichiari il colpo</h3><p>Se dici solo "Pingy, punto a [nome]" senza specificare il colpo, Pingy <b>non assegna subito il punto</b>: chiede a voce "Che colpo è stato?" e resta in ascolto della tua risposta (senza bisogno di ripetere "Pingy"). Se non capisce la risposta, o non arriva nulla entro 8 secondi, registra comunque il punto come <b>Errore Non Forzato</b> (il caso più comune), così nessun punto resta senza dicitura e le statistiche restano complete.</p></div>
+        <div class="gd"><h3>Requisiti tecnici (importante)</h3><p>Il riconoscimento vocale del browser <b>invia l'audio a un servizio cloud per trascriverlo</b>: serve quindi connessione internet attiva, il permesso microfono concesso al browser e una pagina servita in <b>https</b> (o aperta da localhost) — su un file aperto direttamente (file://) il browser blocca il microfono a prescindere. Se il pallino accanto alla scritta "In ascolto" resta grigio, tocca la barra del microfono per riavviare il riconoscimento.</p></div>
         <div class="gd"><h3>Sintesi vocale (l'arbitro che parla)</h3><p>L'app annuncia a voce il punteggio dopo ogni scambio e dichiara Set Point / Match Point / Vantaggi. Si disattiva con il tasto 🔊 in alto nel tracker (diventa 🔇), oppure globalmente da Impostazioni → Sistema → "SFX".</p></div>
         <h2 style="margin-top:22px;">📼 Sistema V.A.R. (moviola)</h2>
-        <div class="gd"><h3>Come funziona</h3><p>Attivando la spunta "Abilita Moviola V.A.R." prima del match, l'app registra con la fotocamera posteriore in <b>mini-clip da 5 secondi</b>: ne conserva sempre le ultime 6 (30 secondi totali), scartando le più vecchie. Al richiamo, le clip vengono riprodotte in sequenza, dando l'effetto di un unico replay degli ultimi 30 secondi.</p></div>
+        <div class="gd"><h3>Come funziona</h3><p>Attivando la spunta "Abilita Moviola V.A.R." prima del match, l'app registra con la <b>fotocamera anteriore</b> (quella dello schermo) in <b>mini-clip da 5 secondi</b>: ne conserva sempre le ultime 6 (30 secondi totali), scartando le più vecchie. Al richiamo, le clip vengono riprodotte in sequenza, dando l'effetto di un unico replay degli ultimi 30 secondi.</p></div>
         <div class="gd"><h3>Come richiamarlo</h3><p>Tasto 📼 in alto nel tracker, oppure a voce con "Pingy, apri V.A.R.". Il cronometro va in pausa automaticamente. Nel player puoi rallentare a 1x, 0.5x o 0.25x.</p></div>
-        <div class="gd"><h3>Requisiti e limiti</h3><p>Serve permesso fotocamera e una connessione sicura (HTTPS). Funziona in modo affidabile su Chrome Android; su alcuni iPhone/Safari la registrazione video in background può non essere supportata: in quel caso la spunta V.A.R. viene disattivata automaticamente e te lo segnaliamo con un avviso.</p></div>
+        <div class="gd"><h3>Requisiti e limiti</h3><p>Serve permesso fotocamera e una pagina servita in https (stesso discorso della voce). Funziona in modo affidabile su Chrome Android; su alcuni iPhone/Safari la registrazione video in background può non essere supportata: in quel caso la spunta V.A.R. viene disattivata automaticamente e te lo segnaliamo con un avviso.</p></div>
       </div>
     </div>
 
@@ -410,12 +432,12 @@ video{width:100%;max-height:48vh;border-radius:14px;background:#000;margin-botto
           <li><b>🛡️ MP Salvati</b>: quante volte l'atleta ha annullato un Match Point all'avversario.</li>
           <li><b>🍀 Fortuna</b>: punti vinti grazie a un tocco di nastro o di bordo.</li>
         </ul></div>
-        <div class="gd"><h3>Matrice Tecnica Colpi</h3><p>Conteggio assoluto per ogni tipo di colpo taggato nel tracker (o via comando vocale): Ace, vincenti di Dritto e Rovescio, colpi Speciali, punti dichiarati in Attacco o Difesa, ed Errori non forzati.</p></div>
+        <div class="gd"><h3>Matrice Tecnica Colpi</h3><p>Conteggio assoluto per ogni tipo di colpo taggato nel tracker (o via comando vocale): Ace, vincenti di Dritto e Rovescio, colpi Speciali, Smash, Errori Non Forzati ed Errori Forzati. La tabella è "trasposta": i colpi sono in riga e gli atleti in colonna (i più attivi per primi), così non serve scorrere a destra.</p></div>
         <div class="gd"><h3>Grafico "Trend ELO"</h3><p>Linea storica del punteggio ELO di ogni atleta, un punto per ogni partita <b>Ufficiale</b> giocata. Le partite Amichevoli non spostano l'ELO e quindi non appaiono nel grafico.</p></div>
         <div class="gd"><h3>Grafico "Bilancio Colpi"</h3><p>Confronto a barre tra vincenti di Dritto, vincenti di Rovescio ed Errori non forzati di ciascun atleta: utile per capire a colpo d'occhio chi rischia di più e chi gioca sul sicuro.</p></div>
         <div class="gd"><h3>Sistema ELO</h3><p>Stesso algoritmo degli scacchi: si parte tutti da <b>1200 punti</b>. Battere un avversario con ELO più alto del tuo fa guadagnare più punti di quanti ne fai perdendo. Si applica <b>solo</b> alle partite Ufficiali. Formula: K=32, probabilità attesa calcolata sulla differenza ELO tra i due giocatori.</p></div>
         <div class="gd"><h3>Testa a Testa (VS)</h3><p>Confronta due atleti scelti: mostra il bilancio vittorie/sconfitte dirette in percentuale e il totale dei punti scambio fatti nei set giocati l'uno contro l'altro, su tutte le partite registrate tra loro.</p></div>
-        <div class="gd"><h3>Trofei — libertà completa</h3><p>Puoi creare un trofeo su <b>qualsiasi</b> statistica tracciata (vittorie, sconfitte, ELO, ogni tipo di colpo, rimonte, MP salvati, fortuna...) con la condizione che preferisci: "almeno" (≥), "al massimo" (≤) o "esattamente" (=) un certo valore. I sei suggerimenti rapidi in cima al pannello servono solo come punto di partenza: puoi modificarli in tutto e per tutto prima di salvare. Lo sblocco è automatico a fine partita.</p></div>
+        <div class="gd"><h3>Trofei — libertà completa</h3><p>Puoi creare un trofeo su <b>qualsiasi</b> statistica tracciata (vittorie, sconfitte, ELO, ogni tipo di colpo, rimonte, MP salvati, fortuna...) con la condizione che preferisci: "almeno" (≥), "al massimo" (≤) o "esattamente" (=) un certo valore. I suggerimenti rapidi in cima al pannello servono solo come punto di partenza: puoi modificarli in tutto e per tutto prima di salvare. Lo sblocco è automatico a fine partita.</p></div>
       </div>
     </div>
 
@@ -429,8 +451,9 @@ video{width:100%;max-height:48vh;border-radius:14px;background:#000;margin-botto
         <div class="gd"><h3>Temi grafici</h3><p>Tre palette (Midnight Dark, Verde ITTF, Blu Olimpico), tutte pensate per un buon contrasto testo/sfondo, cambiabili in qualsiasi momento da Impostazioni → Sistema.</p></div>
         <div class="gd"><h3>Backup dei dati</h3><p>"Esporta Backup" scarica un file .json con tutto (roster, partite, tornei, trofei, impostazioni); "Importa Backup" lo ricarica su qualsiasi dispositivo. Utile prima di un Hard Reset o per passare l'archivio a un altro telefono.</p></div>
         <div class="gd"><h3>Cancellazione dati</h3><p>Puoi cancellare solo le partite registrate oggi, oppure fare un Hard Reset completo che azzera tutto (atleti, storico, tornei, trofei). Questa azione non è reversibile: fai un backup prima se hai dubbi.</p></div>
-        <div class="gd"><h3>Installazione a schermo intero</h3><p>Toccando "Installa" nel banner (o dal menu del browser → "Aggiungi a schermata Home"), Pingy viene installata come una vera app: icona propria sulla Home, si apre <b>a schermo intero senza la barra degli indirizzi di Chrome</b>, ed è questo che rende l'esperienza identica a un'app nativa durante una partita.</p></div>
-        <div class="gd"><h3>Modalità Offline</h3><p>Una volta installata, un service worker mette in cache l'app: tracker, tornei, ELO, roster e foto profilo (salvate come Base64) restano operativi anche senza rete. Solo Coach IA e il riconoscimento vocale richiedono internet, e il V.A.R. richiede il permesso fotocamera.</p></div>
+        <div class="gd"><h3>Installazione a schermo intero</h3><p>Toccando "Installa" nel banner (o dal menu del browser → "Aggiungi a schermata Home"), Pingy viene installata come una vera app: icona propria sulla Home, si apre <b>a schermo intero senza la barra degli indirizzi di Chrome</b>.</p></div>
+        <div class="gd"><h3>Se compare il simbolo di Chrome sull'icona</h3><p>Se l'icona mostra un piccolo badge di Chrome anche con il sito su https, il sistema l'ha probabilmente installata come semplice "collegamento" invece che come app riconosciuta a pieno titolo. Le cause più comuni: hai usato "Aggiungi a schermata Home" dal menu invece del banner/prompt automatico di installazione, oppure il browser non ha ancora finito di registrare il Service Worker al primo avvio. Prova a disinstallare l'icona, riaprire il sito, aspettare qualche secondo e reinstallare usando il banner "Installa" che compare in app.</p></div>
+        <div class="gd"><h3>Modalità Offline</h3><p>Una volta installata, un service worker mette in cache l'app: tracker, tornei, ELO, roster e foto profilo (salvate come Base64) restano operativi anche senza rete. Coach IA e riconoscimento vocale richiedono internet, il V.A.R. richiede il permesso fotocamera: tutte e tre, come il Service Worker stesso, richiedono anche che la pagina sia servita in https.</p></div>
       </div>
     </div>
   </div>
@@ -438,18 +461,24 @@ video{width:100%;max-height:48vh;border-radius:14px;background:#000;margin-botto
 </div>
 
 <nav>
-  <button class="act" onclick="gt('gio',this)"><span>👤</span>Roster</button>
-  <button onclick="gt('pla',this)"><span>🏓</span>Gioca</button>
+  <button class="act" onclick="gt('pla',this)"><span>🏓</span>Gioca</button>
   <button onclick="gt('sta',this)"><span>📊</span>Stats</button>
-  <button onclick="gt('imp',this)"><span>⚙️</span>Impostaz.</button>
+  <button onclick="gt('imp',this)"><span>⚙️</span>Impostazioni</button>
 </nav>
 
 <!-- LIVE TRACKER -->
 <div id="lt">
+  <div class="po" id="endOv">
+    <div id="endOvTxt">🏆 Vince!</div>
+    <div style="display:flex;gap:10px;width:100%;max-width:340px;">
+      <button class="btn btn-o" style="color:#fff;border-color:rgba(255,255,255,0.35);flex:1;" onclick="undoPoint()">↩️ Annulla ultimo punto</button>
+      <button class="btn btn-g" style="flex:1;" onclick="confirmMatchEnd()">💾 Salva</button>
+    </div>
+  </div>
   <div class="lt-t">
     <div><div style="font-size:0.68rem;opacity:0.65;font-weight:800;text-transform:uppercase;" id="ltCat"></div><div class="tm" id="ltTimer">00:00</div></div>
-    <div class="lt-mid"><button class="lt-ic" onclick="toggleSpeech()" id="ltSpk">🔊</button><button class="lt-ic" onclick="pauseMatch()">⏸️</button><button class="lt-ic" style="background:var(--a);color:#1e272e;" onclick="openVAR()">📼</button></div>
-    <button class="lt-ic" style="background:var(--danger);" onclick="endMatch()">✕</button>
+    <div class="lt-mid"><button class="lt-ic" onclick="toggleSpeech()" id="ltSpk">🔊</button><button class="lt-ic" onclick="pauseMatch()">⏸️</button><button class="lt-ic" style="background:var(--a);color:#1e272e;margin-right:16px;" onclick="openVAR()">📼</button></div>
+    <button class="lt-ic" style="background:var(--danger);flex-shrink:0;" onclick="endMatch()">✕</button>
   </div>
   <div class="sb">
     <div class="sc" id="sc1"><div class="av" id="sc1av"></div><div class="nm" id="sc1nm"></div><div class="setdots" id="sd1"></div><div class="snm" id="sn1">0</div></div>
@@ -461,12 +490,11 @@ video{width:100%;max-height:48vh;border-radius:14px;background:#000;margin-botto
   </div>
   <div class="mb" id="shotBar"></div>
   <div class="mb">
-    <button class="mb-btn nst" onclick="markLuck('nastro')">🍀 Nastro</button>
-    <button class="mb-btn brd" onclick="markLuck('bordo')">🍀 Bordo</button>
-    <button class="mb-btn let" onclick="markLet()">🔁 Let</button>
+    <button class="mb-btn nst" onclick="markLuck('nastro',this)">🍀 Nastro</button>
+    <button class="mb-btn brd" onclick="markLuck('bordo',this)">🍀 Bordo</button>
     <button class="mb-btn" onclick="undoPoint()">↩️ Annulla</button>
   </div>
-  <div class="mic"><div class="mic-d" id="micDot"></div><span id="micTxt">Microfono non attivo</span></div>
+  <div class="mic" onclick="restartVoiceManually()" style="cursor:pointer;"><div class="mic-d" id="micDot"></div><span id="micTxt">Microfono non attivo</span><span style="opacity:0.6;font-size:0.7rem;margin-left:4px;">(tocca per riavviare)</span></div>
   <div class="lt-foot"><button style="background:var(--muted);" onclick="closeLM()">↙️ Riduci a icona</button><button style="background:var(--s);color:var(--s-ink);" onclick="endMatch()">🏁 Fine / Salva</button></div>
 </div>
 <div class="pause-ov" id="pauseOv"><div style="font-size:3rem;">⏸️</div><div style="font-family:var(--teko);font-size:2rem;">Partita in Pausa</div><button class="btn btn-g" style="max-width:220px;" onclick="pauseMatch()">Riprendi</button></div>
@@ -499,8 +527,17 @@ video{width:100%;max-height:48vh;border-radius:14px;background:#000;margin-botto
 const $=id=>document.getElementById(id);
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 let DB={players:[],matches:[],tournaments:[],trophies:[],settings:{theme:'dark',sound:true,gemini:''}};
+function migrateDB(){
+  DB.players=DB.players||[];DB.matches=DB.matches||[];DB.tournaments=DB.tournaments||[];DB.trophies=DB.trophies||[];DB.settings=DB.settings||{theme:'dark',sound:true,gemini:''};
+  DB.players.forEach(p=>{p.st=p.st||{};['ace','driV','rovV','spec','smash','errNF','errFo','mps','luck','wins','losses','ptsWon','ptsPlayed','timeMs','timedPts','clutchW','clutchT','cmb','matches'].forEach(k=>{if(typeof p.st[k]!=='number')p.st[k]=0;});
+    if(!p.cardSt){p.cardSt={ace:p.st.ace,driV:p.st.driV,rovV:p.st.rovV,spec:p.st.spec,smash:p.st.smash,errNF:p.st.errNF,errFo:p.st.errFo,mps:p.st.mps,luck:p.st.luck,wins:p.st.wins,losses:p.st.losses,clutchW:p.st.clutchW,clutchT:p.st.clutchT,cmb:p.st.cmb};} // prima volta: parte dallo storico esistente, poi decade partita dopo partita
+    ['ace','driV','rovV','spec','smash','errNF','errFo','mps','luck','wins','losses','clutchW','clutchT','cmb'].forEach(k=>{if(typeof p.cardSt[k]!=='number')p.cardSt[k]=0;});
+    delete p.recentResults; // sostituito dal decadimento su cardSt
+  });
+}
 function load(){try{const raw=localStorage.getItem('pingyDB');if(raw)DB=JSON.parse(raw);}catch(e){}
-  DB.players=DB.players||[];DB.matches=DB.matches||[];DB.tournaments=DB.tournaments||[];DB.trophies=DB.trophies||[];DB.settings=DB.settings||{theme:'dark',sound:true,gemini:''};}
+  migrateDB();
+}
 function save(){try{localStorage.setItem('pingyDB',JSON.stringify(DB));}catch(e){toast('Spazio archiviazione pieno!','⚠️');}}
 function toast(msg,ic){ic=ic||'✅';const d=document.createElement('div');d.className='ts';d.innerHTML=`${ic} ${msg}`;$('tst').appendChild(d);setTimeout(()=>d.remove(),4000);}
 function trophyToast(msg){const d=document.createElement('div');d.className='ts tr';d.innerHTML=`🏆 ${msg}`;$('tst').appendChild(d);setTimeout(()=>d.remove(),4000);}
@@ -513,15 +550,14 @@ function gMres(v){$('gM').style.display='none';if(gMcb)gMcb(v);gMcb=null;}
 /* ================= NAV ================= */
 function gt(id,btn){document.querySelectorAll('.sec').forEach(s=>s.classList.remove('act'));$(id).classList.add('act');document.querySelectorAll('nav button').forEach(b=>b.classList.remove('act'));btn.classList.add('act');
   if(id==='sta'){kpis();rE();rEChart();rSt();rSh();fillVS();}
-  if(id==='gio')rRoster();
   if(id==='pla'){fillSelects();rHist();rTourn();}
-  if(id==='imp')rTrophyList();
+  if(id==='imp'){rRoster();rTrophyList();}
 }
 function gtGuide(id,btn){document.querySelectorAll('.gsec').forEach(s=>s.classList.remove('act'));$(id).classList.add('act');
   btn.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('act'));btn.classList.add('act');}
 function stb(parent,id,btn){document.querySelectorAll('#'+parent+' .s-sec').forEach(s=>s.classList.remove('act'));$(id).classList.add('act');
   const nav=btn.parentElement;nav.querySelectorAll('button').forEach(b=>b.classList.remove('act'));btn.classList.add('act');
-  if(id==='sr'){kpis();rE();rEChart();} if(id==='ss'){rSt();rSh();} if(id==='sv')fillVS(); if(id==='pt')rTourn();
+  if(id==='sr'){kpis();rE();rEChart();} if(id==='ss'){rSt();rSh();} if(id==='sv')fillVS(); if(id==='pt')rTourn(); if(id==='ir')rRoster(); if(id==='ia')rTrophyList();
 }
 
 /* ================= IMMAGINI ================= */
@@ -535,7 +571,8 @@ function upI(inp,prevId){const f=inp.files[0];if(!f)return;const rd=new FileRead
 function ageOf(dob){if(!dob)return '—';const b=new Date(dob),n=new Date();let a=n.getFullYear()-b.getFullYear();const m=n.getMonth()-b.getMonth();if(m<0||(m===0&&n.getDate()<b.getDate()))a--;return a;}
 function addP(){const name=$('pN').value.trim();if(!name){toast('Inserisci un nome','⚠️');return;}
   const p={id:uid(),name,gender:$('pG').value,dob:$('pD').value,hand:$('pH').value,photo:$('pPv').dataset.b64||'',elo:1200,eloHist:[{d:Date.now(),e:1200}],trophies:[],
-    st:{ace:0,driV:0,rovV:0,spec:0,att:0,def:0,errNF:0,mps:0,luck:0,wins:0,losses:0,ptsWon:0,ptsPlayed:0,timeMs:0,timedPts:0,clutchW:0,clutchT:0,cmb:0,matches:0}};
+    st:{ace:0,driV:0,rovV:0,spec:0,smash:0,errNF:0,errFo:0,mps:0,luck:0,wins:0,losses:0,ptsWon:0,ptsPlayed:0,timeMs:0,timedPts:0,clutchW:0,clutchT:0,cmb:0,matches:0},
+    cardSt:{ace:0,driV:0,rovV:0,spec:0,smash:0,errNF:0,errFo:0,mps:0,luck:0,wins:0,losses:0,clutchW:0,clutchT:0,cmb:0}};
   DB.players.push(p);save();$('pN').value='';$('pPv').style.backgroundImage='';$('pPv').innerText='📷';delete $('pPv').dataset.b64;
   rRoster();toast('Atleta aggiunto al roster');}
 function rRoster(){const l=$('pL');if(!DB.players.length){l.innerHTML='<div class="empty">Nessun atleta ancora. Aggiungine uno qui sopra ⤴️</div>';return;}
@@ -560,28 +597,39 @@ function pName(id){const p=DB.players.find(x=>x.id===id);return p?p.name:'Sconos
 function pById(id){return DB.players.find(x=>x.id===id);}
 
 /* ================= FUT CARD ================= */
-function ovrOf(p){return Math.max(40,Math.min(99,Math.round(p.elo/15)));}
-function statsOf(p){const g=Math.min(1,(p.st.matches||0)/20);const base=50;
-  const men=base+g*Math.min(45,(p.st.cmb*4)+((p.st.clutchT?p.st.clutchW/p.st.clutchT:0)*30)-(p.st.errNF*0.4));
-  const con=base+g*Math.min(45,(p.st.wins*2)-(p.st.errNF*0.5));
-  const dri=base+g*Math.min(45,p.st.driV*1.8);
-  const rov=base+g*Math.min(45,p.st.rovV*1.8);
-  const att=base+g*Math.min(45,(p.st.att*1.5)+(p.st.ace*1.2));
-  const def=base+g*Math.min(45,(p.st.def*1.5)+(p.st.mps*2));
-  const spc=base+g*Math.min(45,p.st.spec*2.2);
-  const luk=base+g*Math.min(45,p.st.luck*3);
+/* OVR centrato su 50 all'ELO di partenza (1200): un atleta "tutto base 50" deve avere OVR 50, non 80.
+   Ogni 14 punti ELO sopra/sotto 1200 valgono 1 punto di OVR in più/meno. */
+function ovrOf(p){return Math.max(30,Math.min(99,Math.round(50+(p.elo-1200)/14)));}
+/* Le 8 statistiche della card leggono da cardSt, NON dal totale a vita in st: cardSt decade
+   (×0.9) all'inizio di ogni partita giocata, quindi pesa molto di più il rendimento recente.
+   Un colpo che facevi spesso un anno fa e non fai più smette gradualmente di contare, così come
+   in FIFA gli attributi di un giocatore calano se non li conferma più in campo. I totali a vita
+   in st restano intatti per Trofei, Matrice Colpi e Sabermetrica: quelli sono un archivio storico
+   e non devono sparire. */
+function statsOf(p){
+  const cs=p.cardSt||{};
+  const g=Math.min(1,(p.st.matches||0)/10); // crescita più rapida: peso pieno a 10 partite (prima 20), più adatta a un uso casalingo
+  const base=50;const errTot=(cs.errNF||0)+(cs.errFo||0);
+  const mente=base+g*Math.min(45,((cs.cmb||0)*4)+((cs.clutchT?cs.clutchW/cs.clutchT:0)*30)-(errTot*0.4));
+  const focus=base+g*Math.min(45,((cs.wins||0)*2)-(errTot*0.5));
+  const dritto=base+g*Math.min(45,(cs.driV||0)*1.8);
+  const rovescio=base+g*Math.min(45,(cs.rovV||0)*1.8);
+  const smash=base+g*Math.min(45,((cs.smash||0)*2)+((cs.ace||0)*1.2));
+  const difesa=base+g*Math.min(45,((cs.mps||0)*2.5)-((cs.errFo||0)*0.3));
+  const speciale=base+g*Math.min(45,(cs.spec||0)*2.2);
+  const fortuna=base+g*Math.min(45,(cs.luck||0)*3);
   const cl=n=>Math.max(35,Math.min(99,Math.round(n)));
-  return {MEN:cl(men),CON:cl(con),DRI:cl(dri),ROV:cl(rov),ATT:cl(att),DEF:cl(def),SPC:cl(spc),LUK:cl(luk)};
+  return {MENTE:cl(mente),FOCUS:cl(focus),DRITTO:cl(dritto),ROVESCIO:cl(rovescio),SMASH:cl(smash),DIFESA:cl(difesa),SPECIALE:cl(speciale),FORTUNA:cl(fortuna)};
 }
 function showCard(id){const p=pById(id);if(!p)return;const ovr=ovrOf(p);const st=statsOf(p);
   const cls=ovr>=85?'gld':ovr>=70?'slv':'brz';
   $('pcHolder').innerHTML=`<div class="fc ${cls}" id="fcCard"><div class="fc-t"><div class="fc-o">${ovr}</div><div class="fc-p" style="${p.photo?`background-image:url(${p.photo})`:''}">${p.photo?'':'🏓'}</div></div>
   <div class="fc-n">${p.name}</div>
   <div class="fc-s">
-    <div>${st.MEN}<br><span>MEN</span></div><div>${st.CON}<br><span>CON</span></div>
-    <div>${st.DRI}<br><span>DRI</span></div><div>${st.ROV}<br><span>ROV</span></div>
-    <div>${st.ATT}<br><span>ATT</span></div><div>${st.DEF}<br><span>DEF</span></div>
-    <div>${st.SPC}<br><span>SPC</span></div><div>${st.LUK}<br><span>LUK</span></div>
+    <div>${st.MENTE}<br><span>Mentalità</span></div><div>${st.FOCUS}<br><span>Focus</span></div>
+    <div>${st.DRITTO}<br><span>Dritto</span></div><div>${st.ROVESCIO}<br><span>Rovescio</span></div>
+    <div>${st.SMASH}<br><span>Smash</span></div><div>${st.DIFESA}<br><span>Difesa</span></div>
+    <div>${st.SPECIALE}<br><span>Speciale</span></div><div>${st.FORTUNA}<br><span>Fortuna</span></div>
   </div></div>`;
   $('pcM').style.display='flex';}
 function closeCard(){$('pcM').style.display='none';}
@@ -589,15 +637,16 @@ function dlCard(){html2canvas($('fcCard'),{backgroundColor:null,scale:2}).then(c
 
 /* ================= TROFEI (metrica e operatore completamente liberi) ================= */
 const metricMap={wi:p=>p.st.wins,los:p=>p.st.losses,mch:p=>p.st.matches,elo:p=>p.elo,
-  ac:p=>p.st.ace,dri:p=>p.st.driV,rov:p=>p.st.rovV,spc:p=>p.st.spec,att:p=>p.st.att,def:p=>p.st.def,err:p=>p.st.errNF,
+  ac:p=>p.st.ace,dri:p=>p.st.driV,rov:p=>p.st.rovV,spc:p=>p.st.spec,sma:p=>p.st.smash,errnf:p=>p.st.errNF,errfo:p=>p.st.errFo,
   cmb:p=>p.st.cmb,mps:p=>p.st.mps,lk:p=>p.st.luck};
-const metricLabel={wi:'Vittorie',los:'Sconfitte',mch:'Partite giocate',elo:'Punteggio ELO',ac:'Aces',dri:'Vincenti di Dritto',rov:'Vincenti di Rovescio',spc:'Colpi Speciali',att:'Punti in Attacco',def:'Punti in Difesa',err:'Errori non forzati',cmb:'Rimonte',mps:'Match Point annullati',lk:'Punti Fortuna'};
+const metricLabel={wi:'Vittorie',los:'Sconfitte',mch:'Partite giocate',elo:'Punteggio ELO',ac:'Aces',dri:'Vincenti di Dritto',rov:'Vincenti di Rovescio',spc:'Colpi Speciali',sma:'Smash',errnf:'Errori non forzati',errfo:'Errori forzati',cmb:'Rimonte',mps:'Match Point annullati',lk:'Punti Fortuna'};
 const opLabel={gte:'≥',lte:'≤',eq:'='};
 const opFn={gte:(v,t)=>v>=t,lte:(v,t)=>v<=t,eq:(v,t)=>v===t};
 const TROPHY_SUGGESTIONS=[
-  {icon:'🧱',name:'Il Muro',metric:'def',op:'gte',threshold:20},
+  {icon:'🧱',name:'Il Muro',metric:'mps',op:'gte',threshold:5},
   {icon:'⚡',name:'Servizio Letale',metric:'ac',op:'gte',threshold:10},
-  {icon:'🧠',name:'Cecchino',metric:'err',op:'lte',threshold:3},
+  {icon:'🧠',name:'Cecchino',metric:'errnf',op:'lte',threshold:3},
+  {icon:'💣',name:'Bombardiere',metric:'sma',op:'gte',threshold:8},
   {icon:'🔥',name:'Rimontista',metric:'cmb',op:'gte',threshold:3},
   {icon:'🍀',name:'Fortunato Sfacciato',metric:'lk',op:'gte',threshold:8},
   {icon:'👑',name:'Leggenda',metric:'elo',op:'gte',threshold:1500},
@@ -617,21 +666,29 @@ function checkTrophies(p){DB.trophies.forEach(t=>{const getter=metricMap[t.metri
 /* ================= MATCH SETUP ================= */
 function fillSelects(){const opts=DB.players.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
   ['m1','m2'].forEach(id=>{const cur=$(id).value;$(id).innerHTML=opts;if(cur)$(id).value=cur;});
+  if(DB.players.length>1){
+    if(!$('m1').value)$('m1').value=DB.players[0].id;
+    if(!$('m2').value||$('m2').value===$('m1').value){const other=DB.players.find(p=>p.id!==$('m1').value);if(other)$('m2').value=other.id;}
+  }
   updateServeOpts();$('m1').onchange=updateServeOpts;$('m2').onchange=updateServeOpts;}
 function updateServeOpts(){const p1=DB.players.find(p=>p.id===$('m1').value);const p2=DB.players.find(p=>p.id===$('m2').value);
   $('mf').innerHTML=`<option value="">Casuale</option>`+(p1?`<option value="0">${p1.name}</option>`:'')+(p2?`<option value="1">${p2.name}</option>`:'');}
 
 /* ================= LIVE MATCH ENGINE ================= */
 let LM=null; // stato match live
+const CARD_DECAY=0.9; // ogni nuova partita "sbiadisce" un po' lo storico tecnico a favore del rendimento recente
+function decayCardSt(p){if(!p||!p.cardSt)return;Object.keys(p.cardSt).forEach(k=>{p.cardSt[k]*=CARD_DECAY;});}
 function iLM(resumeId){
   let p1id=$('m1').value,p2id=$('m2').value,mode=+$('mt').value,pts=+$('mp').value,srvEvery=+$('ms').value,cat=$('mc').value,firstSrv=$('mf').value,varOn=$('mV').checked,tourId=null,tourMatch=null;
   if(resumeId){const m=DB.matches.find(x=>x.id===resumeId);if(!m){toast('Match non trovato','⚠️');return;}
     p1id=m.p1;p2id=m.p2;mode=m.mode;pts=m.pts;srvEvery=m.srvEvery;cat=m.cat;varOn=false;
     LM=m;LM.status='active';rebuildScoreboard();openLM();return;}
   if(!p1id||!p2id||p1id===p2id){toast('Seleziona due atleti diversi','⚠️');return;}
+  decayCardSt(pById(p1id));decayCardSt(pById(p2id)); // il decadimento scatta una volta per ogni NUOVA partita giocata, non al resume di una sospesa
   LM={id:uid(),p1:p1id,p2:p2id,mode,pts,srvEvery,cat,date:Date.now(),status:'active',
     sets:[[0,0]],setsWon:[0,0],server:firstSrv===''?(Math.random()<0.5?0:1):+firstSrv,startServer:firstSrv,
-    varOn,shotLog:[],history:[],elapsedMs:0,runStart:Date.now(),paused:false,tourId:tourMatch};
+    varOn,shotLog:[],history:[],elapsedMs:0,runStart:Date.now(),paused:false,tourId:tourMatch,
+    maxDeficit:[0,0],comebackFlag:[false,false],pendingWinner:null};
   openLM();
 }
 function openLM(){$('lt').style.display='flex';rebuildScoreboard();startClock();if(LM.varOn)startVARBuffer();startVoice();speak(`Inizio partita, al servizio ${pName(LM.server?LM.p2:LM.p1)}`);}
@@ -642,34 +699,63 @@ function rebuildScoreboard(){const p1=pById(LM.p1),p2=pById(LM.p2);
   $('sc1av').style.backgroundImage=p1&&p1.photo?`url(${p1.photo})`:'';$('sc2av').style.backgroundImage=p2&&p2.photo?`url(${p2.photo})`:'';
   renderShotBar();renderScore();}
 function renderShotBar(){$('shotBar').innerHTML=`
-  <button class="mb-btn sht" onclick="pickShot('ace')">⚡ Ace</button>
-  <button class="mb-btn sht" onclick="pickShot('driV')">💥 Dritto</button>
-  <button class="mb-btn sht" onclick="pickShot('rovV')">☄️ Rovescio</button>
-  <button class="mb-btn spc" onclick="pickShot('spec')">🌟 Speciale</button>
-  <button class="mb-btn sht" onclick="pickShot('att')">⚔️ Attacco</button>
-  <button class="mb-btn sht" onclick="pickShot('def')">🛡️ Difesa</button>
-  <button class="mb-btn" onclick="pickShot('errNF')">📉 Errore</button>`;
+  <button class="mb-btn sht" onclick="pickShot('ace',this)">⚡ Ace</button>
+  <button class="mb-btn sht" onclick="pickShot('driV',this)">💥 Dritto</button>
+  <button class="mb-btn sht" onclick="pickShot('rovV',this)">☄️ Rovescio</button>
+  <button class="mb-btn spc" onclick="pickShot('spec',this)">🌟 Speciale</button>
+  <button class="mb-btn sht" onclick="pickShot('smash',this)">💣 Smash</button>
+  <button class="mb-btn" onclick="pickShot('errNF',this)">📉 Errore NF</button>
+  <button class="mb-btn" onclick="pickShot('errFo',this)">🧯 Errore FO</button>`;
 }
 let pendingShot=null;
-function pickShot(type){pendingShot=type;toast('Ora tocca +1 SX o +1 DX per assegnare il colpo: '+type,'🎯');}
+function clearShotHighlights(){document.querySelectorAll('#shotBar .mb-btn,.mb .mb-btn.nst,.mb .mb-btn.brd').forEach(b=>b.classList.remove('act'));}
+function pickShot(type,btn){pendingShot=(pendingShot===type)?null:type;clearShotHighlights();if(pendingShot)btn.classList.add('act');}
 function curSet(){return LM.sets[LM.sets.length-1];}
-function addPoint(side){if(!LM||LM.paused)return;
-  LM.history.push(JSON.parse(JSON.stringify({sets:LM.sets,setsWon:LM.setsWon,server:LM.server,shotLog:LM.shotLog})));
-  const s=curSet();s[side]++;
-  const pid=side===0?LM.p1:LM.p2;const other=side===0?LM.p2:LM.p1;
+const ERROR_TYPES=['errNF','errFo'];
+function addPoint(side){if(!LM||LM.paused||LM.pendingWinner!=null)return;
+  LM.history.push(JSON.parse(JSON.stringify({sets:LM.sets,setsWon:LM.setsWon,server:LM.server,shotLog:LM.shotLog,maxDeficit:LM.maxDeficit})));
+  const s=curSet();const target=LM.pts;
+  const isClutch=s[0]>=target-3&&s[1]>=target-3; // punto giocato "in the clutch": 8-8 o oltre (su un set a 11), scalato per il set a 21
+  const needToWin=Math.ceil(LM.mode/2);
+  /* Match Point Salvato: se PRIMA di questo punto l'avversario era a un punto dal vincere l'INTERA
+     partita (non solo il set), e invece il punto lo vinci tu, hai salvato un match point. */
+  const matchPointFor=[0,1].map(sd=>{const proj=s.slice();proj[sd]++;
+    const wouldWinSet=proj[sd]>=target&&(proj[sd]-proj[1-sd])>=2;
+    return wouldWinSet&&(LM.setsWon[sd]+1)>=needToWin;});
+  s[side]++;
   const t=elapsedSetSeconds();
   const entry={side,type:pendingShot||'punto',ts:Date.now(),setIdx:LM.sets.length-1,timeS:t};
   LM.shotLog.push(entry);
-  applyShotStat(pid,pendingShot);
-  pendingShot=null;
+  applyShotStat(side,pendingShot);
+  const p1=pById(LM.p1),p2=pById(LM.p2);
+  if(isClutch){if(p1){p1.st.clutchT++;if(p1.cardSt)p1.cardSt.clutchT++;}if(p2){p2.st.clutchT++;if(p2.cardSt)p2.cardSt.clutchT++;}
+    const winP=side===0?p1:p2;if(winP){winP.st.clutchW++;if(winP.cardSt)winP.cardSt.clutchW++;}}
+  if(matchPointFor[1-side]){const saver=side===0?p1:p2;if(saver){saver.st.mps++;if(saver.cardSt)saver.cardSt.mps++;}}
+  LM.maxDeficit[0]=Math.max(LM.maxDeficit[0],s[1]-s[0]);
+  LM.maxDeficit[1]=Math.max(LM.maxDeficit[1],s[0]-s[1]);
+  pendingShot=null;clearShotHighlights();
   advanceServer();
   checkSetEnd();
   renderScore();
   announcePoint(side);
   save();
 }
-function applyShotStat(pid,type){const p=pById(pid);if(!p)return;
-  if(type==='ace')p.st.ace++;else if(type==='driV')p.st.driV++;else if(type==='rovV')p.st.rovV++;else if(type==='spec')p.st.spec++;else if(type==='att')p.st.att++;else if(type==='def')p.st.def++;else if(type==='errNF'){const opp=pById(pid===LM.p1?LM.p2:LM.p1);}
+/* Il credito statistico dipende dal TIPO di colpo, non da chi ha segnato:
+   - Colpi vincenti (Ace, Dritto, Rovescio, Speciale, Smash) → vanno a chi ha segnato il punto.
+   - Errori (Non Forzato / Forzato) → vanno a chi ha SBAGLIATO, cioè l'avversario di chi ha segnato.
+   Ogni colpo aggiorna sia st (storico a vita, non decade mai) sia cardSt (usato dalla Player Card, decade nel tempo). */
+function applyShotStat(side,type){if(!type)return;
+  const scorerId=side===0?LM.p1:LM.p2;const opponentId=side===0?LM.p2:LM.p1;
+  if(type==='luck_nastro'||type==='luck_bordo'){const p=pById(scorerId);if(p){p.st.luck++;if(p.cardSt)p.cardSt.luck++;}return;}
+  const creditId=ERROR_TYPES.includes(type)?opponentId:scorerId;
+  const p=pById(creditId);if(!p)return;const c=p.cardSt;
+  if(type==='ace'){p.st.ace++;if(c)c.ace++;}
+  else if(type==='driV'){p.st.driV++;if(c)c.driV++;}
+  else if(type==='rovV'){p.st.rovV++;if(c)c.rovV++;}
+  else if(type==='spec'){p.st.spec++;if(c)c.spec++;}
+  else if(type==='smash'){p.st.smash++;if(c)c.smash++;}
+  else if(type==='errNF'){p.st.errNF++;if(c)c.errNF++;}
+  else if(type==='errFo'){p.st.errFo++;if(c)c.errFo++;}
 }
 function elapsedSetSeconds(){return Math.floor((Date.now()-(LM.setStart||LM.runStart))/1000);}
 function advanceServer(){const s=curSet();const total=s[0]+s[1];const deuceZone=(LM.pts===11&&s[0]>=10&&s[1]>=10)||(LM.pts===21&&s[0]>=20&&s[1]>=20);
@@ -679,13 +765,26 @@ function advanceServer(){const s=curSet();const total=s[0]+s[1];const deuceZone=
 function checkSetEnd(){const s=curSet();const [a,b]=s;const target=LM.pts;
   if((a>=target||b>=target)&&Math.abs(a-b)>=2){
     const winner=a>b?0:1;LM.setsWon[winner]++;
-    speak(`Set per ${pName(winner===0?LM.p1:LM.p2)}. ${LM.setsWon[0]} a ${LM.setsWon[1]}.`);
+    const comebackThreshold=target>=21?6:3;
+    if(LM.maxDeficit[winner]>=comebackThreshold)LM.comebackFlag[winner]=true; // ha vinto il set dopo essere stato sotto di parecchio
     const needToWin=Math.ceil(LM.mode/2);
-    if(LM.setsWon[winner]>=needToWin){finishMatch(winner);return;}
-    LM.sets.push([0,0]);LM.setStart=Date.now();
+    if(LM.setsWon[winner]>=needToWin){
+      LM.pendingWinner=winner;showMatchEndConfirm(winner);return; // non chiude subito: aspetta conferma manuale
+    }
+    speak(`Set per ${pName(winner===0?LM.p1:LM.p2)}. ${LM.setsWon[0]} a ${LM.setsWon[1]}.`);
+    LM.sets.push([0,0]);LM.setStart=Date.now();LM.maxDeficit=[0,0];
     LM.server=LM.server===0?1:0; // alterna chi inizia il set successivo
   }
 }
+/* L'ultimo punto della partita non chiude subito il tracker: mostra una schermata di conferma
+   (evita chiusure premature se il punto finale viene dichiarato per sbaglio). Solo toccando
+   "Salva" il risultato viene davvero registrato; "Annulla ultimo punto" fa riprendere il match. */
+function showMatchEndConfirm(winner){clearInterval(clockInt);
+  $('endOvTxt').innerText=`🏆 ${pName(winner===0?LM.p1:LM.p2)} vince!`;
+  $('endOv').style.display='flex';
+  speak(`Punto finale. ${pName(winner===0?LM.p1:LM.p2)} vince. Tocca Salva per confermare.`);
+}
+function confirmMatchEnd(){if(!LM||LM.pendingWinner==null)return;$('endOv').style.display='none';finishMatch(LM.pendingWinner);}
 function renderScore(){const s=curSet();$('sn1').innerText=s[0];$('sn2').innerText=s[1];
   $('sc1').classList.toggle('srv',LM.server===0);$('sc2').classList.toggle('srv',LM.server===1);
   const needToWin=Math.ceil(LM.mode/2);
@@ -700,21 +799,14 @@ function renderScore(){const s=curSet();$('sn1').innerText=s[0];$('sn2').innerTe
 }
 let lastAnn='';function announceOnce(txt){if(lastAnn!==txt){speak(txt);lastAnn=txt;}}
 function announcePoint(side){const s=curSet();lastAnn='';speak(`${s[0]} a ${s[1]}`);}
-function markLuck(kind){if(!LM)return;const pid=(LM.server); /* punto fortuna assegnato a chi ha vinto l'ultimo scambio: semplificazione -> chiediamo lato */
-  toast('Tocca +1 SX o +1 DX indicando chi ha preso il punto di '+kind,'🍀');pendingShot='luck_'+kind;}
-function markLet(){if(!LM)return;speak('Let');toast('Let registrato: servizio ripetuto','🔁');}
+function markLuck(kind,btn){if(!LM)return;pendingShot=(pendingShot==='luck_'+kind)?null:'luck_'+kind;clearShotHighlights();if(pendingShot)btn.classList.add('act');}
 function undoPoint(){if(!LM||!LM.history.length){toast('Niente da annullare','⚠️');return;}
-  const prev=LM.history.pop();LM.sets=prev.sets;LM.setsWon=prev.setsWon;LM.server=prev.server;LM.shotLog=prev.shotLog;
-  renderScore();toast('Ultimo punto annullato','↩️');save();}
-
-/* ============ luck point completion hook (side chosen after markLuck) ============ */
-const _addPoint=addPoint;
-addPoint=function(side){
-  if(pendingShot&&pendingShot.startsWith('luck_')){
-    const pid=side===0?LM.p1:LM.p2;const p=pById(pid);if(p)p.st.luck++;
-  }
-  _addPoint(side);
-};
+  const wasPending=LM.pendingWinner!=null;
+  const prev=LM.history.pop();LM.sets=prev.sets;LM.setsWon=prev.setsWon;LM.server=prev.server;LM.shotLog=prev.shotLog;LM.maxDeficit=prev.maxDeficit||[0,0];
+  LM.pendingWinner=null;
+  if(wasPending){$('endOv').style.display='none';startClock();toast('Punto annullato: la partita riprende','↩️');}
+  else toast('Ultimo punto annullato','↩️');
+  renderScore();save();}
 
 /* ================= TIMER ================= */
 let clockInt=null;
@@ -735,7 +827,10 @@ async function finishMatch(winnerIdx){
   if(p1)p1.st.ptsPlayed+=LM.shotLog.length; if(p2)p2.st.ptsPlayed+=LM.shotLog.length;
   if(LM.cat==='u'&&p1&&p2){eloUpdate(p1,p2,winnerIdx);}
   const winP=winnerIdx===0?p1:p2, loseP=winnerIdx===0?p2:p1;
-  if(winP){winP.st.wins++;checkTrophies(winP);} if(loseP){loseP.st.losses++;}
+  const set0=LM.sets[0];const set0Winner=set0&&set0[0]!==set0[1]?(set0[0]>set0[1]?0:1):winnerIdx;
+  const isComeback=(LM.comebackFlag&&LM.comebackFlag[winnerIdx])||(LM.sets.length>1&&set0Winner!==winnerIdx);
+  if(winP){winP.st.wins++;if(isComeback)winP.st.cmb++;if(winP.cardSt){winP.cardSt.wins++;if(isComeback)winP.cardSt.cmb++;}checkTrophies(winP);}
+  if(loseP){loseP.st.losses++;if(loseP.cardSt)loseP.cardSt.losses++;}
   DB.matches.push(cleanMatch(LM));save();
   speak(`Partita conclusa. Vince ${pName(winnerIdx===0?LM.p1:LM.p2)}.`);
   if(LM.tourId)advanceTournament(LM.tourId,LM.id,winnerIdx===0?LM.p1:LM.p2);
@@ -773,44 +868,78 @@ function speak(txt){if(!speechOn||!DB.settings.sound||!('speechSynthesis' in win
 
 /* ================= VOCE: RICONOSCIMENTO (wake word ESCLUSIVA "Pingy") ================= */
 /* Nota tecnica: il riconoscimento vocale del browser (webkitSpeechRecognition) invia l'audio
-   ai server di Google per la trascrizione: richiede quindi connessione internet e permesso
-   microfono, anche se il resto dell'app funziona offline. Funziona in Chrome (Android/Desktop)
-   e Safari recenti; su alcuni browser potrebbe non essere disponibile. */
+   ai server di Google per la trascrizione: richiede quindi connessione internet, permesso
+   microfono E un "contesto sicuro" (pagina servita in https, o localhost) — su un file aperto
+   direttamente (file://) il browser spesso blocca questa funzione a prescindere dal codice. */
 let recog=null,recogActive=false;
-const WAKE_RX=/\bpin\s?[gj]?h?[iy]\b/; // tollera piccole imprecisioni della trascrizione ("pingy","pingi","ping i") ma SOLO questa parola attiva i comandi
+const WAKE_RX=/\bpin\s?[gj]?h?[iy]\b/; // tollera "pingy","pinghi","pingi","ping i" — ma SOLO questa parola attiva i comandi
 function startVoice(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!SR){$('micTxt').innerText='Riconoscimento vocale non supportato su questo browser';return;}
-  try{recog=new SR();recog.lang='it-IT';recog.continuous=true;recog.interimResults=false;
+  if(!window.isSecureContext){$('micTxt').innerText='Serve una pagina https (o localhost): file:// blocca il microfono';return;}
+  recogActive=true;launchRecog(SR);
+}
+function launchRecog(SR){
+  try{recog=new SR();recog.lang='it-IT';recog.continuous=false;recog.interimResults=false;
     recog.onresult=e=>{const txt=e.results[e.results.length-1][0].transcript.toLowerCase();handleVoice(txt);};
     recog.onerror=ev=>{$('micDot').classList.remove('ls');
-      if(ev.error==='not-allowed'||ev.error==='service-not-allowed')$('micTxt').innerText='Permesso microfono negato';
-      else if(ev.error==='no-speech'){} // normale, si riavvia da solo
+      if(ev.error==='not-allowed'||ev.error==='service-not-allowed'){$('micTxt').innerText='Permesso microfono negato — tocca qui per riprovare';recogActive=false;}
+      else if(ev.error==='no-speech'||ev.error==='aborted'){} // normale, si riavvia da solo
       else if(ev.error==='network')$('micTxt').innerText='Serve connessione internet per la voce';
     };
-    recog.onend=()=>{if(recogActive){try{recog.start();}catch(e){}}else{$('micDot').classList.remove('ls');}};
-    recog.start();recogActive=true;$('micDot').classList.add('ls');$('micTxt').innerText='In ascolto: dì solo "Pingy, ..."';
+    recog.onend=()=>{if(recogActive){setTimeout(()=>{if(recogActive)launchRecog(SR);},250);}else{$('micDot').classList.remove('ls');}};
+    recog.start();$('micDot').classList.add('ls');$('micTxt').innerText='In ascolto: dì solo "Pingy, ..."';
   }catch(e){$('micTxt').innerText='Microfono non disponibile';}
 }
 function stopVoice(){recogActive=false;if(recog){try{recog.stop();}catch(e){}}$('micDot').classList.remove('ls');}
-function handleVoice(txt){if(!WAKE_RX.test(txt))return; // ignora tutto ciò che non contiene la parola chiave "Pingy"
+function restartVoiceManually(){stopVoice();toast('Riavvio riconoscimento vocale…','🎙️');setTimeout(startVoice,300);}
+let awaitingShotFor=null,awaitTimeoutHandle=null;
+function parseShotKeyword(cmd){
+  if(cmd.includes('ace'))return{shot:'ace',label:'ace'};
+  if(cmd.includes('dritto'))return{shot:'driV',label:'dritto vincente'};
+  if(cmd.includes('rovescio'))return{shot:'rovV',label:'rovescio vincente'};
+  if(cmd.includes('special'))return{shot:'spec',label:'colpo speciale'};
+  if(cmd.includes('smash'))return{shot:'smash',label:'smash'};
+  if(cmd.includes('non forzato')||/\bnf\b/.test(cmd))return{shot:'errNF',label:'errore non forzato'};
+  if(cmd.includes('forzato')||/\bfo\b/.test(cmd))return{shot:'errFo',label:'errore forzato'};
+  if(cmd.includes('error'))return{shot:'errNF',label:'errore non forzato'};
+  if(cmd.includes('nastro'))return{shot:'luck_nastro',label:'punto fortuna (nastro)'};
+  if(cmd.includes('bordo'))return{shot:'luck_bordo',label:'punto fortuna (bordo)'};
+  return null;
+}
+/* Se il punto viene assegnato senza specificare il colpo, Pingy lo chiede a voce.
+   Se non arriva risposta comprensibile entro 8 secondi, registra comunque il punto come
+   "errore non forzato" (il caso più frequente): così nessun punto resta mai senza dicitura. */
+function askShotFor(side){
+  awaitingShotFor=side;
+  speak('Che colpo è stato? Per esempio: errore non forzato.');
+  toast('Pingy aspetta la descrizione del colpo…','🎙️');
+  clearTimeout(awaitTimeoutHandle);
+  awaitTimeoutHandle=setTimeout(()=>{
+    if(awaitingShotFor===side){awaitingShotFor=null;toast('Nessuna risposta: registro come errore non forzato','🎙️');pendingShot='errNF';addPoint(side);}
+  },8000);
+}
+function handleVoice(txt){
+  if(awaitingShotFor!=null){
+    clearTimeout(awaitTimeoutHandle);
+    const side=awaitingShotFor;awaitingShotFor=null;
+    const parsed=parseShotKeyword(txt.toLowerCase());
+    const shot=parsed?parsed.shot:'errNF';
+    const label=parsed?parsed.label:'errore non forzato (non ho capito la risposta)';
+    toast('Pingy: '+label,'🎙️');
+    pendingShot=shot;addPoint(side);
+    return;
+  }
+  if(!WAKE_RX.test(txt))return; // ignora tutto ciò che non contiene la parola chiave "Pingy"
   const cmd=txt.replace(WAKE_RX,'').trim();
   $('micTxt').innerText='🎙️ Sentito: "'+cmd+'"';
   if(cmd.includes('var')){openVAR();return;}
-  if(cmd.includes('let')){markLet();return;}
   let side=null,who=null;
   [[0,LM.p1],[1,LM.p2]].forEach(([s,pid])=>{const p=pById(pid);if(p&&cmd.includes(p.name.toLowerCase())){side=s;who=p;}});
   if(side===null){toast('Pingy non ha riconosciuto il nome del giocatore','🎙️');return;}
-  let shot=null,label='punto';
-  if(cmd.includes('ace')){shot='ace';label='ace';}
-  else if(cmd.includes('dritto')){shot='driV';label='dritto vincente';}
-  else if(cmd.includes('rovescio')){shot='rovV';label='rovescio vincente';}
-  else if(cmd.includes('special')){shot='spec';label='colpo speciale';}
-  else if(cmd.includes('attacc')){shot='att';label='punto in attacco';}
-  else if(cmd.includes('difes')){shot='def';label='punto in difesa';}
-  else if(cmd.includes('error')){shot='errNF';label='errore avversario';}
-  else if(cmd.includes('nastro')||cmd.includes('bordo')){const p=pById(side===0?LM.p1:LM.p2);if(p)p.st.luck++;label='punto fortuna';}
-  toast('Pingy: '+label+' per '+who.name,'🎙️');
-  pendingShot=shot;addPoint(side);
+  const parsed=parseShotKeyword(cmd);
+  if(!parsed){askShotFor(side);return;} // colpo non dichiarato: Pingy lo chiede prima di assegnare il punto
+  toast('Pingy: '+parsed.label+' per '+who.name,'🎙️');
+  pendingShot=parsed.shot;addPoint(side);
 }
 
 /* ================= V.A.R. — buffer a segmenti da 5s (max 6 = 30s) ================= */
@@ -823,7 +952,7 @@ const VAR_SEG_MS=5000,VAR_MAX_SEG=6;
 function varSupported(){return !!(window.MediaRecorder&&navigator.mediaDevices&&navigator.mediaDevices.getUserMedia);}
 async function startVARBuffer(){
   if(!varSupported()){toast('V.A.R. non supportato su questo dispositivo/browser','⚠️');return;}
-  try{varStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});varSegments=[];startVarSegment();}
+  try{varStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'},audio:false});varSegments=[];startVarSegment();}
   catch(e){toast('Permesso fotocamera negato: V.A.R. disattivato per questa partita','⚠️');}
 }
 function startVarSegment(){if(!varStream)return;varSegChunks=[];
@@ -933,25 +1062,44 @@ function rEChart(){const ctx=$('cE');if(chE)chE.destroy();
   chE=new Chart(ctx,{type:'line',data:{labels:Array.from({length:maxLen}).map((_,i)=>i+1),datasets:ds},options:{plugins:{legend:{labels:{color:'#eef3f7'}}},scales:{x:{ticks:{color:'#9fb0c0'}},y:{ticks:{color:'#9fb0c0'}}}}});}
 function filterMatches(){const f=$('tF').value;const now=Date.now();
   return DB.matches.filter(m=>{if(f==='a')return true;if(f==='t')return new Date(m.date).toDateString()===new Date().toDateString();if(f==='w')return now-m.date<=7*864e5;return true;});}
-function rSt(){const tb=$('tS2').querySelector('tbody');const ms=filterMatches();
-  tb.innerHTML=DB.players.map(p=>{let srvPts=0,srvWon=0,clutchW=0,clutchT=0,mps=0,luck=0,timeSum=0,timeN=0;
-    ms.forEach(m=>{if(m.p1!==p.id&&m.p2!==p.id)return;
-      (m.shotLog||[]).forEach(s=>{const isP1=m.p1===p.id;const won=(s.side===0&&isP1)||(s.side===1&&!isP1);
-        if(won){timeSum+=s.timeS||0;timeN++;} const total=(s.setIdx!==undefined)?0:0;});
-    });
-    const eff=p.st.ptsPlayed?Math.round((p.st.ace/(p.st.ptsPlayed||1))*100):0;
-    const clutch=p.st.clutchT?Math.round(p.st.clutchW/p.st.clutchT*100):0;
-    const avg=timeN?(timeSum/timeN).toFixed(1)+'s':'—';
-    return `<tr><td style="text-align:left;font-weight:800;">${p.name}</td><td>${eff}%</td><td>${clutch}%</td><td>${avg}</td><td>${p.st.mps}</td><td>${p.st.luck}</td></tr>`;
-  }).join('')||'<tr><td colspan="6">Nessun dato</td></tr>';}
+function sortedByActivity(){return DB.players.slice().sort((a,b)=>(b.st.matches||0)-(a.st.matches||0));}
+function rSt(){const players=sortedByActivity();const ms=filterMatches();
+  if(!players.length){$('tS2').innerHTML='<tr><td>Nessun atleta</td></tr>';return;}
+  const rows=[
+    {label:'Eff. Servizio',calc:p=>{const eff=p.st.ptsPlayed?Math.round((p.st.ace/(p.st.ptsPlayed||1))*100):0;return eff+'%';}},
+    {label:'Clutch %',calc:p=>{const c=p.st.clutchT?Math.round(p.st.clutchW/p.st.clutchT*100):0;return c+'%';}},
+    {label:'⏱ Media',calc:p=>{let timeSum=0,timeN=0;ms.forEach(m=>{if(m.p1!==p.id&&m.p2!==p.id)return;const isP1=m.p1===p.id;
+      (m.shotLog||[]).forEach(s=>{const won=(s.side===0&&isP1)||(s.side===1&&!isP1);if(won){timeSum+=s.timeS||0;timeN++;}});});
+      return timeN?(timeSum/timeN).toFixed(1)+'s':'—';}},
+    {label:'🛡️ MP Salvati',calc:p=>p.st.mps},
+    {label:'🍀 Fortuna',calc:p=>p.st.luck},
+  ];
+  const head='<tr><th>Metrica</th>'+players.map(p=>`<th>${p.name}</th>`).join('')+'</tr>';
+  const body=rows.map(r=>'<tr><td style="text-align:left;font-weight:800;">'+r.label+'</td>'+players.map(p=>`<td>${r.calc(p)}</td>`).join('')+'</tr>').join('');
+  $('tS2').innerHTML='<thead>'+head+'</thead><tbody>'+body+'</tbody>';
+}
 let chR=null;
-function rSh(){const tb=$('tS3').querySelector('tbody');
-  tb.innerHTML=DB.players.map(p=>`<tr><td style="text-align:left;font-weight:800;">${p.name}</td><td>${p.st.ace}</td><td>${p.st.driV}</td><td>${p.st.rovV}</td><td>${p.st.spec}</td><td>${p.st.att}</td><td>${p.st.def}</td><td>${p.st.errNF}</td></tr>`).join('')||'<tr><td colspan="8">Nessun dato</td></tr>';
+function rSh(){const players=sortedByActivity();
+  if(!players.length){$('tS3').innerHTML='<tr><td>Nessun atleta</td></tr>';}else{
+    const rows=[
+      {label:'⚡ Ace',calc:p=>p.st.ace},
+      {label:'💥 Dritto V',calc:p=>p.st.driV},
+      {label:'☄️ Rovescio V',calc:p=>p.st.rovV},
+      {label:'🌟 Speciale',calc:p=>p.st.spec},
+      {label:'💣 Smash',calc:p=>p.st.smash},
+      {label:'📉 Errore NF',calc:p=>p.st.errNF},
+      {label:'🧯 Errore FO',calc:p=>p.st.errFo},
+    ];
+    const head='<tr><th>Colpo</th>'+players.map(p=>`<th>${p.name}</th>`).join('')+'</tr>';
+    const body=rows.map(r=>'<tr><td style="text-align:left;font-weight:800;">'+r.label+'</td>'+players.map(p=>`<td>${r.calc(p)}</td>`).join('')+'</tr>').join('');
+    $('tS3').innerHTML='<thead>'+head+'</thead><tbody>'+body+'</tbody>';
+  }
   const ctx=$('cR');if(chR)chR.destroy();
-  chR=new Chart(ctx,{type:'bar',data:{labels:DB.players.map(p=>p.name),datasets:[
-    {label:'Vincenti Dritto',data:DB.players.map(p=>p.st.driV),backgroundColor:'#ff6b35'},
-    {label:'Vincenti Rovescio',data:DB.players.map(p=>p.st.rovV),backgroundColor:'#17c987'},
-    {label:'Errori NF',data:DB.players.map(p=>p.st.errNF),backgroundColor:'#ef4444'}]},
+  chR=new Chart(ctx,{type:'bar',data:{labels:players.map(p=>p.name),datasets:[
+    {label:'Vincenti Dritto',data:players.map(p=>p.st.driV),backgroundColor:'#ff6b35'},
+    {label:'Vincenti Rovescio',data:players.map(p=>p.st.rovV),backgroundColor:'#17c987'},
+    {label:'Errori NF',data:players.map(p=>p.st.errNF),backgroundColor:'#ef4444'},
+    {label:'Errori FO',data:players.map(p=>p.st.errFo),backgroundColor:'#fa8231'}]},
     options:{plugins:{legend:{labels:{color:'#eef3f7'}}},scales:{x:{ticks:{color:'#9fb0c0'}},y:{ticks:{color:'#9fb0c0'}}}}});}
 function fillVS(){const opts=DB.players.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');$('v1').innerHTML=opts;$('v2').innerHTML=opts;
   if(DB.players.length>1)$('v2').selectedIndex=1;rV();}
@@ -988,7 +1136,7 @@ async function dD(){const mode=$('dF').value;const ok=await askConfirm(mode==='a
   else{const today=new Date().toDateString();DB.matches=DB.matches.filter(m=>new Date(m.date).toDateString()!==today);}
   save();rRoster();rHist();rTourn();toast('Cancellazione completata','🗑️');}
 function eD(){const blob=new Blob([JSON.stringify(DB,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='pingy-backup-'+Date.now()+'.json';a.click();}
-function iD(ev){const f=ev.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=e=>{try{const d=JSON.parse(e.target.result);DB=d;save();toast('Backup importato');rRoster();rHist();rTourn();}catch(err){toast('File non valido','⚠️');}};rd.readAsText(f);}
+function iD(ev){const f=ev.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=e=>{try{const d=JSON.parse(e.target.result);DB=d;migrateDB();save();toast('Backup importato');rRoster();rHist();rTourn();}catch(err){toast('File non valido','⚠️');}};rd.readAsText(f);}
 
 /* ================= AVVIO PWA / MANIFEST / INSTALL BANNER / SW OFFLINE =================
    display:"standalone" nel manifest è ciò che fa aprire l'app a schermo intero, senza barra
@@ -1029,12 +1177,12 @@ function makeIcon(size,maskable){
   $('instNo').onclick=()=>{try{localStorage.setItem(KEY,String(Date.now()));}catch(e){}$('instBanner').style.display='none';};
   window.addEventListener('appinstalled',()=>{$('instBanner').style.display='none';try{localStorage.removeItem(KEY);}catch(e){}});
 })();
-/* Service worker offline-first generato come Blob, senza bisogno di un file .js separato */
+/* Service Worker offline-first incorporato in questo stesso file (Blob URL), niente file separati. */
 (function(){
   if(!('serviceWorker' in navigator))return;
   const swCode=`
     const CACHE='pingy-v1';
-    self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE).then(c=>c.add(self.location.href.replace('sw-virtual.js','') ).catch(()=>{})));});
+    self.addEventListener('install',e=>{self.skipWaiting();});
     self.addEventListener('activate',e=>self.clients.claim());
     self.addEventListener('fetch',e=>{
       if(e.request.method!=='GET')return;
