@@ -278,7 +278,7 @@ video{width:100%;max-height:48vh;border-radius:14px;background:#000;margin-botto
       <label class="fl">Tipo di analisi</label>
       <select id="aP">
         <option value="analizza accuratamente i colpi tecnici (Aces, vincenti, errori) identificando lo stile di gioco di ciascuno">Analisi Tecnica e Stile</option>
-        <option value="esamina la tenuta mentale (Clutch%), la stamina e gli eventuali crolli (slumps) di ciascun atleta">Analisi Psicologica e Stress</option>
+        <option value="esamina la tenuta mentale (Freddezza nei punti caldi), la stamina e gli eventuali crolli (slumps) di ciascun atleta">Analisi Psicologica e Stress</option>
         <option value="fai un roast ironico, sarcastico e bonario sui giocatori in base ai loro numeri">Roast Ironico</option>
       </select>
       <button class="btn btn-ai" onclick="aG()">✨ Richiedi Consulto Tattico IA</button>
@@ -394,7 +394,7 @@ video{width:100%;max-height:48vh;border-radius:14px;background:#000;margin-botto
           <li><b>Fortuna</b> = punti nastro/bordo (recenti) × 3</li>
           <li><b>Difesa</b> = MP Salvati×2.5 − Errori Forzati×0.3 (recenti)</li>
           <li><b>Focus</b> = vittorie×2 − errori totali×0.5 (recenti)</li>
-          <li><b>Mentalità</b> = rimonte×4 + Clutch%×30 − errori totali×0.4 (recenti)</li>
+          <li><b>Mentalità</b> = rimonte×4 + Freddezza%×30 − errori totali×0.4 (recenti)</li>
         </ul></div>
         <div class="gd"><h3>6. Tornei</h3><p><b>Eliminazione diretta</b> (4 o 8 atleti): tabellone a turni, il vincitore avanza in automatico. <b>Girone all'italiana</b> (3-6 atleti): tutti contro tutti, classifica per punti (2 a vittoria). Un torneo può essere sospeso e ripreso in un secondo momento dal tasto ⏸️/▶️ sulla sua scheda.</p></div>
         <div class="gd"><h3>7. Giocatori eliminati dal roster</h3><p>Se elimini un atleta dal Roster, le sue partite passate restano nello storico: l'avversario le vedrà semplicemente giocate contro "Sconosciuto", senza perdere le proprie statistiche.</p></div>
@@ -427,7 +427,7 @@ video{width:100%;max-height:48vh;border-radius:14px;background:#000;margin-botto
         <div class="gd"><h3>Cos'è la "Sabermetrica"</h3><p>Il termine viene dal baseball (SABR = Society for American Baseball Research): indica l'uso di statistiche avanzate, oltre al semplice punteggio, per leggere il vero rendimento di un atleta. Qui l'abbiamo applicata al ping pong.</p></div>
         <div class="gd"><h3>Le metriche della tabella "Sabermetrica & Stili"</h3><ul>
           <li><b>Eff. Servizio</b>: percentuale di punti vinti direttamente con un Ace sul totale degli scambi giocati.</li>
-          <li><b>Clutch%</b>: freddezza nei momenti caldi — percentuale di punti vinti quando il punteggio è 8-8 o oltre, oppure ai vantaggi.</li>
+          <li><b>Freddezza%</b>: tenuta nei momenti caldi — percentuale di punti vinti quando il punteggio è 8-8 o oltre, oppure ai vantaggi.</li>
           <li><b>⏱ Media</b>: tempo medio (in secondi) impiegato per chiudere uno scambio a proprio favore.</li>
           <li><b>🛡️ MP Salvati</b>: quante volte l'atleta ha annullato un Match Point all'avversario.</li>
           <li><b>🍀 Fortuna</b>: punti vinti grazie a un tocco di nastro o di bordo.</li>
@@ -1067,7 +1067,7 @@ function rSt(){const players=sortedByActivity();const ms=filterMatches();
   if(!players.length){$('tS2').innerHTML='<tr><td>Nessun atleta</td></tr>';return;}
   const rows=[
     {label:'Eff. Servizio',calc:p=>{const eff=p.st.ptsPlayed?Math.round((p.st.ace/(p.st.ptsPlayed||1))*100):0;return eff+'%';}},
-    {label:'Clutch %',calc:p=>{const c=p.st.clutchT?Math.round(p.st.clutchW/p.st.clutchT*100):0;return c+'%';}},
+    {label:'Freddezza %',calc:p=>{const c=p.st.clutchT?Math.round(p.st.clutchW/p.st.clutchT*100):0;return c+'%';}},
     {label:'⏱ Media',calc:p=>{let timeSum=0,timeN=0;ms.forEach(m=>{if(m.p1!==p.id&&m.p2!==p.id)return;const isP1=m.p1===p.id;
       (m.shotLog||[]).forEach(s=>{const won=(s.side===0&&isP1)||(s.side===1&&!isP1);if(won){timeSum+=s.timeS||0;timeN++;}});});
       return timeN?(timeSum/timeN).toFixed(1)+'s':'—';}},
