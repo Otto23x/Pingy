@@ -93,15 +93,19 @@ tr:last-child td{border-bottom:none;}
 .tm{font-family:var(--mono);font-size:1.5rem;font-weight:700;color:var(--a);}
 .lt-mid{display:flex;gap:8px;}
 .lt-ic{background:rgba(255,255,255,0.08);border:none;color:#fff;width:38px;height:38px;border-radius:10px;font-size:1.1rem;}
-.sb{display:flex;gap:10px;flex:1;margin-top:6px;}
-.sc{flex:1;background:rgba(255,255,255,0.05);border-radius:20px;display:flex;flex-direction:column;align-items:center;padding:14px 5px 10px;position:relative;border:3px solid transparent;min-width:0;}
+.sb{display:flex;gap:8px;margin-top:6px;}
+.sc{flex:1;background:rgba(255,255,255,0.05);border-radius:16px;display:flex;flex-direction:column;align-items:center;padding:8px 5px 6px;position:relative;border:3px solid transparent;min-width:0;}
 .sc.srv{border-color:var(--a);box-shadow:0 0 22px rgba(255,203,61,0.25);}
-.sc .nm{font-weight:900;font-size:0.95rem;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;padding:0 4px;}
-.sc .av{width:44px;height:44px;border-radius:50%;background:#3a4655;background-size:cover;background-position:center;margin-bottom:4px;border:2px solid rgba(255,255,255,0.3);}
-.snm{font-family:var(--teko);font-size:clamp(3.4rem,15vw,7.5rem);font-weight:600;line-height:0.85;margin:8px 0;text-shadow:0 6px 18px rgba(0,0,0,0.6);font-variant-numeric:tabular-nums;}
-.setdots{display:flex;gap:5px;margin-bottom:6px;}
-.setdots span{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,0.2);}
+.sc .nm{font-weight:900;font-size:0.88rem;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;padding:0 4px;}
+.sc .av{width:32px;height:32px;border-radius:50%;background:#3a4655;background-size:cover;background-position:center;margin-bottom:3px;border:2px solid rgba(255,255,255,0.3);}
+.snm{font-family:var(--teko);font-size:clamp(2.4rem,10vw,4.6rem);font-weight:600;line-height:0.85;margin:4px 0 2px;text-shadow:0 6px 18px rgba(0,0,0,0.6);font-variant-numeric:tabular-nums;}
+.setdots{display:flex;gap:5px;margin-bottom:4px;}
+.setdots span{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.2);}
 .setdots span.w{background:var(--a);}
+#voiceBox{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);border-radius:14px;padding:10px 14px;margin-top:8px;min-height:62px;}
+#voiceBox .vb-t{font-size:0.66rem;font-weight:800;text-transform:uppercase;letter-spacing:0.8px;opacity:0.55;margin-bottom:3px;}
+#voiceBox .vb-l{font-size:0.88rem;font-style:italic;opacity:0.9;min-height:1.2em;}
+#voiceBox .vb-a{font-size:0.95rem;font-weight:800;color:var(--a);margin-top:4px;min-height:1.2em;}
 .mb{display:flex;gap:5px;justify-content:center;margin-top:10px;flex-wrap:wrap;}
 .mb-btn{flex:1;min-width:22%;padding:10px 2px;font-size:0.7rem;font-weight:800;border-radius:9px;border:2px solid rgba(255,255,255,0.16);background:transparent;color:#fff;}
 .mb-btn.act{background:#808e9b;border-color:#808e9b;} .mb-btn.act.nst{background:#0fb9b1;} .mb-btn.act.brd{background:#fa8231;} .mb-btn.act.sht{background:var(--ai);} .mb-btn.act.spc{background:var(--a);color:#1e272e;}
@@ -488,6 +492,11 @@ video{width:100%;max-height:48vh;border-radius:14px;background:#000;margin-botto
     <div class="sc" id="sc1"><div class="av" id="sc1av"></div><div class="nm" id="sc1nm"></div><div class="setdots" id="sd1"></div><div class="snm" id="sn1">0</div></div>
     <div class="sc" id="sc2"><div class="av" id="sc2av"></div><div class="nm" id="sc2nm"></div><div class="setdots" id="sd2"></div><div class="snm" id="sn2">0</div></div>
   </div>
+  <div id="voiceBox">
+    <div class="vb-t">🎙️ Messaggio vocale ricevuto</div>
+    <div class="vb-l" id="vbHeardEl">In attesa di comandi vocali…</div>
+    <div class="vb-a" id="vbActionEl"></div>
+  </div>
   <div class="pts-row">
     <button style="background:var(--p);" onclick="addPoint(0)">+1 SX</button>
     <button style="background:var(--s);color:var(--s-ink);" onclick="addPoint(1)">+1 DX</button>
@@ -738,11 +747,34 @@ function addPoint(side){if(!LM||LM.paused||LM.pendingWinner!=null)return;
   LM.maxDeficit[0]=Math.max(LM.maxDeficit[0],s[1]-s[0]);
   LM.maxDeficit[1]=Math.max(LM.maxDeficit[1],s[0]-s[1]);
   pendingShot=null;clearShotHighlights();
+  const prevServer=LM.server;
   advanceServer();
+  const serveChanged=LM.server!==prevServer;
+  const scoreMsg=s[0]+' a '+s[1];
+  const statusMsg=matchStatusCall();
+  const setsBefore=LM.setsWon[0]+LM.setsWon[1];
   checkSetEnd();
   renderScore();
-  announcePoint(side);
+  /* CRONACA: punteggio aggiornato + eventuale Vantaggi/Set Point/Match Point + cambio palla
+     con il nome di chi dovrà battere. Se il punto ha chiuso il set/partita, l'annuncio lo fa
+     già checkSetEnd e qui non si parla per non sovrapporsi. */
+  if(LM&&LM.pendingWinner==null&&(LM.setsWon[0]+LM.setsWon[1])===setsBefore){
+    let msg=scoreMsg;
+    if(statusMsg)msg+='. '+statusMsg;
+    if(serveChanged)msg+='. Cambio palla: batte '+pName(LM.server===0?LM.p1:LM.p2);
+    speak(msg);
+  }
   save();
+}
+/* Stato del set DOPO il punto appena giocato: Vantaggi / Set Point / Match Point (o niente) */
+function matchStatusCall(){
+  const s=curSet();const target=LM.pts;const needToWin=Math.ceil(LM.mode/2);
+  if((s[0]>=target-1||s[1]>=target-1)&&Math.abs(s[0]-s[1])<=2){
+    if(s[0]===s[1])return 'Vantaggi';
+    if(LM.setsWon[s[0]>s[1]?0:1]===needToWin-1)return 'Match Point';
+    return 'Set Point';
+  }
+  return null;
 }
 /* Il credito statistico dipende dal TIPO di colpo, non da chi ha segnato:
    - Colpi vincenti (Ace, Dritto, Rovescio, Speciale, Smash) → vanno a chi ha segnato il punto.
@@ -775,9 +807,9 @@ function checkSetEnd(){const s=curSet();const [a,b]=s;const target=LM.pts;
     if(LM.setsWon[winner]>=needToWin){
       LM.pendingWinner=winner;showMatchEndConfirm(winner);return; // non chiude subito: aspetta conferma manuale
     }
-    speak(`Set per ${pName(winner===0?LM.p1:LM.p2)}. ${LM.setsWon[0]} a ${LM.setsWon[1]}.`);
     LM.sets.push([0,0]);LM.setStart=Date.now();LM.maxDeficit=[0,0];
     LM.server=LM.server===0?1:0; // alterna chi inizia il set successivo
+    speak(`Set per ${pName(winner===0?LM.p1:LM.p2)}. ${LM.setsWon[0]} a ${LM.setsWon[1]}. Nuovo set: batte ${pName(LM.server===0?LM.p1:LM.p2)}.`);
   }
 }
 /* L'ultimo punto della partita non chiude subito il tracker: mostra una schermata di conferma
@@ -794,15 +826,7 @@ function renderScore(){const s=curSet();$('sn1').innerText=s[0];$('sn2').innerTe
   const needToWin=Math.ceil(LM.mode/2);
   $('sd1').innerHTML=Array.from({length:needToWin}).map((_,i)=>`<span class="${i<LM.setsWon[0]?'w':''}"></span>`).join('');
   $('sd2').innerHTML=Array.from({length:needToWin}).map((_,i)=>`<span class="${i<LM.setsWon[1]?'w':''}"></span>`).join('');
-  const target=LM.pts;
-  if((s[0]>=target-1||s[1]>=target-1)&&Math.abs(s[0]-s[1])<=2){
-    if(s[0]===s[1])announceOnce('Vantaggi');
-    else if(LM.setsWon[s[0]>s[1]?0:1]===needToWin-1)announceOnce('Match Point');
-    else announceOnce('Set Point');
-  }
 }
-let lastAnn='';function announceOnce(txt){if(lastAnn!==txt){speak(txt);lastAnn=txt;}}
-function announcePoint(side){const s=curSet();lastAnn='';speak(`${s[0]} a ${s[1]}`);}
 function markLuck(kind,btn){if(!LM)return;pendingShot=(pendingShot==='luck_'+kind)?null:'luck_'+kind;clearShotHighlights();if(pendingShot)btn.classList.add('act');}
 function undoPoint(){if(!LM||!LM.history.length){toast('Niente da annullare','⚠️');return;}
   const wasPending=LM.pendingWinner!=null;
@@ -891,13 +915,20 @@ async function startVoice(){const SR=window.SpeechRecognition||window.webkitSpee
   }catch(e){$('micTxt').innerText='Permesso microfono negato — abilitalo dalle impostazioni del sito e tocca qui';return;}
   recogActive=true;launchRecog(SR);
 }
+function setVbHeard(t){const el=$('vbHeardEl');if(el)el.innerText=t;}
+function setVbAction(t){const el=$('vbActionEl');if(el)el.innerText=t;}
 function launchRecog(SR){
-  try{recog=new SR();recog.lang='it-IT';recog.continuous=false;recog.interimResults=false;
-    recog.onresult=e=>{const txt=e.results[e.results.length-1][0].transcript.toLowerCase();handleVoice(txt);};
+  try{recog=new SR();recog.lang='it-IT';recog.continuous=false;recog.interimResults=true;
+    recog.onresult=e=>{
+      let interim='',fin='';
+      for(let i=e.resultIndex;i<e.results.length;i++){const t=e.results[i][0].transcript;if(e.results[i].isFinal)fin+=t;else interim+=t;}
+      if(interim)setVbHeard('… '+interim.trim()); // trascrizione live mentre parli: se la vedi muoversi, il microfono funziona
+      if(fin){const clean=fin.trim();setVbHeard('"'+clean+'"');handleVoice(clean.toLowerCase());}
+    };
     recog.onerror=ev=>{$('micDot').classList.remove('ls');
-      if(ev.error==='not-allowed'||ev.error==='service-not-allowed'){$('micTxt').innerText='Permesso microfono negato — tocca qui per riprovare';recogActive=false;}
+      if(ev.error==='not-allowed'||ev.error==='service-not-allowed'){$('micTxt').innerText='Permesso microfono negato — tocca qui per riprovare';setVbHeard('⚠️ Permesso microfono negato');recogActive=false;}
       else if(ev.error==='no-speech'||ev.error==='aborted'){} // normale, si riavvia da solo
-      else if(ev.error==='network')$('micTxt').innerText='Serve connessione internet per la voce';
+      else if(ev.error==='network'){$('micTxt').innerText='Serve connessione internet per la voce';setVbHeard('⚠️ Trascrizione non disponibile senza rete');}
     };
     recog.onend=()=>{if(recogActive){setTimeout(()=>{if(recogActive)launchRecog(SR);},250);}else{$('micDot').classList.remove('ls');}};
     recog.start();$('micDot').classList.add('ls');$('micTxt').innerText='In ascolto: dì solo "Pingy, ..."';
@@ -945,16 +976,19 @@ async function aiInterpretVoice(cmd){
    "errore non forzato" (il caso più frequente): così nessun punto resta mai senza dicitura. */
 function askShotFor(side){
   awaitingShotFor=side;
+  setVbAction('❓ Punto a '+pName(side===0?LM.p1:LM.p2)+' — che colpo è stato?');
   speak('Che colpo è stato? Per esempio: errore non forzato.');
   toast('Pingy aspetta la descrizione del colpo…','🎙️');
   clearTimeout(awaitTimeoutHandle);
   awaitTimeoutHandle=setTimeout(()=>{
-    if(awaitingShotFor===side){awaitingShotFor=null;toast('Nessuna risposta: registro come errore non forzato','🎙️');pendingShot='errNF';addPoint(side);}
+    if(awaitingShotFor===side){awaitingShotFor=null;setVbAction('⏱️ Nessuna risposta: registrato come errore non forzato');pendingShot='errNF';addPoint(side);}
   },8000);
 }
 function execVoiceCommand(side,shot,source){
   const label=shot?(SHOT_LABELS[shot]||shot):'punto';
-  toast('Pingy'+(source==='ai'?' (IA)':'')+': '+label+' per '+pName(side===0?LM.p1:LM.p2),source==='ai'?'🤖':'🎙️');
+  const who=pName(side===0?LM.p1:LM.p2);
+  setVbAction((source==='ai'?'🤖 ':'🎙️ ')+'→ '+label+' · punto a '+who);
+  toast('Pingy'+(source==='ai'?' (IA)':'')+': '+label+' per '+who,source==='ai'?'🤖':'🎙️');
   pendingShot=shot;addPoint(side);
 }
 async function handleVoice(txt){
@@ -968,29 +1002,29 @@ async function handleVoice(txt){
     pendingShot=shot;addPoint(side);
     return;
   }
-  if(!WAKE_RX.test(txt))return; // ignora tutto ciò che non contiene la parola chiave "Pingy"
+  if(!WAKE_RX.test(txt)){setVbAction('(ignorato: manca la parola "Pingy")');return;}
   const cmd=txt.replace(WAKE_RX,'').trim();
   $('micTxt').innerText='🎙️ Sentito: "'+cmd+'"';
   /* 1° livello: interpretazione IA (se chiave Gemini verificata e rete disponibile) */
   if(DB.settings.gemini&&DB.settings.geminiOk&&navigator.onLine){
-    $('micTxt').innerText='🤖 Interpretazione IA: "'+cmd+'"…';
+    setVbAction('🤖 Interpretazione IA in corso…');
     try{
       const res=await aiInterpretVoice(cmd);
       if(res){
-        if(res.shot==='var'){openVAR();return;}
+        if(res.shot==='var'){setVbAction('📼 Apro il V.A.R.');openVAR();return;}
         if(res.side===0||res.side===1){
           if(res.shot){execVoiceCommand(res.side,res.shot,'ai');return;}
           askShotFor(res.side);return;
         }
-        toast('L\'IA non ha capito a chi va il punto: ripeti con il nome','🤖');return;
+        setVbAction('🤖 L\'IA non ha capito a chi va il punto: ripeti con il nome');return;
       }
-    }catch(e){/* IA non disponibile o risposta non valida: passo al parser locale */}
+    }catch(e){setVbAction('⚠️ IA non raggiungibile: uso il riconoscimento a parole chiave');}
   }
   /* 2° livello (fallback): parser locale a parole chiave */
-  if(cmd.includes('var')){openVAR();return;}
+  if(cmd.includes('var')){setVbAction('📼 Apro il V.A.R.');openVAR();return;}
   let side=null,who=null;
   [[0,LM.p1],[1,LM.p2]].forEach(([s,pid])=>{const p=pById(pid);if(p&&cmd.includes(p.name.toLowerCase())){side=s;who=p;}});
-  if(side===null){toast('Pingy non ha riconosciuto il nome del giocatore','🎙️');return;}
+  if(side===null){setVbAction('❌ Nome del giocatore non riconosciuto: ripeti citando il nome');return;}
   const parsed=parseShotKeyword(cmd);
   if(!parsed){askShotFor(side);return;} // colpo non dichiarato: Pingy lo chiede prima di assegnare il punto
   execVoiceCommand(side,parsed.shot,'local');
