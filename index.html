@@ -3,10 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Pingy Ultimate Legend</title>
+<title>Pingy</title>
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Pingy">
 <meta name="theme-color" content="#0f1720">
 <link href="https://fonts.googleapis.com/css2?family=Teko:wght@500;600;700&family=Nunito:wght@400;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -452,8 +453,8 @@ video{width:100%;max-height:48vh;border-radius:14px;background:#000;margin-botto
         <div class="gd"><h3>Backup dei dati</h3><p>"Esporta Backup" scarica un file .json con tutto (roster, partite, tornei, trofei, impostazioni); "Importa Backup" lo ricarica su qualsiasi dispositivo. Utile prima di un Hard Reset o per passare l'archivio a un altro telefono.</p></div>
         <div class="gd"><h3>Cancellazione dati</h3><p>Puoi cancellare solo le partite registrate oggi, oppure fare un Hard Reset completo che azzera tutto (atleti, storico, tornei, trofei). Questa azione non è reversibile: fai un backup prima se hai dubbi.</p></div>
         <div class="gd"><h3>Installazione a schermo intero</h3><p>Toccando "Installa" nel banner (o dal menu del browser → "Aggiungi a schermata Home"), Pingy viene installata come una vera app: icona propria sulla Home, si apre <b>a schermo intero senza la barra degli indirizzi di Chrome</b>.</p></div>
-        <div class="gd"><h3>Se compare il simbolo di Chrome sull'icona</h3><p>Se l'icona mostra un piccolo badge di Chrome anche con il sito su https, il sistema l'ha probabilmente installata come semplice "collegamento" invece che come app riconosciuta a pieno titolo. Le cause più comuni: hai usato "Aggiungi a schermata Home" dal menu invece del banner/prompt automatico di installazione, oppure il browser non ha ancora finito di registrare il Service Worker al primo avvio. Prova a disinstallare l'icona, riaprire il sito, aspettare qualche secondo e reinstallare usando il banner "Installa" che compare in app.</p></div>
-        <div class="gd"><h3>Modalità Offline</h3><p>Una volta installata, un service worker mette in cache l'app: tracker, tornei, ELO, roster e foto profilo (salvate come Base64) restano operativi anche senza rete. Coach IA e riconoscimento vocale richiedono internet, il V.A.R. richiede il permesso fotocamera: tutte e tre, come il Service Worker stesso, richiedono anche che la pagina sia servita in https.</p></div>
+        <div class="gd"><h3>Se compare il simbolo di Chrome sull'icona</h3><p>Se l'icona mostra un piccolo badge di Chrome anche con il sito su https, il sistema l'ha probabilmente installata come semplice "collegamento" invece che come app riconosciuta a pieno titolo. La causa più comune: hai usato "Aggiungi a schermata Home" dal menu invece del banner/prompt automatico di installazione. Prova a disinstallare l'icona, riaprire il sito e reinstallare usando il banner "Installa" che compare in app.</p></div>
+        <div class="gd"><h3>Modalità Offline</h3><p>Tracker, tornei, ELO, roster e foto profilo (salvate come Base64) restano operativi anche senza rete, perché tutto viene salvato localmente sul dispositivo. Coach IA e riconoscimento vocale richiedono internet, il V.A.R. richiede il permesso fotocamera: tutte e tre richiedono anche che la pagina sia servita in https.</p></div>
       </div>
     </div>
   </div>
@@ -1138,10 +1139,12 @@ async function dD(){const mode=$('dF').value;const ok=await askConfirm(mode==='a
 function eD(){const blob=new Blob([JSON.stringify(DB,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='pingy-backup-'+Date.now()+'.json';a.click();}
 function iD(ev){const f=ev.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=e=>{try{const d=JSON.parse(e.target.result);DB=d;migrateDB();save();toast('Backup importato');rRoster();rHist();rTourn();}catch(err){toast('File non valido','⚠️');}};rd.readAsText(f);}
 
-/* ================= AVVIO PWA / MANIFEST / INSTALL BANNER / SW OFFLINE =================
+/* ================= AVVIO PWA / MANIFEST / INSTALL BANNER =================
    display:"standalone" nel manifest è ciò che fa aprire l'app a schermo intero, senza barra
-   indirizzi del browser, una volta installata sulla Home. Le icone sono vere PNG generate al
-   volo su canvas (più compatibili di un semplice SVG su Android/iOS). */
+   indirizzi del browser, una volta installata sulla Home. Le icone sono vere PNG generate su
+   canvas e agganciate sia al manifest sia ai tag <link> in head (favicon e apple-touch-icon),
+   esattamente come nell'altra app (Opty) che si installa correttamente — niente Service Worker:
+   non è necessario per l'installabilità e qui è stato tolto per allinearsi a quel che funziona. */
 function makeIcon(size,maskable){
   const cv=document.createElement('canvas');cv.width=size;cv.height=size;const ctx=cv.getContext('2d');
   const pad=maskable?size*0.16:0; // le icone "maskable" necessitano di margine di sicurezza
@@ -1153,17 +1156,20 @@ function makeIcon(size,maskable){
 }
 (function(){
   try{
-    const man={name:"Pingy Ultimate Legend",short_name:"Pingy",description:"Tracker completo per il ping pong: partite, tornei, ELO, statistiche e coach IA.",
+    const ICON192=makeIcon(192,false),ICON512=makeIcon(512,false),ICON192M=makeIcon(192,true),ICON512M=makeIcon(512,true);
+    const fav=document.createElement('link');fav.rel='icon';fav.href=ICON192;document.head.appendChild(fav);
+    const ic=document.createElement('link');ic.rel='apple-touch-icon';ic.href=ICON192;document.head.appendChild(ic);
+    if(location.protocol==='file:')return; // manifest inutile da file locale, come in Opty
+    const man={name:"Pingy",short_name:"Pingy",description:"Tracker completo per il ping pong: partite, tornei, ELO, statistiche e coach IA.",
       display:"standalone",orientation:"any",start_url:location.href.split("#")[0],scope:location.href.replace(/[^/]*$/,""),
       background_color:"#0b1119",theme_color:"#0f1720",
       icons:[
-        {src:makeIcon(192,false),sizes:"192x192",type:"image/png",purpose:"any"},
-        {src:makeIcon(192,true),sizes:"192x192",type:"image/png",purpose:"maskable"},
-        {src:makeIcon(512,false),sizes:"512x512",type:"image/png",purpose:"any"},
-        {src:makeIcon(512,true),sizes:"512x512",type:"image/png",purpose:"maskable"}
+        {src:ICON192,sizes:"192x192",type:"image/png",purpose:"any"},
+        {src:ICON192M,sizes:"192x192",type:"image/png",purpose:"maskable"},
+        {src:ICON512,sizes:"512x512",type:"image/png",purpose:"any"},
+        {src:ICON512M,sizes:"512x512",type:"image/png",purpose:"maskable"}
       ]};
     const l=document.createElement('link');l.rel='manifest';l.href='data:application/manifest+json,'+encodeURIComponent(JSON.stringify(man));document.head.appendChild(l);
-    const ic=document.createElement('link');ic.rel='apple-touch-icon';ic.href=makeIcon(192,false);document.head.appendChild(ic);
   }catch(e){}
 })();
 (function(){
@@ -1176,23 +1182,6 @@ function makeIcon(size,maskable){
   $('instYes').onclick=async()=>{$('instBanner').style.display='none';if(deferredPrompt){deferredPrompt.prompt();try{await deferredPrompt.userChoice;}catch(e){}deferredPrompt=null;}else{toast('Apri il menu del browser e scegli "Aggiungi a schermata Home"','📲');}};
   $('instNo').onclick=()=>{try{localStorage.setItem(KEY,String(Date.now()));}catch(e){}$('instBanner').style.display='none';};
   window.addEventListener('appinstalled',()=>{$('instBanner').style.display='none';try{localStorage.removeItem(KEY);}catch(e){}});
-})();
-/* Service Worker offline-first incorporato in questo stesso file (Blob URL), niente file separati. */
-(function(){
-  if(!('serviceWorker' in navigator))return;
-  const swCode=`
-    const CACHE='pingy-v1';
-    self.addEventListener('install',e=>{self.skipWaiting();});
-    self.addEventListener('activate',e=>self.clients.claim());
-    self.addEventListener('fetch',e=>{
-      if(e.request.method!=='GET')return;
-      e.respondWith(caches.match(e.request).then(cached=>{
-        const fetchP=fetch(e.request).then(res=>{try{const resClone=res.clone();caches.open(CACHE).then(c=>c.put(e.request,resClone));}catch(err){}return res;}).catch(()=>cached);
-        return cached||fetchP;
-      }));
-    });`;
-  try{const blob=new Blob([swCode],{type:'application/javascript'});const url=URL.createObjectURL(blob);
-    navigator.serviceWorker.register(url).catch(()=>{});}catch(e){}
 })();
 
 /* ================= INIT ================= */
