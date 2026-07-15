@@ -317,9 +317,10 @@ video{width:100%;max-height:48vh;border-radius:14px;background:#000;margin-botto
   </div>
   <div id="is" class="s-sec">
     <div class="cd"><h2>🎨 Tema e Audio</h2>
-      <div class="gr2">
+      <div class="gr3">
         <div><label class="fl">Tema Grafico</label><select id="cT" onchange="sTheme()"><option value="dark">Midnight Dark</option><option value="ittf">Verde ITTF</option><option value="olympic">Blu Olimpico</option></select></div>
         <div><label class="fl">Audio</label><button id="bS" class="btn btn-g" style="margin-bottom:0;" onclick="tS()">🔊 SFX: ON</button></div>
+        <div><label class="fl">Assistente Vocale</label><button id="bV" class="btn btn-g" style="margin-bottom:0;" onclick="tVoice()">🎙️ Voce: ON</button></div>
       </div>
     </div>
     <div class="cd"><h2>🤖 API Gemini</h2>
@@ -434,7 +435,8 @@ video{width:100%;max-height:48vh;border-radius:14px;background:#000;margin-botto
       <div class="cd">
         <h2>🎙️ Comandi vocali "Arbitro"</h2>
         <div class="gd"><h3>Come funziona (trascrizione + interpretazione IA)</h3><p>Il flusso è in due passi: <b>1)</b> il browser trascrive quello che dici (Web Speech API); <b>2)</b> la frase trascritta viene passata a <b>Gemini</b>, che capisce a chi va il punto e che colpo è stato — anche con frasi libere ("Arbitro, gran schiacciata poi Lorenzo l'ha buttata in rete") e anche se il nome viene trascritto storpiato: l'IA lo interpreta foneticamente. Il risultato lancia il normale comando di assegnazione punto con la dicitura del colpo. <b>Serve la chiave Gemini verificata</b> (Impostazioni → Sistema): se manca la chiave o la rete, l'app ripiega automaticamente sul riconoscimento a parole chiave esatte, più letterale ma sempre funzionante.</p></div>
-        <div class="gd"><h3>Attivazione e permessi</h3><p>All'avvio del tracker l'app <b>chiede esplicitamente il permesso microfono</b>: concedilo alla prima richiesta. La <b>parola chiave è esclusivamente "Arbitro"</b> (l'app accetta anche varianti come "barbitro" per facilitarne il riconoscimento): qualunque cosa detta senza quella parola viene ignorata. Ogni comando riconosciuto mostra una conferma a schermo (con 🤖 se interpretato dall'IA) e viene ripetuto a voce. Se il pallino resta grigio o hai negato il permesso per errore: tocca il lucchetto nella barra indirizzi → Autorizzazioni → Microfono → Consenti, poi tocca la barra del microfono nel tracker per riavviare.</p></div>
+        <div class="gd"><h3>Attivazione e permessi</h3><p>All'avvio del tracker l'app <b>chiede esplicitamente il permesso microfono</b>: concedilo alla prima richiesta. La <b>parola chiave è esclusivamente "Arbitro"</b> (l'app accetta anche varianti come "barbitro" per facilitarne il riconoscimento): qualunque cosa detta senza quella parola viene ignorata. Ogni comando riconosciuto mostra una conferma a schermo (con 🤖 se interpretato dall'IA) e viene ripetuto a voce. Se il pallino resta grigio o hai negato il permesso per errore: tocca il lucchetto nella barra indirizzi → Autorizzazioni → Microfono → Consenti, poi tocca la barra del microfono nel tracker per riavviare. Se preferisci non usarlo (bastano i tasti a schermo), puoi <b>disattivare completamente l'assistente vocale</b> in Impostazioni → Sistema → "Assistente Vocale": OFF spegne il microfono, niente permesso richiesto, niente suoni di sistema.</p></div>
+        <div class="gd"><h3>Il microfono a volte non sente la prima parola</h3><p>Il testo passa da "⏳ Avvio microfono…" a "In ascolto" solo quando il motore vocale del browser ha davvero iniziato a catturare l'audio: <b>parla solo dopo aver visto "In ascolto"</b>, mai prima. Anche rispettando questo, il motore vocale (che manda l'audio ai server di Google) può impiegare una frazione di secondo per "agganciarsi" del tutto: se capita che proprio la parola "Arbitro" venga persa, un trucco pratico è anteporre una parola qualsiasi, tipo <b>"Ehi, arbitro, ..."</b> — la prima parola fa da "cuscinetto" ed evita che venga tagliata quella che conta davvero. È un limite del motore vocale del browser, non correggibile del tutto lato app: ogni tanto Chrome interrompe e riavvia da solo l'ascolto durante le pause di gioco (con un breve suono di sistema che l'app non genera e non può disattivare) — è normale, il riconoscimento riparte automaticamente.</p></div>
         <div class="gd"><h3>Frasi riconosciute</h3><p>Con l'IA attiva puoi parlare liberamente ("Arbitro, punto a Marco che ha chiuso di dritto"). Senza IA valgono le forme fisse:</p><ul>
           <li>"Arbitro, punto a [nome del giocatore]"</li>
           <li>"Arbitro, servizio vincente di [nome]" — oppure "dritto vincente", "rovescio vincente", "colpo speciale", "schiacciata", "errore non forzato", "errore forzato"</li>
@@ -555,7 +557,7 @@ video{width:100%;max-height:48vh;border-radius:14px;background:#000;margin-botto
     <div class="vb-a" id="vbActionEl"></div>
   </div>
   <div id="aiSpin"><span class="ais-dot"></span><span id="aiSpinTxt">🤖 L'IA sta elaborando…</span></div>
-  <div id="voiceHint">💡 Comandi vocali: "Arbitro, punto a Marco" · "Arbitro, schiacciata di Lorenzo" · "Arbitro, servizio vincente di Marco" · "Arbitro, apri V.A.R."</div>
+  <div id="voiceHint">💡 Comandi vocali: "Arbitro, punto a Marco" · "Arbitro, schiacciata di Lorenzo" · "Arbitro, servizio vincente di Marco" · "Arbitro, apri V.A.R." — consiglio: attendi la scritta "in ascolto" prima di parlare, e se "Arbitro" non viene sentito bene prova ad anteporre una parola tipo "Ehi, arbitro..."</div>
   <div class="pts-row">
     <button style="background:var(--p);" onclick="addPoint(0)">+1 SX</button>
     <button style="background:var(--s);color:var(--s-ink);" onclick="addPoint(1)">+1 DX</button>
@@ -602,6 +604,7 @@ let DB={players:[],matches:[],tournaments:[],trophies:[],settings:{theme:'dark',
 function migrateDB(){
   DB.players=DB.players||[];DB.matches=DB.matches||[];DB.tournaments=DB.tournaments||[];DB.trophies=DB.trophies||[];DB.settings=DB.settings||{theme:'dark',sound:true,gemini:''};
   if(!DB.settings.geminiModel)DB.settings.geminiModel='auto';
+  if(typeof DB.settings.voiceOn!=='boolean')DB.settings.voiceOn=true;
   DB.players.forEach(p=>{p.st=p.st||{};['ace','driV','rovV','spec','smash','errNF','errFo','mps','luck','wins','losses','ptsWon','ptsPlayed','timeMs','timedPts','clutchW','clutchT','cmb','matches'].forEach(k=>{if(typeof p.st[k]!=='number')p.st[k]=0;});
     if(!p.cardSt){p.cardSt={ace:p.st.ace,driV:p.st.driV,rovV:p.st.rovV,spec:p.st.spec,smash:p.st.smash,errNF:p.st.errNF,errFo:p.st.errFo,mps:p.st.mps,luck:p.st.luck,wins:p.st.wins,losses:p.st.losses,clutchW:p.st.clutchW,clutchT:p.st.clutchT,cmb:p.st.cmb};} // prima volta: parte dallo storico esistente, poi decade partita dopo partita
     ['ace','driV','rovV','spec','smash','errNF','errFo','mps','luck','wins','losses','clutchW','clutchT','cmb'].forEach(k=>{if(typeof p.cardSt[k]!=='number')p.cardSt[k]=0;});
@@ -988,8 +991,13 @@ function speak(txt){if(!speechOn||!DB.settings.sound||!('speechSynthesis' in win
 let recog=null,recogActive=false;
 /* Wake word "Arbitro": accetto anche varianti che la trascrizione automatica produce spesso
    ("barbitro", "l'arbitro", "arbitri", "arbitro"), per rendere l'attivazione più facile. */
-const WAKE_RX=/\b[bl]?'?arbitr[oiae]\b/;
-async function startVoice(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+/* Tollerante anche a "arbitro" con le primissime lettere perse (capita quando il motore
+   vocale non ha ancora "agganciato" l'audio: vedi la nota su onstart più sotto) — accetta
+   varianti come "rbitro"/"bitro" oltre a "arbitro"/"barbitro"/"l'arbitro". */
+const WAKE_RX=/\b[a-z]{0,2}r?bitr[oiae]\b/;
+async function startVoice(){
+  if(!DB.settings.voiceOn){$('micTxt').innerText='Assistente vocale disattivato (riattivalo in Impostazioni → Sistema)';return;}
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   if(!SR){$('micTxt').innerText='Riconoscimento vocale non supportato su questo browser';return;}
   if(!window.isSecureContext){$('micTxt').innerText='Serve una pagina https (o localhost): file:// blocca il microfono';return;}
   /* Richiedo esplicitamente il permesso microfono PRIMA di avviare il riconoscimento:
@@ -1126,12 +1134,27 @@ async function geminiCall(prompt,maxTokens){
    JSON che lancia il normale comando di assegnazione punto. Wake word e colpi sono in italiano. */
 async function aiInterpretVoice(cmd){
   const p1=pById(LM.p1),p2=pById(LM.p2);
-  const prompt='Sei l\'arbitro vocale di una partita di ping pong. La parola di attivazione è "Arbitro". Giocatore lato SINISTRO (side 0): "'+(p1?p1.name:'?')+'". Giocatore lato DESTRO (side 1): "'+(p2?p2.name:'?')+'". Frase pronunciata in italiano (trascrizione automatica, i nomi possono essere storpiati: interpretali foneticamente): "'+cmd+'". Rispondi SOLO con JSON puro, senza markdown ne testo extra, in questo formato: {"side":0 oppure 1 oppure null,"shot":"ace"|"driV"|"rovV"|"spec"|"smash"|"errNF"|"errFo"|"luck_nastro"|"luck_bordo"|"var"|null}. Mappatura colpi (tutti in italiano): "servizio vincente"->"ace", "dritto vincente"->"driV", "rovescio vincente"->"rovV", "colpo speciale"->"spec", "schiacciata"->"smash", "errore non forzato"->"errNF", "errore forzato"->"errFo", punto di fortuna con nastro->"luck_nastro", con bordo->"luck_bordo", richiesta di aprire la moviola/VAR->"var", colpo non dichiarato->null. Regole: side = a chi VA il punto (0 sinistro, 1 destro, null se non capisci). Se la frase dice che qualcuno HA SBAGLIATO, il punto (side) va all\'ALTRO giocatore e shot e l\'errore.';
+  if(!p1||!p2)return null; // senza i nomi veri l'IA non ha modo di capire a chi va il punto: niente chiamata, si passa subito al fallback locale
+  const prompt='Sei l\'arbitro vocale di una partita di ping pong. La parola di attivazione è "Arbitro". Giocatore lato SINISTRO (side 0): "'+p1.name+'". Giocatore lato DESTRO (side 1): "'+p2.name+'". Frase pronunciata in italiano (trascrizione automatica, i nomi possono essere storpiati: interpretali foneticamente, anche se il nome è troncato o sentito male): "'+cmd+'". Rispondi SOLO con JSON puro, senza markdown ne testo extra, in questo formato: {"side":0 oppure 1 oppure null,"shot":"ace"|"driV"|"rovV"|"spec"|"smash"|"errNF"|"errFo"|"luck_nastro"|"luck_bordo"|"var"|null}. Mappatura colpi (tutti in italiano): "servizio vincente"->"ace", "dritto vincente"->"driV", "rovescio vincente"->"rovV", "colpo speciale"->"spec", "schiacciata"->"smash", "errore non forzato"->"errNF", "errore forzato"->"errFo", punto di fortuna con nastro->"luck_nastro", con bordo->"luck_bordo", richiesta di aprire la moviola/VAR->"var", colpo non dichiarato->null. REGOLA PRINCIPALE: side = a chi VA IL PUNTO. Per un colpo VINCENTE (servizio vincente, dritto vincente, rovescio vincente, colpo speciale, schiacciata, punto fortuna), il punto va SEMPRE al giocatore nominato subito dopo "di" — è lui che ha fatto il colpo e segna. Esempio: frase "servizio vincente di '+p1.name+'" con side 0="'+p1.name+'" → risposta corretta {"side":0,"shot":"ace"}. Per un ERRORE, vale l\'eccezione opposta: il punto va all\'ALTRO giocatore, non a quello nominato (chi sbaglia regala il punto all\'avversario). Usa null per side SOLO se nella frase non compare né riconosci nessuno dei due nomi.';
   let txt=await geminiCall(prompt,80);
   txt=txt.replace(/```json|```/g,'').trim();
   const obj=JSON.parse(txt);
-  if(obj&&(obj.side===0||obj.side===1||obj.side===null))return obj;
-  return null;
+  if(!obj||!(obj.side===0||obj.side===1||obj.side===null))return null;
+  /* RETE DI SICUREZZA: se l'IA non è riuscita a determinare il lato ma uno dei due nomi
+     compare comunque, testuale, nella frase trascritta, ci fidiamo del riconoscimento diretto
+     del nome — molto più affidabile in questo caso specifico del giudizio complessivo
+     dell'IA, che a volte esita anche quando il nome è scritto chiaramente. */
+  if(obj.side===null){
+    const found=localNameMatch(cmd);
+    if(found!=null)obj.side=found;
+  }
+  return obj;
+}
+/* Cerca il nome di uno dei due giocatori in campo dentro il testo. Ritorna 0, 1, o null. */
+function localNameMatch(cmd){
+  let side=null;
+  [[0,LM.p1],[1,LM.p2]].forEach(([s,pid])=>{const p=pById(pid);if(p&&cmd.includes(p.name.toLowerCase()))side=s;});
+  return side;
 }
 function askShotFor(side){
   awaitingShotFor=side;
@@ -1150,15 +1173,21 @@ function execVoiceCommand(side,shot,source){
   toast('Arbitro'+(source==='ai'?' (IA)':'')+': '+label+' per '+who,source==='ai'?'🤖':'🎙️');
   pendingShot=shot;addPoint(side);
 }
-let voiceLock=false; // impedisce a due comandi vocali di eseguirsi in sovrapposizione (vedi handleVoice)
+let voiceLock=false,lockedTxt='',pendingVoiceTxt=null; // vedi handleVoice
 async function handleVoice(txt){
-  /* FIX PUNTI DOPPI (2° livello di protezione): se un comando precedente è ancora in
-     elaborazione — per esempio è in attesa della risposta dell'IA, che può richiedere
-     qualche secondo — un nuovo risultato "finale" che arriva nel frattempo (per un guizzo
-     del motore di riconoscimento, o perché l'utente ha parlato di nuovo troppo in fretta)
-     viene scartato invece di rischiare di assegnare un secondo punto per la stessa azione. */
-  if(voiceLock){setVbAction('⏳ Comando precedente ancora in elaborazione: ignorato per evitare doppioni');return;}
-  voiceLock=true;
+  /* FIX PUNTI DOPPI (2° livello, oltre al dedup per indice in launchRecog): se un comando
+     è ancora in elaborazione (es. in attesa della risposta IA, che può richiedere qualche
+     secondo) e arriva un nuovo risultato:
+     - se il testo è IDENTICO a quello in elaborazione, è quasi certamente un doppione
+       generato dal motore di riconoscimento (lo stesso bug che duplicava i punti): lo scarto.
+     - se il testo è DIVERSO, è una frase realmente nuova (l'utente ha parlato di nuovo
+       mentre l'arbitro stava ancora "pensando"): non va persa, la metto in coda ed eseguo
+       subito dopo che il comando corrente ha finito, invece di ignorarla per sempre. */
+  if(voiceLock){
+    if(txt===lockedTxt){setVbAction('⏳ Doppione ignorato (stessa frase già in elaborazione)');return;}
+    pendingVoiceTxt=txt;setVbAction('⏳ In coda: verrà eseguito subito dopo il comando in corso…');return;
+  }
+  voiceLock=true;lockedTxt=txt;
   try{
   if(awaitingShotFor!=null){
     clearTimeout(awaitTimeoutHandle);
@@ -1186,19 +1215,21 @@ async function handleVoice(txt){
           if(res.shot){execVoiceCommand(res.side,res.shot,'ai');return;}
           askShotFor(res.side);return;
         }
-        setVbAction('🤖 L\'IA non ha capito a chi va il punto: ripeti con il nome');return;
+        setVbAction('🤖 Nessuno dei due nomi riconosciuto: ripeti citando il nome');return;
       }
     }catch(e){aiBusyOff();setVbAction('⚠️ '+(e.message||'IA non raggiungibile')+' — uso le parole chiave');}
   }
   /* 2° livello (fallback): parser locale a parole chiave */
   if(cmd.includes('var')||cmd.includes('moviola')){setVbAction('📼 Apro il V.A.R.');openVAR();return;}
-  let side=null,who=null;
-  [[0,LM.p1],[1,LM.p2]].forEach(([s,pid])=>{const p=pById(pid);if(p&&cmd.includes(p.name.toLowerCase())){side=s;who=p;}});
+  const side=localNameMatch(cmd);
   if(side===null){setVbAction('❌ Nome del giocatore non riconosciuto: ripeti citando il nome');return;}
   const parsed=parseShotKeyword(cmd);
   if(!parsed){askShotFor(side);return;} // colpo non dichiarato: l'arbitro lo chiede prima di assegnare il punto
   execVoiceCommand(side,parsed.shot,'local');
-  }finally{voiceLock=false;}
+  }finally{
+    voiceLock=false;lockedTxt='';
+    if(pendingVoiceTxt!=null){const next=pendingVoiceTxt;pendingVoiceTxt=null;handleVoice(next);}
+  }
 }
 
 /* ================= V.A.R. — buffer a segmenti da 5s (max 6 = 30s) ================= */
@@ -1388,6 +1419,13 @@ async function aG(){if(!DB.settings.gemini){toast('Registra prima la tua API Key
 /* ================= IMPOSTAZIONI ================= */
 function sTheme(){document.body.dataset.theme=$('cT').value;DB.settings.theme=$('cT').value;save();}
 function tS(){DB.settings.sound=!DB.settings.sound;$('bS').innerText='🔊 SFX: '+(DB.settings.sound?'ON':'OFF');save();}
+function tVoice(){
+  DB.settings.voiceOn=!DB.settings.voiceOn;save();
+  $('bV').innerText='🎙️ Voce: '+(DB.settings.voiceOn?'ON':'OFF');
+  if(!DB.settings.voiceOn&&recogActive){stopVoice();$('micTxt').innerText='Assistente vocale disattivato (riattivalo in Impostazioni)';}
+  else if(DB.settings.voiceOn&&LM&&LM.status==='active'&&!recogActive){startVoice();}
+  toast('Assistente vocale '+(DB.settings.voiceOn?'attivato':'disattivato'),'🎙️');
+}
 /* Verifica della chiave Gemini con micro-test reale: invia una richiesta minima e mostra
    la spunta solo se l'API risponde davvero. Lo stato "verificata" resta salvato. */
 async function testGeminiKey(){
@@ -1663,7 +1701,7 @@ const ICON512M="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAMAAADDpi
 /* ================= INIT ================= */
 load();
 document.body.dataset.theme=DB.settings.theme||'dark';$('cT').value=DB.settings.theme||'dark';
-$('bS').innerText='🔊 SFX: '+(DB.settings.sound?'ON':'OFF');$('cG').value=DB.settings.gemini||'';$('cGM').value=DB.settings.geminiModel||'auto';
+$('bS').innerText='🔊 SFX: '+(DB.settings.sound?'ON':'OFF');$('bV').innerText='🎙️ Voce: '+(DB.settings.voiceOn?'ON':'OFF');$('cG').value=DB.settings.gemini||'';$('cGM').value=DB.settings.geminiModel||'auto';
 if(DB.settings.gemini&&DB.settings.geminiOk){$('gStatus').style.display='block';$('gStatus').innerHTML='✅ <b>Chiave verificata</b> (in un test precedente). Coach IA e interpretazione vocale IA attivi. Premi di nuovo il pulsante per riverificarla.';}
 $('varVid').addEventListener('ended',()=>{varQueueIdx++;if(varQueueIdx<varQueue.length)playVarQueueItem();});
 if(!varSupported()){$('mV').checked=false;$('mV').disabled=true;const lb=$('mV').nextElementSibling;if(lb)lb.innerText='V.A.R. non disponibile su questo dispositivo';}
