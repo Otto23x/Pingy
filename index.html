@@ -972,17 +972,32 @@ async function startVoice(){const SR=window.SpeechRecognition||window.webkitSpee
 }
 function setVbHeard(t){const el=$('vbHeardEl');if(el)el.innerText=t;}
 function setVbAction(t){const el=$('vbActionEl');if(el)el.innerText=t;}
+let lastFinalIdx=-1; // ultimo indice di risultato FINALE già elaborato in QUESTA sessione di ascolto
 function launchRecog(SR){
-  try{recog=new SR();recog.lang='it-IT';
+  try{recog=new SR();recog.lang='it-IT';lastFinalIdx=-1;
     /* MODALITÀ CONTINUA: il riconoscimento non si spegne durante le pause del gioco.
        continuous=true evita che una pausa di un paio di secondi chiuda la sessione facendo
        perdere l'inizio della frase successiva; interimResults mostra la trascrizione live. */
     recog.continuous=true;recog.interimResults=true;
     recog.onresult=e=>{
-      let interim='',fin='';
-      for(let i=e.resultIndex;i<e.results.length;i++){const t=e.results[i][0].transcript;if(e.results[i].isFinal)fin+=t;else interim+=t;}
+      let interim='';
+      /* FIX PUNTI DOPPI: itero da e.resultIndex (solo i risultati nuovi rispetto all'evento
+         precedente, per specifica), MA scarto comunque ogni indice ≤ lastFinalIdx: su Android
+         Chrome capita che, in modalità continua, un risultato FINALE già elaborato venga
+         re-incluso in un evento successivo (bug noto del motore, non dell'app). Senza questo
+         controllo, la stessa frase — con dentro "arbitro" — poteva essere rieseguita una
+         seconda volta, assegnando il punto due volte. */
+      for(let i=e.resultIndex;i<e.results.length;i++){
+        const res=e.results[i];
+        if(res.isFinal){
+          if(i<=lastFinalIdx)continue; // già elaborato: lo ignoro
+          lastFinalIdx=i;
+          const clean=res[0].transcript.trim();
+          setVbHeard('"'+clean+'"');
+          handleVoice(clean.toLowerCase());
+        }else{interim+=res[0].transcript;}
+      }
       if(interim)setVbHeard('… '+interim.trim()); // trascrizione live mentre parli: se la vedi muoversi, il microfono funziona
-      if(fin){const clean=fin.trim();setVbHeard('"'+clean+'"');handleVoice(clean.toLowerCase());}
     };
     recog.onerror=ev=>{$('micDot').classList.remove('ls');
       if(ev.error==='not-allowed'||ev.error==='service-not-allowed'){$('micTxt').innerText='Permesso microfono negato — tocca qui per riprovare';setVbHeard('⚠️ Permesso microfono negato');recogActive=false;}
@@ -990,7 +1005,15 @@ function launchRecog(SR){
       else if(ev.error==='network'){$('micTxt').innerText='Serve connessione internet per la voce';setVbHeard('⚠️ Trascrizione non disponibile senza rete');}
     };
     recog.onend=()=>{if(recogActive){setTimeout(()=>{if(recogActive)launchRecog(SR);},250);}else{$('micDot').classList.remove('ls');}};
-    recog.start();$('micDot').classList.add('ls');$('micTxt').innerText='In ascolto: dì "Arbitro, ..."';
+    /* FIX PRIMA PAROLA PERSA: prima l'indicatore "in ascolto" scattava subito dopo aver
+       chiamato recog.start(), ma il motore vocale (che manda l'audio ai server di Google)
+       impiega un istante per iniziare davvero a catturare — se dici "Arbitro..." proprio in
+       quel breve intervallo, la prima parola (spesso "Arbitro" stesso) va persa. onstart è
+       l'evento che il browser emette SOLO quando l'ascolto è realmente iniziato: ora il testo
+       "in ascolto" compare lì, così sai con certezza quando è sicuro iniziare a parlare. */
+    $('micTxt').innerText='⏳ Avvio microfono…';
+    recog.onstart=()=>{$('micDot').classList.add('ls');$('micTxt').innerText='In ascolto: dì "Arbitro, ..."';};
+    recog.start();
   }catch(e){$('micTxt').innerText='Microfono non disponibile';}
 }
 function stopVoice(){recogActive=false;if(recog){try{recog.stop();}catch(e){}}$('micDot').classList.remove('ls');}
@@ -1094,7 +1117,16 @@ function execVoiceCommand(side,shot,source){
   toast('Arbitro'+(source==='ai'?' (IA)':'')+': '+label+' per '+who,source==='ai'?'🤖':'🎙️');
   pendingShot=shot;addPoint(side);
 }
+let voiceLock=false; // impedisce a due comandi vocali di eseguirsi in sovrapposizione (vedi handleVoice)
 async function handleVoice(txt){
+  /* FIX PUNTI DOPPI (2° livello di protezione): se un comando precedente è ancora in
+     elaborazione — per esempio è in attesa della risposta dell'IA, che può richiedere
+     qualche secondo — un nuovo risultato "finale" che arriva nel frattempo (per un guizzo
+     del motore di riconoscimento, o perché l'utente ha parlato di nuovo troppo in fretta)
+     viene scartato invece di rischiare di assegnare un secondo punto per la stessa azione. */
+  if(voiceLock){setVbAction('⏳ Comando precedente ancora in elaborazione: ignorato per evitare doppioni');return;}
+  voiceLock=true;
+  try{
   if(awaitingShotFor!=null){
     clearTimeout(awaitTimeoutHandle);
     const side=awaitingShotFor;awaitingShotFor=null;
@@ -1133,6 +1165,7 @@ async function handleVoice(txt){
   const parsed=parseShotKeyword(cmd);
   if(!parsed){askShotFor(side);return;} // colpo non dichiarato: l'arbitro lo chiede prima di assegnare il punto
   execVoiceCommand(side,parsed.shot,'local');
+  }finally{voiceLock=false;}
 }
 
 /* ================= V.A.R. — buffer a segmenti da 5s (max 6 = 30s) ================= */
