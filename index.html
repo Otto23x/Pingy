@@ -1015,20 +1015,25 @@ async function startVoice(){
 function setVbHeard(t){const el=$('vbHeardEl');if(el)el.innerText=t;}
 function setVbAction(t){const el=$('vbActionEl');if(el)el.innerText=t;}
 let lastFinalIdx=-1; // ultimo indice di risultato FINALE già elaborato in QUESTA sessione di ascolto
+let finalDebounce=null;
 function launchRecog(SR){
-  try{recog=new SR();recog.lang='it-IT';lastFinalIdx=-1;
+  try{recog=new SR();recog.lang='it-IT';lastFinalIdx=-1;clearTimeout(finalDebounce);finalDebounce=null;
     /* MODALITÀ CONTINUA: il riconoscimento non si spegne durante le pause del gioco.
        continuous=true evita che una pausa di un paio di secondi chiuda la sessione facendo
        perdere l'inizio della frase successiva; interimResults mostra la trascrizione live. */
     recog.continuous=true;recog.interimResults=true;
     recog.onresult=e=>{
       let interim='';
-      /* FIX PUNTI DOPPI: itero da e.resultIndex (solo i risultati nuovi rispetto all'evento
-         precedente, per specifica), MA scarto comunque ogni indice ≤ lastFinalIdx: su Android
-         Chrome capita che, in modalità continua, un risultato FINALE già elaborato venga
-         re-incluso in un evento successivo (bug noto del motore, non dell'app). Senza questo
-         controllo, la stessa frase — con dentro "arbitro" — poteva essere rieseguita una
-         seconda volta, assegnando il punto due volte. */
+      /* FIX PUNTI DOPPI/TRIPLI: in modalità continua il motore (specie su Chrome Android) non
+         emette sempre UN SOLO risultato "definitivo" per frase pronunciata: a volte la stessa
+         frase arriva spezzata in più affinamenti successivi, ciascuno segnato come "finale" a
+         pochi istanti di distanza ("rovescio vincente" poi "rovescio vincente di" poi "rovescio
+         vincente di lillo"). Trattarli come comandi separati — come succedeva prima — significa
+         interpretarli e assegnare punti più volte per un'unica frase. Rimedio: non elaboro MAI
+         un risultato definitivo subito; aspetto un breve istante di silenzio (nessun altro
+         affinamento nel frattempo) prima di agire, usando solo l'ultima versione, più completa,
+         del testo. Il controllo per indice sotto resta come ulteriore rete di sicurezza contro
+         un affinamento già elaborato che il motore reinvia identico. */
       for(let i=e.resultIndex;i<e.results.length;i++){
         const res=e.results[i];
         if(res.isFinal){
@@ -1036,7 +1041,8 @@ function launchRecog(SR){
           lastFinalIdx=i;
           const clean=res[0].transcript.trim();
           setVbHeard('"'+clean+'"');
-          handleVoice(clean.toLowerCase());
+          clearTimeout(finalDebounce);
+          finalDebounce=setTimeout(()=>{handleVoice(clean.toLowerCase());},550);
         }else{interim+=res[0].transcript;}
       }
       if(interim)setVbHeard('… '+interim.trim()); // trascrizione live mentre parli: se la vedi muoversi, il microfono funziona
@@ -1058,7 +1064,7 @@ function launchRecog(SR){
     recog.start();
   }catch(e){$('micTxt').innerText='Microfono non disponibile';}
 }
-function stopVoice(){recogActive=false;if(recog){try{recog.stop();}catch(e){}}$('micDot').classList.remove('ls');}
+function stopVoice(){recogActive=false;clearTimeout(finalDebounce);if(recog){try{recog.stop();}catch(e){}}$('micDot').classList.remove('ls');}
 function restartVoiceManually(){stopVoice();toast('Riavvio riconoscimento vocale…','🎙️');setTimeout(startVoice,300);}
 let awaitingShotFor=null,awaitTimeoutHandle=null;
 const SHOT_LABELS={ace:'servizio vincente',driV:'dritto vincente',rovV:'rovescio vincente',spec:'colpo speciale',smash:'schiacciata',errNF:'errore non forzato',errFo:'errore forzato',luck_nastro:'punto fortuna (nastro)',luck_bordo:'punto fortuna (bordo)'};
