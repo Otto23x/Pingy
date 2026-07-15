@@ -338,6 +338,15 @@ video{width:100%;max-height:48vh;border-radius:14px;background:#000;margin-botto
       <button class="btn" style="background:var(--ai);" onclick="testGeminiKey()">Registra e Verifica Chiave</button>
       <div id="gStatus" style="display:none;padding:12px;border-radius:10px;background:rgba(0,0,0,0.04);font-weight:800;font-size:0.9rem;"></div>
     </div>
+    <div class="cd"><h2>☁️ Google Drive</h2>
+      <label class="fl">CLIENT_ID (Google Cloud)</label>
+      <input type="text" id="dCid" placeholder="xxxx.apps.googleusercontent.com" onchange="saveDriveSettings()">
+      <button class="btn" style="background:#1a73e8;" onclick="driveConnect()">🔗 Connetti e sincronizza</button>
+      <button class="btn btn-o" onclick="driveDisconnect()">🔌 Disconnetti e desincronizza</button>
+      <button class="btn btn-d" onclick="driveDelete()">🗑️ Elimina backup</button>
+      <div id="driveStatus" style="font-size:0.8rem;opacity:0.75;margin-top:4px;font-weight:700;">Non connesso.</div>
+      <div style="font-size:0.76rem;opacity:0.65;margin-top:8px;line-height:1.5;"><b>Disconnetti e desincronizza</b>: stacca solo questo dispositivo, il backup su Drive e gli altri dispositivi restano intatti. <b>Elimina backup</b>: cancella il file su Drive (sparisce da tutti i dispositivi collegati, previa conferma). I dati restano sempre salvati anche <b>in locale</b> su questo dispositivo, indipendentemente da Drive: se elimini il backup su Drive o ti disconnetti, qui non perdi nulla, e viceversa.</div>
+    </div>
     <div class="cd"><h2>💾 Dati & Backup</h2>
       <label class="fl">Cancellazione</label>
       <select id="dF"><option value="t">Cancella solo dati di Oggi</option><option value="a">HARD RESET (Svuota Tutto)</option></select>
@@ -470,7 +479,8 @@ video{width:100%;max-height:48vh;border-radius:14px;background:#000;margin-botto
         <div class="gd"><h3>Cosa fa il Coach</h3><p>In Statistiche → Coach IA scegli un taglio (Tecnico, Psicologico o Roast ironico) e l'app invia a Gemini un riassunto dei dati aggregati di tutti gli atleti (ELO, V-P, colpi, ecc.), chiedendo un report breve in italiano. Serve connessione internet attiva: se manca, l'app te lo segnala invece di restare bloccata.</p></div>
         <h2 style="margin-top:22px;">⚙️ Sistema, Backup e Installazione</h2>
         <div class="gd"><h3>Temi grafici</h3><p>Tre palette (Midnight Dark, Verde ITTF, Blu Olimpico), tutte pensate per un buon contrasto testo/sfondo, cambiabili in qualsiasi momento da Impostazioni → Sistema.</p></div>
-        <div class="gd"><h3>Backup dei dati</h3><p>"Esporta Backup" scarica un file .json con tutto (roster, partite, tornei, trofei, impostazioni); "Importa Backup" lo ricarica su qualsiasi dispositivo. Utile prima di un Hard Reset o per passare l'archivio a un altro telefono.</p></div>
+        <div class="gd"><h3>Sincronizzazione Google Drive</h3><p>In Impostazioni → Sistema → "Google Drive", incolla un <b>CLIENT_ID</b> (creato gratuitamente su Google Cloud Console) e premi <b>"Connetti e sincronizza"</b>: da quel momento questo dispositivo e ogni altro collegato allo stesso CLIENT_ID e account Google condividono automaticamente roster, partite, tornei e trofei — l'app confronta da sola chi ha i dati più recenti ad ogni avvio. <b>"Disconnetti e desincronizza"</b> stacca solo questo dispositivo: il backup su Drive e gli altri dispositivi restano intatti. <b>"Elimina backup"</b> cancella il file da Drive per tutti i dispositivi collegati — chiede sempre conferma con un banner prima di procedere, proprio perché è un'azione che riguarda anche gli altri dispositivi. In ogni caso, <b>i dati restano sempre salvati anche in locale</b> su questo telefono, indipendentemente da Drive: eliminare il backup su Drive o disconnettersi non cancella nulla qui, e viceversa cancellare/reimpostare i dati locali non tocca il backup su Drive. La chiave API Gemini resta sempre e solo locale a ogni dispositivo, non viene mai sincronizzata.</p></div>
+        <div class="gd"><h3>Backup dei dati</h3><p>"Esporta Backup" scarica un file .json con tutto (roster, partite, tornei, trofei, impostazioni); "Importa Backup" lo ricarica su qualsiasi dispositivo. Utile prima di un Hard Reset o per passare l'archivio a un altro telefono, anche senza Google Drive.</p></div>
         <div class="gd"><h3>Cancellazione dati</h3><p>Puoi cancellare solo le partite registrate oggi, oppure fare un Hard Reset completo che azzera tutto (atleti, storico, tornei, trofei). Questa azione non è reversibile: fai un backup prima se hai dubbi.</p></div>
         <div class="gd"><h3>Installazione a schermo intero</h3><p>Toccando "Installa" nel banner (o dal menu del browser → "Aggiungi a schermata Home"), Pingy viene installata come una vera app: icona propria sulla Home, si apre <b>a schermo intero senza la barra degli indirizzi di Chrome</b>.</p></div>
         <div class="gd"><h3>Se l'installazione su Android fallisce ("installazione in corso" e poi nulla)</h3><p>La causa tipica è un <b>Service Worker residuo</b> di una versione precedente rimasto registrato sul telefono: serve una copia vecchia della pagina e fa fallire l'installazione. Attenzione: il normale "Cancella cache" di Chrome <b>non</b> lo rimuove. Quest'app ora si auto-ripulisce ad ogni apertura, ma per il primo giro conviene una pulizia manuale mirata: apri il sito, tocca il <b>lucchetto</b> (o l'icona a sinistra dell'indirizzo) → <b>Impostazioni sito</b> → <b>Cancella e reimposta</b> (o "Elimina dati"). Poi chiudi tutte le schede del sito, riaprilo, attendi qualche secondo e premi "Installa" dal banner.</p></div>
@@ -568,7 +578,7 @@ function migrateDB(){
 function load(){try{const raw=localStorage.getItem('pingyDB');if(raw)DB=JSON.parse(raw);}catch(e){}
   migrateDB();
 }
-function save(){try{localStorage.setItem('pingyDB',JSON.stringify(DB));}catch(e){toast('Spazio archiviazione pieno!','⚠️');}}
+function save(){try{localStorage.setItem('pingyDB',JSON.stringify(DB));touchContent();}catch(e){toast('Spazio archiviazione pieno!','⚠️');}}
 function toast(msg,ic){ic=ic||'✅';const d=document.createElement('div');d.className='ts';d.innerHTML=`${ic} ${msg}`;$('tst').appendChild(d);setTimeout(()=>d.remove(),4000);}
 function trophyToast(msg){const d=document.createElement('div');d.className='ts tr';d.innerHTML=`🏆 ${msg}`;$('tst').appendChild(d);setTimeout(()=>d.remove(),4000);}
 
@@ -1329,6 +1339,205 @@ async function testGeminiKey(){
     st.innerHTML='❌ '+(e.message||'Chiave non verificata')+'';
   }
 }
+/* ═══════════════════════════════════════════════════════════════
+   GOOGLE DRIVE SYNC (GSI + Drive REST, scope drive.appdata) — stesso
+   pattern collaudato usato in Tappy. I dati vivono SEMPRE in locale
+   (localStorage 'pingyDB'): Drive è un secondo backup che si tiene
+   sincronizzato in parallelo, non li sostituisce. Così se elimini il
+   backup su Drive o ti disconnetti, i dati locali restano intatti, e
+   viceversa se cancelli i dati locali il backup su Drive resta.
+   ═══════════════════════════════════════════════════════════════ */
+const DRIVE_SETTINGS_KEY='pingy_drive';
+let DTOKEN=null,tokenClient=null,driveReauthed=false;
+/* Cache del token d'accesso Drive: dopo il primo consenso, entro la sua durata (~1h)
+   l'app riusa il token salvato senza richiedere di nuovo l'accesso, anche dopo un
+   riavvio; alla scadenza si rinnova in silenzio. */
+const DTOK_KEY='pingy_dtoken';
+function driveSaveToken(t){
+  try{if(t&&t.access_token){DTOKEN=t.access_token;const exp=Date.now()+(((+t.expires_in||3600)-90)*1000);localStorage.setItem(DTOK_KEY,JSON.stringify({tok:t.access_token,exp}));}}catch(e){}
+}
+function driveCachedToken(){
+  try{const c=JSON.parse(localStorage.getItem(DTOK_KEY)||'null');if(c&&c.tok&&c.exp&&Date.now()<c.exp)return c.tok;}catch(e){}
+  return null;
+}
+function driveClearToken(){DTOKEN=null;try{localStorage.removeItem(DTOK_KEY);}catch(e){}}
+function driveSilentAuth(){
+  const s=loadDriveSettings();if(!(s.cid))return;
+  loadGSI(()=>{
+    try{
+      tokenClient=google.accounts.oauth2.initTokenClient({
+        client_id:s.cid,scope:'https://www.googleapis.com/auth/drive.appdata',
+        callback:async t=>{
+          if(t&&t.access_token){driveSaveToken(t);await driveSyncOnStart();
+            const st=$('driveStatus');if(st)st.innerText='✅ Sincronizzato con Drive.';}
+        },
+        error_callback:()=>{}
+      });
+      tokenClient.requestAccessToken({prompt:''});
+    }catch(e){}
+  });
+}
+function loadDriveSettings(){try{return JSON.parse(localStorage.getItem(DRIVE_SETTINGS_KEY))||{};}catch(e){return{};}}
+function saveDriveSettings(){
+  const s={cid:$('dCid').value.trim(),on:loadDriveSettings().on||false};
+  localStorage.setItem(DRIVE_SETTINGS_KEY,JSON.stringify(s));
+}
+function loadDriveSettingsIntoForm(){
+  const s=loadDriveSettings();$('dCid').value=s.cid||'';
+  const st=$('driveStatus');
+  if(st)st.innerText=s.on
+    ? "Configurato: a ogni avvio l'app si riconnette da sola, confronta i timestamp e carica la versione più recente (telefono e PC condividono così gli stessi dati)."
+    : 'Non connesso.';
+}
+/* Timestamp di CONTENUTO persistito: si aggiorna solo quando i dati cambiano davvero
+   (save() lo tocca ad ogni modifica reale), mai al semplice avvio dell'app. Serve per
+   confrontare in modo affidabile "chi ha i dati più recenti" tra più dispositivi. */
+const TOUCH_KEY='pingy_content_updated';
+function touchContent(){try{localStorage.setItem(TOUCH_KEY,new Date().toISOString());}catch(e){}}
+function getContentUpdated(){try{return localStorage.getItem(TOUCH_KEY)||'';}catch(e){return'';}}
+const SYNCED_ONCE_KEY='pingy_synced_once';
+function hasRealLocalContent(){return DB.players.length>0||DB.matches.length>0;}
+/* La chiave Gemini NON viene sincronizzata su Drive (resta locale a ogni dispositivo,
+   come le chiavi API in Tappy): tutto il resto (roster, partite, tornei, trofei,
+   impostazioni) sì. */
+function collectAllData(){
+  const d=JSON.parse(JSON.stringify(DB));
+  if(d.settings){delete d.settings.gemini;delete d.settings.geminiOk;}
+  d.updated=getContentUpdated()||new Date().toISOString();
+  return d;
+}
+function applyAllData(d){
+  const keepKey=DB.settings?DB.settings.gemini:'',keepOk=DB.settings?DB.settings.geminiOk:false;
+  DB=d;migrateDB();
+  if(DB.settings){DB.settings.gemini=keepKey;DB.settings.geminiOk=keepOk;}
+  save();
+  // Il timestamp locale deve riflettere quello dei dati importati, non il momento
+  // dell'import: va impostato PER ULTIMO, perché save() sopra lo ha già toccato a "ora".
+  try{localStorage.setItem(TOUCH_KEY,d.updated||new Date().toISOString());}catch(e){}
+}
+function loadGSI(cb){
+  if(window.google&&google.accounts)return cb();
+  const s=document.createElement('script');s.src='https://accounts.google.com/gsi/client';
+  s.onload=cb;s.onerror=()=>toast('Impossibile caricare Google Identity (offline?)','⚠️');
+  document.head.appendChild(s);
+}
+window.driveConnect=()=>{
+  saveDriveSettings();const s=loadDriveSettings();
+  if(!s.cid){toast('Inserisci prima il CLIENT_ID','⚠️');return;}
+  if(window.location.protocol==='file:'){toast("L'OAuth Google non funziona da file:// — pubblica l'app su https",'⚠️');return;}
+  loadGSI(()=>{
+    tokenClient=google.accounts.oauth2.initTokenClient({
+      client_id:s.cid,scope:'https://www.googleapis.com/auth/drive.appdata',
+      callback:async t=>{
+        driveSaveToken(t);
+        const settings=loadDriveSettings();settings.on=true;
+        localStorage.setItem(DRIVE_SETTINGS_KEY,JSON.stringify(settings));
+        $('driveStatus').innerText='✅ Connesso. Sincronizzo…';
+        await driveSyncOnStart();
+      }
+    });
+    tokenClient.requestAccessToken();
+  });
+};
+async function driveFind(){
+  const r=await fetch("https://www.googleapis.com/drive/v3/files?spaces=appDataFolder&q=name%3D%27pingy_backup.json%27&fields=files(id,modifiedTime)",
+    {headers:{Authorization:'Bearer '+DTOKEN}});
+  if(r.status===401){driveClearToken();throw new Error('auth');}
+  const j=await r.json();return(j.files&&j.files[0])||null;
+}
+window.driveUpload=async()=>{
+  if(!DTOKEN){toast('Connettiti prima a Drive','⚠️');return;}
+  try{
+    const f=await driveFind();
+    const meta={name:'pingy_backup.json',parents:f?undefined:['appDataFolder']};
+    const boundary='-------pingy';
+    const body='--'+boundary+'\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n'+JSON.stringify(meta)+
+      '\r\n--'+boundary+'\r\nContent-Type: application/json\r\n\r\n'+JSON.stringify(collectAllData())+'\r\n--'+boundary+'--';
+    const url='https://www.googleapis.com/upload/drive/v3/files'+(f?'/'+f.id:'')+'?uploadType=multipart';
+    await fetch(url,{method:f?'PATCH':'POST',headers:{Authorization:'Bearer '+DTOKEN,'Content-Type':'multipart/related; boundary='+boundary},body});
+    $('driveStatus').innerText='✅ Salvato su Drive alle '+new Date().toLocaleTimeString('it-IT');
+    try{localStorage.setItem(SYNCED_ONCE_KEY,'1');}catch(e2){}
+  }catch(e){toast('Errore Drive: '+e.message,'⚠️');}
+};
+window.driveImport=async()=>{
+  if(!DTOKEN){toast('Connettiti prima a Drive','⚠️');return;}
+  try{
+    const f=await driveFind();
+    if(!f){toast('Nessun backup trovato su Drive','⚠️');return;}
+    const ok=await askConfirm('Importo il backup da Drive del '+new Date(f.modifiedTime).toLocaleString('it-IT')+'? Sovrascrive i dati locali.');
+    if(!ok)return;
+    const r=await fetch('https://www.googleapis.com/drive/v3/files/'+f.id+'?alt=media',{headers:{Authorization:'Bearer '+DTOKEN}});
+    applyAllData(await r.json());
+    try{localStorage.setItem(SYNCED_ONCE_KEY,'1');}catch(e2){}
+    location.reload();
+  }catch(e){toast('Errore importazione: '+e.message,'⚠️');}
+};
+/* Scollega SOLO questo dispositivo: non tocca il backup su Drive né gli altri dispositivi. */
+window.driveDisconnect=async()=>{
+  const ok=await askConfirm('Scollegare SOLO questo dispositivo da Drive? Il backup su Drive e gli altri dispositivi restano intatti. Potrai ricollegarti quando vuoi.');
+  if(!ok)return;
+  driveClearToken();
+  try{localStorage.removeItem(SYNCED_ONCE_KEY);}catch(e){}
+  const s=loadDriveSettings();s.on=false;
+  localStorage.setItem(DRIVE_SETTINGS_KEY,JSON.stringify(s));
+  const st=$('driveStatus');if(st)st.innerText='Dispositivo scollegato da Drive (il backup remoto è intatto).';
+  toast('Disconnesso da Drive','🔌');
+};
+/* Elimina il backup su Drive: riguarda TUTTI i dispositivi collegati. Richiede SEMPRE
+   conferma tramite il banner askConfirm(), tranne quando chiamato in modalità silenziosa
+   da codice interno (silent=true). I dati locali di questo dispositivo non vengono toccati. */
+window.driveDelete=async(silent)=>{
+  if(!DTOKEN){if(!silent)toast('Connettiti prima a Drive','⚠️');return;}
+  if(!silent){
+    const ok=await askConfirm('Eliminare il backup da Google Drive? ATTENZIONE: sparirà da TUTTI i dispositivi collegati a questo account, non solo da questo. I dati locali di questo dispositivo restano finché non li cancelli a parte.');
+    if(!ok)return;
+  }
+  try{
+    const f=await driveFind();
+    if(f)await fetch('https://www.googleapis.com/drive/v3/files/'+f.id,{method:'DELETE',headers:{Authorization:'Bearer '+DTOKEN}});
+    if(!silent){const st=$('driveStatus');if(st)st.innerText='🗑️ Backup eliminato da Drive.';toast('Backup eliminato da Drive','🗑️');}
+  }catch(e){if(!silent)toast('Errore eliminazione: '+e.message,'⚠️');}
+};
+function tryDriveAuto(){
+  const s=loadDriveSettings();
+  if(!(s.on&&s.cid)||window.location.protocol==='file:')return;
+  const cached=driveCachedToken();
+  if(cached){DTOKEN=cached;driveSyncOnStart().then(()=>{const st=$('driveStatus');if(st)st.innerText='✅ Sincronizzato con Drive.';}).catch(()=>{});return;}
+  driveSilentAuth();
+}
+async function driveSyncOnStart(){
+  try{
+    const f=await driveFind();
+    if(!f){try{localStorage.setItem(SYNCED_ONCE_KEY,'1');}catch(e2){}return driveUpload();} // nessun backup: primo dispositivo, carico i miei dati
+    const r=await fetch('https://www.googleapis.com/drive/v3/files/'+f.id+'?alt=media',{headers:{Authorization:'Bearer '+DTOKEN}});
+    if(r.status===401){driveClearToken();throw new Error('auth');}
+    const remote=await r.json();
+    const rT=new Date((remote&&remote.updated)||0).getTime();
+    const lT=new Date(getContentUpdated()||0).getTime();
+    const firstSyncOnThisDevice=!localStorage.getItem(SYNCED_ONCE_KEY);
+    if(firstSyncOnThisDevice){
+      /* Primo collegamento di QUESTO dispositivo a Drive: un dispositivo appena
+         collegato non ha mai un timestamp di contenuto significativo, quindi non va
+         mai usato per decidere se sovrascrivere un backup che può contenere i dati
+         veri di un altro dispositivo. Se qui non c'è nulla di reale, adottiamo il
+         backup silenziosamente; altrimenti chiediamo con il banner di conferma. */
+      if(!hasRealLocalContent()){
+        applyAllData(remote);
+        try{localStorage.setItem(SYNCED_ONCE_KEY,'1');}catch(e2){}
+        location.reload();return;
+      }
+      const useRemote=await askConfirm('Questo dispositivo non si è mai sincronizzato con Drive. È già presente un backup del '+new Date(remote.updated||f.modifiedTime).toLocaleString('it-IT')+'. Conferma = usa i dati di Drive (quelli presenti solo su questo dispositivo andranno persi). Annulla = mantieni i dati di questo dispositivo e sovrascrivi Drive.');
+      try{localStorage.setItem(SYNCED_ONCE_KEY,'1');}catch(e2){}
+      if(useRemote){applyAllData(remote);location.reload();}else{driveUpload();}
+      return;
+    }
+    // Sincronizzazioni successive: confronto silenzioso tra timestamp di CONTENUTO.
+    if(rT>lT+2000){applyAllData(remote);location.reload();}
+    else if(lT>rT+2000){driveUpload();}
+  }catch(e){
+    if(String(e&&e.message)==='auth'&&!driveReauthed){driveReauthed=true;driveSilentAuth();}
+  }
+}
 async function dD(){const mode=$('dF').value;const ok=await askConfirm(mode==='a'?'HARD RESET: verranno cancellati TUTTI i dati. Continuare?':'Cancellare solo i dati registrati oggi?');
   if(!ok)return;
   if(mode==='a'){DB={players:[],matches:[],tournaments:[],trophies:[],settings:DB.settings};}
@@ -1395,6 +1604,7 @@ if(!varSupported()){$('mV').checked=false;$('mV').disabled=true;const lb=$('mV')
 $('pF').onclick=null; // usa file input standard (galleria); per scatto diretto si può estendere con openCam('pPv')
 $('ePF').onclick=null;
 rRoster();fillSelects();rHist();rTourn();uTS();renderTrophySuggest();
+loadDriveSettingsIntoForm();tryDriveAuto();
 </script>
 </body>
 </html>
