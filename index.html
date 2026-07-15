@@ -480,6 +480,39 @@ video{width:100%;max-height:48vh;border-radius:14px;background:#000;margin-botto
         <h2 style="margin-top:22px;">⚙️ Sistema, Backup e Installazione</h2>
         <div class="gd"><h3>Temi grafici</h3><p>Tre palette (Midnight Dark, Verde ITTF, Blu Olimpico), tutte pensate per un buon contrasto testo/sfondo, cambiabili in qualsiasi momento da Impostazioni → Sistema.</p></div>
         <div class="gd"><h3>Sincronizzazione Google Drive</h3><p>In Impostazioni → Sistema → "Google Drive", incolla un <b>CLIENT_ID</b> (creato gratuitamente su Google Cloud Console) e premi <b>"Connetti e sincronizza"</b>: da quel momento questo dispositivo e ogni altro collegato allo stesso CLIENT_ID e account Google condividono automaticamente roster, partite, tornei e trofei — l'app confronta da sola chi ha i dati più recenti ad ogni avvio. <b>"Disconnetti e desincronizza"</b> stacca solo questo dispositivo: il backup su Drive e gli altri dispositivi restano intatti. <b>"Elimina backup"</b> cancella il file da Drive per tutti i dispositivi collegati — chiede sempre conferma con un banner prima di procedere, proprio perché è un'azione che riguarda anche gli altri dispositivi. In ogni caso, <b>i dati restano sempre salvati anche in locale</b> su questo telefono, indipendentemente da Drive: eliminare il backup su Drive o disconnettersi non cancella nulla qui, e viceversa cancellare/reimpostare i dati locali non tocca il backup su Drive. La chiave API Gemini resta sempre e solo locale a ogni dispositivo, non viene mai sincronizzata.</p></div>
+        <div class="gd"><h3>Come creare il CLIENT_ID (Google Cloud) — passo per passo</h3>
+          <p><b>Fase A — Crea il progetto e abilita l'API</b></p>
+          <ul>
+            <li>Vai su <b>console.cloud.google.com</b></li>
+            <li>Crea un progetto (in alto a sinistra → "Nuovo progetto") o apri quello che usi già per l'app</li>
+            <li>Menu ☰ → "API e servizi" → "Libreria"</li>
+            <li>Cerca <b>"Google Drive API"</b> e clicca su "Abilita"</li>
+          </ul>
+          <p><b>Fase B — Schermata di consenso OAuth e utente di test</b></p>
+          <p>Finché il progetto è in modalità "Testing", Google blocca gli account non autorizzati esplicitamente: vanno aggiunti come utenti di test.</p>
+          <ul>
+            <li>Menu ☰ → "API e servizi" → "Schermata di consenso OAuth"</li>
+            <li>Scegli tipo <b>"Esterno"</b> e compila nome app + la tua email</li>
+            <li>Scorri fino a <b>"Utenti di test"</b> (Test users)</li>
+            <li>Clicca <b>"+ ADD USERS"</b> e digita esattamente la tua email Google (quella con cui userai l'app)</li>
+            <li><b>Fondamentale:</b> clicca su <b>Salva</b> per confermare, altrimenti l'accesso resta bloccato</li>
+          </ul>
+          <p><b>Fase C — Crea le credenziali (il CLIENT_ID vero e proprio)</b></p>
+          <ul>
+            <li>Menu ☰ → "API e servizi" → "Credenziali"</li>
+            <li>"Crea credenziali" → <b>"ID client OAuth"</b></li>
+            <li>Tipo applicazione: <b>"App web"</b></li>
+            <li>In "Origini JavaScript autorizzate" incolla l'URL base del sito dove hai pubblicato Pingy (es. <code>https://tuonome.github.io</code>) — <b>solo il dominio</b>, senza percorsi né slash finali</li>
+            <li>Salva: ottieni un <b>Client ID</b> (una stringa tipo <code>123456-abc.apps.googleusercontent.com</code>). Copialo</li>
+          </ul>
+          <p><b>Fase D — Collega Pingy</b></p>
+          <ul>
+            <li>Vai su Impostazioni → Sistema → "☁️ Google Drive"</li>
+            <li>Incolla il Client ID nel campo <b>CLIENT_ID</b></li>
+            <li>Premi <b>"🔗 Connetti e sincronizza"</b> e autorizza col tuo account Google (quello aggiunto come utente di test nella Fase B)</li>
+          </ul>
+          <p>L'OAuth di Google richiede che la pagina sia servita in https (GitHub Pages va benissimo): non funziona aprendo il file direttamente dal telefono/PC.</p>
+        </div>
         <div class="gd"><h3>Backup dei dati</h3><p>"Esporta Backup" scarica un file .json con tutto (roster, partite, tornei, trofei, impostazioni); "Importa Backup" lo ricarica su qualsiasi dispositivo. Utile prima di un Hard Reset o per passare l'archivio a un altro telefono, anche senza Google Drive.</p></div>
         <div class="gd"><h3>Cancellazione dati</h3><p>Puoi cancellare solo le partite registrate oggi, oppure fare un Hard Reset completo che azzera tutto (atleti, storico, tornei, trofei). Questa azione non è reversibile: fai un backup prima se hai dubbi.</p></div>
         <div class="gd"><h3>Installazione a schermo intero</h3><p>Toccando "Installa" nel banner (o dal menu del browser → "Aggiungi a schermata Home"), Pingy viene installata come una vera app: icona propria sulla Home, si apre <b>a schermo intero senza la barra degli indirizzi di Chrome</b>.</p></div>
