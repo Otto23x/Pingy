@@ -1136,26 +1136,32 @@ async function geminiCall(prompt,maxTokens){
   throw new Error(lastErr?lastErr.message:'Errore sconosciuto');
 }
 /* ===== INTERPRETAZIONE IA DELLA FRASE =====
-   La trascrizione la fa sempre il browser. La frase viene passata a Gemini, che capisce a chi
-   va il punto e che colpo è stato — anche con frasi libere e nomi trascritti male. Ritorna un
-   JSON che lancia il normale comando di assegnazione punto. Wake word e colpi sono in italiano. */
+   Divisione dei compiti, per togliere all'IA le decisioni che sbagliava:
+   - all'IA chiediamo solo COSA è successo: il tipo di colpo e QUALE giocatore è stato NOMINATO
+     nella frase (il nome che di solito segue "di"/"a"). Niente giudizi di attribuzione.
+   - CHI prende il punto lo decide il codice, in modo deterministico: per un colpo vincente il
+     punto va al giocatore nominato; per un ERRORE va all'AVVERSARIO del nominato (chi sbaglia
+     regala il punto). Prima questa regola era affidata all'IA, che la sbagliava (vedi i casi
+     "errore di Lillo" → punto a Lillo, che invece deve andare a Bibi). */
+/* uso ERROR_TYPES, gia definito sopra, per la stessa lista */
 async function aiInterpretVoice(cmd){
   const p1=pById(LM.p1),p2=pById(LM.p2);
-  if(!p1||!p2)return null; // senza i nomi veri l'IA non ha modo di capire a chi va il punto: niente chiamata, si passa subito al fallback locale
-  const prompt='Sei l\'arbitro vocale di una partita di ping pong. La parola di attivazione è "Arbitro". Giocatore lato SINISTRO (side 0): "'+p1.name+'". Giocatore lato DESTRO (side 1): "'+p2.name+'". Frase pronunciata in italiano (trascrizione automatica, i nomi possono essere storpiati: interpretali foneticamente, anche se il nome è troncato o sentito male): "'+cmd+'". Rispondi SOLO con JSON puro, senza markdown ne testo extra, in questo formato: {"side":0 oppure 1 oppure null,"shot":"ace"|"driV"|"rovV"|"spec"|"smash"|"errNF"|"errFo"|"luck_nastro"|"luck_bordo"|"var"|null}. Mappatura colpi (tutti in italiano): "servizio vincente"->"ace", "dritto vincente"->"driV", "rovescio vincente"->"rovV", "colpo speciale"->"spec", "schiacciata"->"smash", "errore non forzato"->"errNF", "errore forzato"->"errFo", punto di fortuna con nastro->"luck_nastro", con bordo->"luck_bordo", richiesta di aprire la moviola/VAR->"var", colpo non dichiarato->null. REGOLA PRINCIPALE: side = a chi VA IL PUNTO. Per un colpo VINCENTE (servizio vincente, dritto vincente, rovescio vincente, colpo speciale, schiacciata, punto fortuna), il punto va SEMPRE al giocatore nominato subito dopo "di" — è lui che ha fatto il colpo e segna. Esempio: frase "servizio vincente di '+p1.name+'" con side 0="'+p1.name+'" → risposta corretta {"side":0,"shot":"ace"}. Per un ERRORE, vale l\'eccezione opposta: il punto va all\'ALTRO giocatore, non a quello nominato (chi sbaglia regala il punto all\'avversario). Usa null per side SOLO se nella frase non compare né riconosci nessuno dei due nomi.';
+  if(!p1||!p2)return null;
+  const prompt='Sei l\'assistente di un arbitro di ping pong. Devi solo ESTRARRE informazioni da una frase, senza decidere a chi va il punto. Giocatore lato SINISTRO (side 0): "'+p1.name+'". Giocatore lato DESTRO (side 1): "'+p2.name+'". Frase in italiano (trascrizione automatica, i nomi possono essere storpiati o troncati: riconoscili foneticamente): "'+cmd+'". Rispondi SOLO con JSON puro, senza markdown, in questo formato: {"named":0 oppure 1 oppure null,"shot":"ace"|"driV"|"rovV"|"spec"|"smash"|"errNF"|"errFo"|"luck_nastro"|"luck_bordo"|"var"|null}. "named" = quale dei due giocatori è NOMINATO nella frase (0 = "'+p1.name+'", 1 = "'+p2.name+'"), tipicamente il nome dopo "di" o "a"; null solo se non riconosci nessuno dei due nomi. NON ragionare su chi vince il punto: indica solo il nome che senti. "shot" = il colpo, con questa mappatura: "servizio vincente"->"ace", "dritto vincente"->"driV", "rovescio vincente"->"rovV", "colpo speciale"->"spec", "schiacciata"->"smash", "errore non forzato"->"errNF", "errore forzato"->"errFo", nastro->"luck_nastro", bordo->"luck_bordo", moviola/VAR->"var", colpo non dichiarato->null.';
   let txt=await geminiCall(prompt,80);
   txt=txt.replace(/```json|```/g,'').trim();
   const obj=JSON.parse(txt);
-  if(!obj||!(obj.side===0||obj.side===1||obj.side===null))return null;
-  /* RETE DI SICUREZZA: se l'IA non è riuscita a determinare il lato ma uno dei due nomi
-     compare comunque, testuale, nella frase trascritta, ci fidiamo del riconoscimento diretto
-     del nome — molto più affidabile in questo caso specifico del giudizio complessivo
-     dell'IA, che a volte esita anche quando il nome è scritto chiaramente. */
-  if(obj.side===null){
-    const found=localNameMatch(cmd);
-    if(found!=null)obj.side=found;
-  }
-  return obj;
+  if(!obj)return null;
+  // Determino il giocatore NOMINATO: prima il riconoscimento diretto del nome nel testo (più
+  // affidabile), poi la risposta dell'IA come ripiego.
+  let named=localNameMatch(cmd);
+  if(named==null&&(obj.named===0||obj.named===1))named=obj.named;
+  const shot=obj.shot||null;
+  if(shot==='var')return{side:'var',shot:'var'};
+  if(named==null)return{side:null,shot};
+  // REGOLA DI ATTRIBUZIONE DETERMINISTICA (nel codice, non nell'IA):
+  const side=ERROR_TYPES.includes(shot)?(1-named):named; // errore → punto all'avversario del nominato
+  return{side,shot};
 }
 /* Cerca il nome di uno dei due giocatori in campo dentro il testo. Ritorna 0, 1, o null. */
 function localNameMatch(cmd){
@@ -1182,6 +1188,7 @@ function execVoiceCommand(side,shot,source){
 }
 let voiceLock=false,lockedTxt='',pendingVoiceTxt=null; // vedi handleVoice
 async function handleVoice(txt){
+  txt=(txt||'').toLowerCase(); // normalizzo SEMPRE qui: così anche i comandi ripresi dalla coda (che prima arrivavano con le maiuscole) passano la wake word e il confronto dei nomi
   /* FIX PUNTI DOPPI (2° livello, oltre al dedup per indice in launchRecog): se un comando
      è ancora in elaborazione (es. in attesa della risposta IA, che può richiedere qualche
      secondo) e arriva un nuovo risultato:
@@ -1222,16 +1229,20 @@ async function handleVoice(txt){
           if(res.shot){execVoiceCommand(res.side,res.shot,'ai');return;}
           askShotFor(res.side);return;
         }
-        setVbAction('🤖 Nessuno dei due nomi riconosciuto: ripeti citando il nome');return;
+        // side null ma colpo riconosciuto: manca solo il nome
+        setVbAction('🤖 Ho capito il colpo ma non il nome: ripeti dicendo chiaramente il nome del giocatore');return;
       }
     }catch(e){aiBusyOff();setVbAction('⚠️ '+(e.message||'IA non raggiungibile')+' — uso le parole chiave');}
   }
-  /* 2° livello (fallback): parser locale a parole chiave */
+  /* 2° livello (fallback): parser locale a parole chiave. Applica la STESSA regola di
+     attribuzione deterministica dell'IA: individuo il giocatore nominato, poi decido il lato
+     (vincente → al nominato, errore → all'avversario). */
   if(cmd.includes('var')||cmd.includes('moviola')){setVbAction('📼 Apro il V.A.R.');openVAR();return;}
-  const side=localNameMatch(cmd);
-  if(side===null){setVbAction('❌ Nome del giocatore non riconosciuto: ripeti citando il nome');return;}
+  const named=localNameMatch(cmd);
+  if(named===null){setVbAction('❌ Nome del giocatore non riconosciuto: ripeti citando il nome');return;}
   const parsed=parseShotKeyword(cmd);
-  if(!parsed){askShotFor(side);return;} // colpo non dichiarato: l'arbitro lo chiede prima di assegnare il punto
+  if(!parsed){askShotFor(named);return;} // colpo non dichiarato: l'arbitro lo chiede (a chi è nominato)
+  const side=ERROR_TYPES.includes(parsed.shot)?(1-named):named;
   execVoiceCommand(side,parsed.shot,'local');
   }finally{
     voiceLock=false;lockedTxt='';
