@@ -225,7 +225,7 @@ video{width:100%;max-height:48vh;border-radius:14px;background:#000;margin-botto
         <div><label class="fl">Giocatore 1</label><select id="m1"></select></div>
         <div><label class="fl">Giocatore 2</label><select id="m2"></select></div>
         <div><label class="fl">Formato</label><select id="mt"><option value="1">1 Set</option><option value="3" selected>Al meglio dei 3</option><option value="5">Al meglio dei 5</option></select></div>
-        <div><label class="fl">Categoria</label><select id="mc"><option value="a">Amichevole</option><option value="u">Ufficiale (ELO)</option></select></div>
+        <div><label class="fl">Categoria</label><select id="mc"><option value="a">Amichevole</option><option value="u">Ufficiale (ELO)</option><option value="t">Test (ELO, cancellabile)</option></select></div>
         <div><label class="fl">Punteggio Set</label><select id="mp"><option value="11">Set a 11</option><option value="21">Set a 21</option></select></div>
         <div><label class="fl">Cambio Battuta</label><select id="ms"><option value="2">Ogni 2 punti</option><option value="5">Ogni 5 punti</option></select></div>
       </div>
@@ -319,10 +319,10 @@ video{width:100%;max-height:48vh;border-radius:14px;background:#000;margin-botto
     <div class="cd"><h2>🎨 Tema e Audio</h2>
       <div class="gr3" style="align-items:end;">
         <div><label class="fl">Tema</label><select id="cT" onchange="sTheme()" style="height:47px;box-sizing:border-box;">
-          <option value="dark">Midnight Dark</option><option value="ittf">Verde ITTF</option><option value="olympic">Blu Olimpico</option>
+          <option value="dark">Scuro</option><option value="ittf">Verde</option><option value="olympic">Blu</option>
         </select></div>
-        <div><label class="fl">Audio</label><button id="bS" class="btn btn-g" style="margin-bottom:0;height:47px;box-sizing:border-box;" onclick="tS()">🔊 SFX: ON</button></div>
-        <div><label class="fl">Assistente</label><button id="bV" class="btn btn-g" style="margin-bottom:0;height:47px;box-sizing:border-box;" onclick="tVoice()">🎙️ Voce: ON</button></div>
+        <div><label class="fl">Audio</label><button id="bS" class="btn btn-g" style="margin-bottom:0;height:47px;box-sizing:border-box;" onclick="tS()">🔊 ON</button></div>
+        <div><label class="fl">Assistente</label><button id="bV" class="btn btn-g" style="margin-bottom:0;height:47px;box-sizing:border-box;" onclick="tVoice()">🎙️ ON</button></div>
       </div>
     </div>    <div class="cd"><h2>🤖 API Gemini</h2>
       <label class="fl">Chiave API (rimane solo su questo dispositivo)</label>
@@ -428,6 +428,8 @@ video{width:100%;max-height:48vh;border-radius:14px;background:#000;margin-botto
           <li><b>Mentalità</b> = rimonte×4 + Freddezza%×30 − errori totali×0.4 (recenti)</li>
         </ul></div>
         <div class="gd"><h3>6. Tornei</h3><p><b>Eliminazione diretta</b> (4 o 8 atleti): tabellone a turni, il vincitore avanza in automatico. <b>Girone all'italiana</b> (3-6 atleti): tutti contro tutti, classifica per punti (2 a vittoria). Un torneo può essere sospeso e ripreso in un secondo momento dal tasto ⏸️/▶️ sulla sua scheda.</p></div>
+        <div class="gd"><h3>Partite di Test (cancellabili)</h3><p>Nel setup partita puoi scegliere la categoria <b>Test</b>: la partita viene registrata normalmente e — finché esiste — vale per tutto come una Ufficiale (ELO compreso, statistiche, card). La differenza è che nello storico ha il tag <b>TEST</b> e un cestino 🗑️: eliminandola (con banner di conferma) vengono <b>annullati anche tutti i suoi effetti</b> — ELO, vittorie/sconfitte, colpi e ogni statistica tornano esattamente come prima della partita. Utile per provare l'app o l'arbitro vocale senza sporcare l'archivio. Le partite Amichevoli e Ufficiali non si possono cancellare.</p></div>
+        <div class="gd"><h3>Schermo sempre acceso nel tracker</h3><p>Durante una partita live lo schermo non si spegne da solo (Wake Lock): torna a spegnersi normalmente quando chiudi o salvi il match.</p></div>
         <div class="gd"><h3>7. Giocatori eliminati dal roster</h3><p>Se elimini un atleta dal Roster, le sue partite passate restano nello storico: l'avversario le vedrà semplicemente giocate contro "Sconosciuto", senza perdere le proprie statistiche.</p></div>
       </div>
     </div>
@@ -606,9 +608,9 @@ function migrateDB(){
   DB.players=DB.players||[];DB.matches=DB.matches||[];DB.tournaments=DB.tournaments||[];DB.trophies=DB.trophies||[];DB.settings=DB.settings||{theme:'dark',sound:true,gemini:''};
   if(!DB.settings.geminiModel)DB.settings.geminiModel='auto';
   if(typeof DB.settings.voiceOn!=='boolean')DB.settings.voiceOn=true;
-  DB.players.forEach(p=>{p.st=p.st||{};['ace','driV','rovV','spec','smash','errNF','errFo','mps','luck','wins','losses','ptsWon','ptsPlayed','timeMs','timedPts','clutchW','clutchT','cmb','matches'].forEach(k=>{if(typeof p.st[k]!=='number')p.st[k]=0;});
+  DB.players.forEach(p=>{p.st=p.st||{};['ace','driV','rovV','spec','smash','errNF','errFo','mps','sps','luck','wins','losses','ptsWon','ptsPlayed','timeMs','timedPts','clutchW','clutchT','cmb','matches'].forEach(k=>{if(typeof p.st[k]!=='number')p.st[k]=0;});
     if(!p.cardSt){p.cardSt={ace:p.st.ace,driV:p.st.driV,rovV:p.st.rovV,spec:p.st.spec,smash:p.st.smash,errNF:p.st.errNF,errFo:p.st.errFo,mps:p.st.mps,luck:p.st.luck,wins:p.st.wins,losses:p.st.losses,clutchW:p.st.clutchW,clutchT:p.st.clutchT,cmb:p.st.cmb};} // prima volta: parte dallo storico esistente, poi decade partita dopo partita
-    ['ace','driV','rovV','spec','smash','errNF','errFo','mps','luck','wins','losses','clutchW','clutchT','cmb'].forEach(k=>{if(typeof p.cardSt[k]!=='number')p.cardSt[k]=0;});
+    ['ace','driV','rovV','spec','smash','errNF','errFo','mps','sps','luck','wins','losses','clutchW','clutchT','cmb'].forEach(k=>{if(typeof p.cardSt[k]!=='number')p.cardSt[k]=0;});
     delete p.recentResults; // sostituito dal decadimento su cardSt
   });
 }
@@ -648,8 +650,8 @@ function upI(inp,prevId){const f=inp.files[0];if(!f)return;const rd=new FileRead
 function ageOf(dob){if(!dob)return '—';const b=new Date(dob),n=new Date();let a=n.getFullYear()-b.getFullYear();const m=n.getMonth()-b.getMonth();if(m<0||(m===0&&n.getDate()<b.getDate()))a--;return a;}
 function addP(){const name=$('pN').value.trim();if(!name){toast('Inserisci un nome','⚠️');return;}
   const p={id:uid(),name,gender:$('pG').value,dob:$('pD').value,hand:$('pH').value,photo:$('pPv').dataset.b64||'',elo:1200,eloHist:[{d:Date.now(),e:1200}],trophies:[],
-    st:{ace:0,driV:0,rovV:0,spec:0,smash:0,errNF:0,errFo:0,mps:0,luck:0,wins:0,losses:0,ptsWon:0,ptsPlayed:0,timeMs:0,timedPts:0,clutchW:0,clutchT:0,cmb:0,matches:0},
-    cardSt:{ace:0,driV:0,rovV:0,spec:0,smash:0,errNF:0,errFo:0,mps:0,luck:0,wins:0,losses:0,clutchW:0,clutchT:0,cmb:0}};
+    st:{ace:0,driV:0,rovV:0,spec:0,smash:0,errNF:0,errFo:0,mps:0,sps:0,luck:0,wins:0,losses:0,ptsWon:0,ptsPlayed:0,timeMs:0,timedPts:0,clutchW:0,clutchT:0,cmb:0,matches:0},
+    cardSt:{ace:0,driV:0,rovV:0,spec:0,smash:0,errNF:0,errFo:0,mps:0,sps:0,luck:0,wins:0,losses:0,clutchW:0,clutchT:0,cmb:0}};
   DB.players.push(p);save();$('pN').value='';$('pPv').style.backgroundImage='';$('pPv').innerText='📷';delete $('pPv').dataset.b64;
   rRoster();toast('Atleta aggiunto al roster');}
 function rRoster(){const l=$('pL');if(!DB.players.length){l.innerHTML='<div class="empty">Nessun atleta ancora. Aggiungine uno qui sopra ⤴️</div>';return;}
@@ -762,16 +764,27 @@ function iLM(resumeId){
     LM=m;LM.status='active';rebuildScoreboard();openLM();return;}
   if(!p1id||!p2id||p1id===p2id){toast('Seleziona due atleti diversi','⚠️');return;}
   decayCardSt(pById(p1id));decayCardSt(pById(p2id)); // il decadimento scatta una volta per ogni NUOVA partita giocata, non al resume di una sospesa
+  /* Snapshot delle statistiche a inizio partita (dopo il decadimento): serve per calcolare a
+     fine match l'impatto esatto della partita, così una partita di Test può essere annullata
+     restituendo ai giocatori i valori che avevano prima. */
+  const snap={};[['a',p1id],['b',p2id]].forEach(([k,pid])=>{const p=pById(pid);if(p)snap[k]={id:pid,elo:p.elo,st:JSON.parse(JSON.stringify(p.st)),cardSt:JSON.parse(JSON.stringify(p.cardSt||{}))};});
   LM={id:uid(),p1:p1id,p2:p2id,mode,pts,srvEvery,cat,date:Date.now(),status:'active',
     sets:[[0,0]],setsWon:[0,0],server:firstSrv===''?(Math.random()<0.5?0:1):+firstSrv,startServer:firstSrv,
     varOn,shotLog:[],history:[],elapsedMs:0,runStart:Date.now(),paused:false,tourId:tourMatch,
-    maxDeficit:[0,0],comebackFlag:[false,false],pendingWinner:null};
+    maxDeficit:[0,0],comebackFlag:[false,false],pendingWinner:null,snap};
   openLM();
 }
-function openLM(){$('lt').style.display='flex';rebuildScoreboard();startClock();if(LM.varOn)startVARBuffer();startVoice();speak(`Inizio partita, al servizio ${pName(LM.server?LM.p2:LM.p1)}`);}
+/* WAKE LOCK: durante il live tracker lo schermo resta ACCESO (niente spegnimento automatico
+   a metà partita). Il sistema rilascia il lock quando l'app va in background: alla riapertura
+   viene riacquisito automaticamente finché il match è attivo. */
+let wakeLock=null;
+async function acquireWakeLock(){try{if('wakeLock' in navigator){wakeLock=await navigator.wakeLock.request('screen');}}catch(e){}}
+function releaseWakeLock(){try{if(wakeLock){wakeLock.release();wakeLock=null;}}catch(e){}}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&LM&&LM.status==='active')acquireWakeLock();});
+function openLM(){$('lt').style.display='flex';rebuildScoreboard();startClock();if(LM.varOn)startVARBuffer();startVoice();acquireWakeLock();speak(`Inizio partita, al servizio ${pName(LM.server?LM.p2:LM.p1)}`);}
 function closeLM(){$('lt').style.display='none';} // riduce a icona (match resta attivo in background)
 function rebuildScoreboard(){const p1=pById(LM.p1),p2=pById(LM.p2);
-  $('ltCat').innerText=(LM.cat==='u'?'Ufficiale':'Amichevole')+' · '+(LM.mode+'° Set / al meglio dei '+LM.mode);
+  $('ltCat').innerText=(LM.cat==='u'?'Ufficiale':LM.cat==='t'?'Test':'Amichevole')+' · '+(LM.mode+'° Set / al meglio dei '+LM.mode);
   $('sc1nm').innerText=p1?p1.name:'Sconosciuto';$('sc2nm').innerText=p2?p2.name:'Sconosciuto';
   $('sc1av').style.backgroundImage=p1&&p1.photo?`url(${p1.photo})`:'';$('sc2av').style.backgroundImage=p2&&p2.photo?`url(${p2.photo})`:'';
   renderShotBar();renderScore();}
@@ -795,10 +808,11 @@ function addPoint(side){if(!LM||LM.paused||LM.pendingWinner!=null)return;
   const isClutch=s[0]>=target-3&&s[1]>=target-3; // punto giocato "in the clutch": 8-8 o oltre (su un set a 11), scalato per il set a 21
   const needToWin=Math.ceil(LM.mode/2);
   /* Match Point Salvato: se PRIMA di questo punto l'avversario era a un punto dal vincere l'INTERA
-     partita (non solo il set), e invece il punto lo vinci tu, hai salvato un match point. */
-  const matchPointFor=[0,1].map(sd=>{const proj=s.slice();proj[sd]++;
-    const wouldWinSet=proj[sd]>=target&&(proj[sd]-proj[1-sd])>=2;
-    return wouldWinSet&&(LM.setsWon[sd]+1)>=needToWin;});
+     partita (non solo il set), e invece il punto lo vinci tu, hai salvato un match point.
+     Set Point Salvato: idem ma l'avversario avrebbe vinto solo il SET (non la partita). */
+  const setPointFor=[0,1].map(sd=>{const proj=s.slice();proj[sd]++;
+    return proj[sd]>=target&&(proj[sd]-proj[1-sd])>=2;});
+  const matchPointFor=[0,1].map(sd=>setPointFor[sd]&&(LM.setsWon[sd]+1)>=needToWin);
   s[side]++;
   const t=elapsedSetSeconds();
   const entry={side,type:pendingShot||'punto',ts:Date.now(),setIdx:LM.sets.length-1,timeS:t};
@@ -808,6 +822,7 @@ function addPoint(side){if(!LM||LM.paused||LM.pendingWinner!=null)return;
   if(isClutch){if(p1){p1.st.clutchT++;if(p1.cardSt)p1.cardSt.clutchT++;}if(p2){p2.st.clutchT++;if(p2.cardSt)p2.cardSt.clutchT++;}
     const winP=side===0?p1:p2;if(winP){winP.st.clutchW++;if(winP.cardSt)winP.cardSt.clutchW++;}}
   if(matchPointFor[1-side]){const saver=side===0?p1:p2;if(saver){saver.st.mps++;if(saver.cardSt)saver.cardSt.mps++;}}
+  else if(setPointFor[1-side]){const saver=side===0?p1:p2;if(saver){saver.st.sps++;if(saver.cardSt)saver.cardSt.sps++;}} // set point (non match point) salvato
   LM.maxDeficit[0]=Math.max(LM.maxDeficit[0],s[1]-s[0]);
   LM.maxDeficit[1]=Math.max(LM.maxDeficit[1],s[0]-s[1]);
   pendingShot=null;clearShotHighlights();
@@ -926,34 +941,72 @@ function pauseMatch(){if(!LM)return;LM.paused=!LM.paused;$('pauseOv').classList.
 
 /* ================= FINE PARTITA ================= */
 async function finishMatch(winnerIdx){
-  clearInterval(clockInt);stopVoice();stopVARBuffer();
+  clearInterval(clockInt);stopVoice();stopVARBuffer();releaseWakeLock();
   LM.status='completed';LM.winnerIdx=winnerIdx;LM.durationMs=Date.now()-LM.runStart;
   const p1=pById(LM.p1),p2=pById(LM.p2);
   if(p1)p1.st.matches++; if(p2)p2.st.matches++;
   if(p1)p1.st.ptsPlayed+=LM.shotLog.length; if(p2)p2.st.ptsPlayed+=LM.shotLog.length;
-  if(LM.cat==='u'&&p1&&p2){eloUpdate(p1,p2,winnerIdx);}
+  if((LM.cat==='u'||LM.cat==='t')&&p1&&p2){eloUpdate(p1,p2,winnerIdx);} // il Test conta per l'ELO finche non viene cancellato
   const winP=winnerIdx===0?p1:p2, loseP=winnerIdx===0?p2:p1;
   const set0=LM.sets[0];const set0Winner=set0&&set0[0]!==set0[1]?(set0[0]>set0[1]?0:1):winnerIdx;
   const isComeback=(LM.comebackFlag&&LM.comebackFlag[winnerIdx])||(LM.sets.length>1&&set0Winner!==winnerIdx);
   if(winP){winP.st.wins++;if(isComeback)winP.st.cmb++;if(winP.cardSt){winP.cardSt.wins++;if(isComeback)winP.cardSt.cmb++;}checkTrophies(winP);}
   if(loseP){loseP.st.losses++;if(loseP.cardSt)loseP.cardSt.losses++;}
+  /* Impatto della partita = differenza tra le statistiche di adesso e lo snapshot di inizio
+     match: serve per poter annullare completamente una partita di Test. */
+  computeImpact();
   DB.matches.push(cleanMatch(LM));save();
   speak(`Partita conclusa. Vince ${pName(winnerIdx===0?LM.p1:LM.p2)}.`);
   if(LM.tourId)advanceTournament(LM.tourId,LM.id,winnerIdx===0?LM.p1:LM.p2);
   $('lt').style.display='none';LM=null;rHist();fillSelects();rRoster();
 }
-function cleanMatch(m){return {id:m.id,p1:m.p1,p2:m.p2,mode:m.mode,pts:m.pts,cat:m.cat,date:m.date,status:m.status,sets:m.sets,setsWon:m.setsWon,winnerIdx:m.winnerIdx,durationMs:m.durationMs,shotLog:m.shotLog,incomplete:!!m.incomplete,tourId:m.tourId||null};}
+function cleanMatch(m){return {id:m.id,p1:m.p1,p2:m.p2,mode:m.mode,pts:m.pts,cat:m.cat,date:m.date,status:m.status,sets:m.sets,setsWon:m.setsWon,winnerIdx:m.winnerIdx,durationMs:m.durationMs,shotLog:m.shotLog,incomplete:!!m.incomplete,tourId:m.tourId||null,impact:m.impact||null};}
+/* Calcola l'impatto della partita in corso (differenze elo/st/cardSt rispetto allo snapshot). */
+function computeImpact(){
+  if(!LM||!LM.snap)return;
+  const imp={};
+  [['a',LM.p1],['b',LM.p2]].forEach(([k,pid])=>{
+    const p=pById(pid);const s=LM.snap[k];if(!p||!s||s.id!==pid)return;
+    const stD={},cardD={};
+    Object.keys(p.st).forEach(key=>{const d=(p.st[key]||0)-(s.st[key]||0);if(d)stD[key]=d;});
+    Object.keys(p.cardSt||{}).forEach(key=>{const d=(p.cardSt[key]||0)-(s.cardSt[key]||0);if(d)cardD[key]=d;});
+    imp[k]={id:pid,eloD:p.elo-s.elo,stD,cardD};
+  });
+  LM.impact=imp;
+}
+/* Elimina una partita di TEST annullandone completamente l'impatto: ELO, statistiche a vita e
+   statistiche card tornano esattamente com'erano prima della partita. Solo le partite di Test
+   sono cancellabili; chiede sempre conferma con il banner. */
+async function delTestMatch(id){
+  const m=DB.matches.find(x=>x.id===id);
+  if(!m||m.cat!=='t'){toast('Solo le partite di Test si possono eliminare','⚠️');return;}
+  const ok=await askConfirm('Eliminare questa partita di TEST? Verranno annullati anche tutti i suoi effetti: ELO, vittorie/sconfitte, colpi e ogni statistica torneranno come prima della partita.');
+  if(!ok)return;
+  if(m.impact){
+    [['a'],['b']].forEach(([k])=>{
+      const rec=m.impact[k];if(!rec)return;
+      const p=pById(rec.id);if(!p)return;
+      if(rec.eloD){p.elo-=rec.eloD;p.eloHist.push({d:Date.now(),e:p.elo});}
+      Object.keys(rec.stD||{}).forEach(key=>{p.st[key]=Math.max(0,(p.st[key]||0)-rec.stD[key]);});
+      Object.keys(rec.cardD||{}).forEach(key=>{if(p.cardSt)p.cardSt[key]=Math.max(0,(p.cardSt[key]||0)-rec.cardD[key]);});
+    });
+  }
+  DB.matches=DB.matches.filter(x=>x.id!==id);
+  save();rHist();rRoster();fillSelects();
+  toast('Partita di test eliminata: statistiche ripristinate','🗑️');
+}
 function eloUpdate(p1,p2,winnerIdx){const K=32;const ea=1/(1+Math.pow(10,(p2.elo-p1.elo)/400));const eb=1-ea;
   const sa=winnerIdx===0?1:0,sb=1-sa;p1.elo=Math.round(p1.elo+K*(sa-ea));p2.elo=Math.round(p2.elo+K*(sb-eb));
   p1.eloHist.push({d:Date.now(),e:p1.elo});p2.eloHist.push({d:Date.now(),e:p2.elo});}
 async function endMatch(){if(!LM)return;
   const finished=LM.status==='completed';
   const ok=await askConfirm('Vuoi salvare la partita come Incompleta nello storico? (Non modifica ELO né tornei)');
-  if(!ok){$('lt').style.display='none';clearInterval(clockInt);stopVoice();stopVARBuffer();LM=null;return;}
-  clearInterval(clockInt);stopVoice();stopVARBuffer();
+  if(!ok){$('lt').style.display='none';clearInterval(clockInt);stopVoice();stopVARBuffer();releaseWakeLock();LM=null;return;}
+  clearInterval(clockInt);stopVoice();stopVARBuffer();releaseWakeLock();
   LM.status='incomplete';LM.incomplete=true;LM.durationMs=Date.now()-LM.runStart;
   const p1=pById(LM.p1),p2=pById(LM.p2);
   if(p1)p1.st.matches++; if(p2)p2.st.matches++;
+  computeImpact(); // anche una partita incompleta ha applicato statistiche colpi live: l'impatto serve per l'eventuale annullamento se e' di Test
   DB.matches.push(cleanMatch(LM));save();
   toast('Partita salvata come incompleta (INC)','⚠️');
   $('lt').style.display='none';LM=null;rHist();fillSelects();rRoster();
@@ -963,7 +1016,9 @@ async function endMatch(){if(!LM)return;
 function rHist(){const l=$('hM');const list=DB.matches.slice().sort((a,b)=>b.date-a.date).slice(0,15);
   if(!list.length){l.innerHTML='<div class="empty">Nessuna partita registrata.</div>';return;}
   l.innerHTML=list.map(m=>{const p1=pName(m.p1),p2=pName(m.p2);const d=new Date(m.date).toLocaleDateString('it-IT');
-    return `<div class="rd"><div><b>${p1}</b> vs <b>${p2}</b> ${m.incomplete?'<span class="inc-tag">INC</span>':''}<div class="p-sub">${d} · ${m.setsWon?m.setsWon.join('-'):'-'} · ${m.cat==='u'?'Ufficiale':'Amichevole'}</div></div></div>`;
+    const catLbl=m.cat==='u'?'Ufficiale':m.cat==='t'?'<b style="color:var(--a);">TEST</b>':'Amichevole';
+    const delBtn=m.cat==='t'?`<button class="ic-btn" style="font-size:1.1rem;" onclick="delTestMatch('${m.id}')" title="Elimina partita di test">🗑️</button>`:'';
+    return `<div class="rd"><div><b>${p1}</b> vs <b>${p2}</b> ${m.incomplete?'<span class="inc-tag">INC</span>':''}<div class="p-sub">${d} · ${m.setsWon?m.setsWon.join('-'):'-'} · ${catLbl}</div></div>${delBtn}</div>`;
   }).join('');}
 
 /* ================= VOCE: SINTESI ================= */
@@ -1016,6 +1071,16 @@ function setVbHeard(t){const el=$('vbHeardEl');if(el)el.innerText=t;}
 function setVbAction(t){const el=$('vbActionEl');if(el)el.innerText=t;}
 let lastFinalIdx=-1; // ultimo indice di risultato FINALE già elaborato in QUESTA sessione di ascolto
 let finalDebounce=null;
+/* BUFFER RICOMPOSITIVO: il motore a volte spezza una frase in più risultati "finali" separati
+   (es. "servizio vincente di bibi" + "arbitro" come due frammenti, specie se la parola di
+   attivazione viene detta in fondo o dopo una micro-pausa). Valutare ogni frammento da solo
+   fallisce sempre: qui i frammenti recenti (entro 4 secondi) vengono CONCATENATI e valutati
+   come un'unica frase. Il buffer si svuota quando un comando va a buon fine, così il testo già
+   consumato non inquina il comando successivo. */
+let voiceBuf=[];
+function voiceBufAdd(txt){const now=Date.now();voiceBuf.push({t:now,txt});voiceBuf=voiceBuf.filter(f=>now-f.t<4000);}
+function voiceBufText(){const now=Date.now();return voiceBuf.filter(f=>now-f.t<4000).map(f=>f.txt).join(' ').trim();}
+function voiceBufClear(){voiceBuf=[];}
 function launchRecog(SR){
   try{recog=new SR();recog.lang='it-IT';lastFinalIdx=-1;clearTimeout(finalDebounce);finalDebounce=null;
     /* MODALITÀ CONTINUA: il riconoscimento non si spegne durante le pause del gioco.
@@ -1024,25 +1089,20 @@ function launchRecog(SR){
     recog.continuous=true;recog.interimResults=true;
     recog.onresult=e=>{
       let interim='';
-      /* FIX PUNTI DOPPI/TRIPLI: in modalità continua il motore (specie su Chrome Android) non
-         emette sempre UN SOLO risultato "definitivo" per frase pronunciata: a volte la stessa
-         frase arriva spezzata in più affinamenti successivi, ciascuno segnato come "finale" a
-         pochi istanti di distanza ("rovescio vincente" poi "rovescio vincente di" poi "rovescio
-         vincente di lillo"). Trattarli come comandi separati — come succedeva prima — significa
-         interpretarli e assegnare punti più volte per un'unica frase. Rimedio: non elaboro MAI
-         un risultato definitivo subito; aspetto un breve istante di silenzio (nessun altro
-         affinamento nel frattempo) prima di agire, usando solo l'ultima versione, più completa,
-         del testo. Il controllo per indice sotto resta come ulteriore rete di sicurezza contro
-         un affinamento già elaborato che il motore reinvia identico. */
+      /* FIX PUNTI DOPPI/TRIPLI: non elaboro MAI un risultato definitivo subito; aspetto un
+         breve istante di silenzio (nessun altro affinamento in arrivo) e poi valuto il testo
+         RICOMPOSTO dal buffer. Il controllo per indice resta come rete di sicurezza contro
+         risultati reinviati identici dal motore. */
       for(let i=e.resultIndex;i<e.results.length;i++){
         const res=e.results[i];
         if(res.isFinal){
           if(i<=lastFinalIdx)continue; // già elaborato: lo ignoro
           lastFinalIdx=i;
-          const clean=res[0].transcript.trim();
-          setVbHeard('"'+clean+'"');
+          voiceBufAdd(res[0].transcript.trim());
+          const combined=voiceBufText();
+          setVbHeard('"'+combined+'"');
           clearTimeout(finalDebounce);
-          finalDebounce=setTimeout(()=>{handleVoice(clean.toLowerCase());},550);
+          finalDebounce=setTimeout(()=>{handleVoice(combined.toLowerCase());},450);
         }else{interim+=res[0].transcript;}
       }
       if(interim)setVbHeard('… '+interim.trim()); // trascrizione live mentre parli: se la vedi muoversi, il microfono funziona
@@ -1155,7 +1215,8 @@ async function aiInterpretVoice(cmd){
   // Determino il giocatore NOMINATO: prima il riconoscimento diretto del nome nel testo (più
   // affidabile), poi la risposta dell'IA come ripiego.
   let named=localNameMatch(cmd);
-  if(named==null&&(obj.named===0||obj.named===1))named=obj.named;
+  const aiNamed=(obj.named===0||obj.named===1)?obj.named:(obj.named==='0'?0:obj.named==='1'?1:null);
+  if(named==null&&aiNamed!=null)named=aiNamed;
   const shot=obj.shot||null;
   if(shot==='var')return{side:'var',shot:'var'};
   if(named==null)return{side:null,shot};
@@ -1163,10 +1224,20 @@ async function aiInterpretVoice(cmd){
   const side=ERROR_TYPES.includes(shot)?(1-named):named; // errore → punto all'avversario del nominato
   return{side,shot};
 }
-/* Cerca il nome di uno dei due giocatori in campo dentro il testo. Ritorna 0, 1, o null. */
+/* Cerca il nome di uno dei due giocatori in campo dentro il testo. Ritorna 0, 1, o null.
+   Robusto contro: accenti ("bibì"), spazi accidentali nel nome salvato, nomi troncati dalla
+   trascrizione (confronto per prefisso di almeno 3 lettere, in entrambe le direzioni). */
+function normTxt(s){return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();}
 function localNameMatch(cmd){
+  const c=normTxt(cmd);const words=c.split(/\s+/);
   let side=null;
-  [[0,LM.p1],[1,LM.p2]].forEach(([s,pid])=>{const p=pById(pid);if(p&&cmd.includes(p.name.toLowerCase()))side=s;});
+  [[0,LM.p1],[1,LM.p2]].forEach(([s,pid])=>{
+    const p=pById(pid);if(!p)return;
+    const n=normTxt(p.name);if(!n)return;
+    if(c.includes(n)){side=s;return;}
+    // confronto per prefisso: "loren" trascritto per "Lorenzo", o nome salvato più corto della parola sentita
+    if(n.length>=3&&words.some(w=>w.length>=3&&(w.startsWith(n.slice(0,Math.min(4,n.length)))||n.startsWith(w.slice(0,Math.min(4,w.length))))&&Math.abs(w.length-n.length)<=3))side=s;
+  });
   return side;
 }
 function askShotFor(side){
@@ -1213,10 +1284,25 @@ async function handleVoice(txt){
     pendingShot=shot;addPoint(side);
     return;
   }
-  if(!WAKE_RX.test(txt)){setVbAction('(ignorato: manca la parola "Arbitro")');return;}
+  if(!WAKE_RX.test(txt)){setVbAction('(in attesa della parola "Arbitro"…)');return;}
   const cmd=txt.replace(WAKE_RX,'').trim();
   $('micTxt').innerText='🎙️ Sentito: "'+cmd+'"';
-  /* 1° livello: interpretazione IA (se chiave Gemini verificata e rete disponibile) */
+  /* ═══ 1° LIVELLO: PARSER LOCALE — istantaneo e deterministico ═══
+     Se nella frase trovo SIA il nome di un giocatore SIA un colpo standard (o il V.A.R.),
+     eseguo SUBITO, senza interrogare l'IA: zero latenza di rete, zero possibilità che il
+     modello "ragioni male". L'IA entra in gioco solo per le frasi libere che il parser non
+     riesce a risolvere da solo. L'attribuzione è sempre la stessa regola deterministica:
+     colpo vincente → punto al nominato; errore → punto all'avversario del nominato. */
+  if(cmd.includes('var')||cmd.includes('v.a.r')||cmd.includes('moviola')){voiceBufClear();setVbAction('📼 Apro il V.A.R.');openVAR();return;}
+  const named=localNameMatch(cmd);
+  const parsed=parseShotKeyword(cmd);
+  if(named!==null&&parsed){
+    voiceBufClear();
+    const side=ERROR_TYPES.includes(parsed.shot)?(1-named):named;
+    execVoiceCommand(side,parsed.shot,'local');
+    return;
+  }
+  /* ═══ 2° LIVELLO: IA (solo per frasi libere non risolte dal parser) ═══ */
   if(DB.settings.gemini&&DB.settings.geminiOk&&navigator.onLine){
     setVbAction('🤖 Interpretazione IA in corso…');
     aiBusyOn('🤖 L\'IA sta interpretando il comando…');
@@ -1224,26 +1310,20 @@ async function handleVoice(txt){
       const res=await aiInterpretVoice(cmd);
       aiBusyOff();
       if(res){
-        if(res.shot==='var'){setVbAction('📼 Apro il V.A.R.');openVAR();return;}
+        if(res.shot==='var'){voiceBufClear();setVbAction('📼 Apro il V.A.R.');openVAR();return;}
         if(res.side===0||res.side===1){
+          voiceBufClear();
           if(res.shot){execVoiceCommand(res.side,res.shot,'ai');return;}
           askShotFor(res.side);return;
         }
-        // side null ma colpo riconosciuto: manca solo il nome
         setVbAction('🤖 Ho capito il colpo ma non il nome: ripeti dicendo chiaramente il nome del giocatore');return;
       }
-    }catch(e){aiBusyOff();setVbAction('⚠️ '+(e.message||'IA non raggiungibile')+' — uso le parole chiave');}
+    }catch(e){aiBusyOff();setVbAction('⚠️ '+(e.message||'IA non raggiungibile'));}
   }
-  /* 2° livello (fallback): parser locale a parole chiave. Applica la STESSA regola di
-     attribuzione deterministica dell'IA: individuo il giocatore nominato, poi decido il lato
-     (vincente → al nominato, errore → all'avversario). */
-  if(cmd.includes('var')||cmd.includes('moviola')){setVbAction('📼 Apro il V.A.R.');openVAR();return;}
-  const named=localNameMatch(cmd);
-  if(named===null){setVbAction('❌ Nome del giocatore non riconosciuto: ripeti citando il nome');return;}
-  const parsed=parseShotKeyword(cmd);
-  if(!parsed){askShotFor(named);return;} // colpo non dichiarato: l'arbitro lo chiede (a chi è nominato)
-  const side=ERROR_TYPES.includes(parsed.shot)?(1-named):named;
-  execVoiceCommand(side,parsed.shot,'local');
+  /* ═══ 3° LIVELLO: informazioni parziali dal solo parser locale ═══ */
+  if(named!==null&&!parsed){voiceBufClear();askShotFor(named);return;} // nome sì, colpo no: l'arbitro chiede il colpo
+  if(named===null&&parsed){setVbAction('❓ Colpo capito ('+parsed.label+') ma manca il nome: ripeti citando il nome');return;}
+  setVbAction('❌ Comando non riconosciuto: ripeti con nome e colpo');
   }finally{
     voiceLock=false;lockedTxt='';
     if(pendingVoiceTxt!=null){const next=pendingVoiceTxt;pendingVoiceTxt=null;handleVoice(next);}
@@ -1380,6 +1460,7 @@ function rSt(){const players=sortedByActivity();const ms=filterMatches();
       (m.shotLog||[]).forEach(s=>{const won=(s.side===0&&isP1)||(s.side===1&&!isP1);if(won){timeSum+=s.timeS||0;timeN++;}});});
       return timeN?(timeSum/timeN).toFixed(1)+'s':'—';}},
     {label:'🛡️ MP Salvati',calc:p=>p.st.mps},
+    {label:'🧱 SP Salvati',calc:p=>p.st.sps},
     {label:'🍀 Fortuna',calc:p=>p.st.luck},
   ];
   const head='<tr><th>Metrica</th>'+players.map(p=>`<th>${p.name}</th>`).join('')+'</tr>';
@@ -1403,12 +1484,12 @@ function rSh(){const players=sortedByActivity();
     $('tS3').innerHTML='<thead>'+head+'</thead><tbody>'+body+'</tbody>';
   }
   const ctx=$('cR');if(chR)chR.destroy();
+  /* Grafico semplificato: 2 sole barre orizzontali per atleta — colpi vincenti totali (verde)
+     contro errori totali (rosso). Prima c'erano 4 serie affiancate, illeggibili sul telefono. */
   chR=new Chart(ctx,{type:'bar',data:{labels:players.map(p=>p.name),datasets:[
-    {label:'Vincenti Dritto',data:players.map(p=>p.st.driV),backgroundColor:'#ff6b35'},
-    {label:'Vincenti Rovescio',data:players.map(p=>p.st.rovV),backgroundColor:'#17c987'},
-    {label:'Errori NF',data:players.map(p=>p.st.errNF),backgroundColor:'#ef4444'},
-    {label:'Errori FO',data:players.map(p=>p.st.errFo),backgroundColor:'#fa8231'}]},
-    options:{plugins:{legend:{labels:{color:'#eef3f7'}}},scales:{x:{ticks:{color:'#9fb0c0'}},y:{ticks:{color:'#9fb0c0'}}}}});}
+    {label:'✅ Colpi vincenti (tutti)',data:players.map(p=>p.st.ace+p.st.driV+p.st.rovV+p.st.spec+p.st.smash),backgroundColor:'#17c987'},
+    {label:'❌ Errori (tutti)',data:players.map(p=>p.st.errNF+p.st.errFo),backgroundColor:'#ef4444'}]},
+    options:{indexAxis:'y',plugins:{legend:{labels:{color:'#eef3f7'}}},scales:{x:{ticks:{color:'#9fb0c0',precision:0}},y:{ticks:{color:'#eef3f7',font:{weight:'bold'}}}}}});}
 function fillVS(){const opts=DB.players.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');$('v1').innerHTML=opts;$('v2').innerHTML=opts;
   if(DB.players.length>1)$('v2').selectedIndex=1;rV();}
 function rV(){const id1=$('v1').value,id2=$('v2').value;if(!id1||!id2||id1===id2){$('vR').innerHTML='<div class="empty">Seleziona due atleti diversi.</div>';return;}
@@ -1425,8 +1506,18 @@ function rV(){const id1=$('v1').value,id2=$('v2').value;if(!id1||!id2||id1===id2
 async function aG(){if(!DB.settings.gemini){toast('Registra prima la tua API Key Gemini in Impostazioni','⚠️');return;}
   if(!DB.players.length){toast('Serve almeno un atleta con dati','⚠️');return;}
   $('aR').style.display='block';$('aR').innerText='Analisi in corso...';
-  const dataset=DB.players.map(p=>`${p.name}: ELO ${p.elo}, V-P ${p.st.wins}-${p.st.losses}, Servizi vincenti ${p.st.ace}, Dritto.V ${p.st.driV}, Rovescio.V ${p.st.rovV}, Errori ${p.st.errNF}, MP salvati ${p.st.mps}, Fortuna ${p.st.luck}`).join(String.fromCharCode(10));
-  const prompt='Sei un coach di ping pong. In italiano, '+$('aP').value+'. Ecco i dati:'+String.fromCharCode(10)+dataset+String.fromCharCode(10)+'Scrivi un report di massimo 180 parole.';
+  const dataset=DB.players.map(p=>`${p.name}: ELO ${p.elo}, V-P ${p.st.wins}-${p.st.losses}, Servizi vincenti ${p.st.ace}, Dritto.V ${p.st.driV}, Rovescio.V ${p.st.rovV}, Errori ${p.st.errNF}, MP salvati ${p.st.mps}, SP salvati ${p.st.sps}, Fortuna ${p.st.luck}`).join(String.fromCharCode(10));
+  /* Registro punto-a-punto delle ultime 3 partite complete: permette all'IA analisi molto piu'
+     fini (sequenze di errori, cali nel finale, pattern per set) rispetto ai soli totali. */
+  const NL=String.fromCharCode(10);
+  const recent=DB.matches.filter(m=>!m.incomplete&&m.shotLog&&m.shotLog.length).slice(-3);
+  const logTxt=recent.map(m=>{
+    const n1=pName(m.p1),n2=pName(m.p2);
+    const seq=m.shotLog.map(e=>(e.side===0?n1:n2).slice(0,3)+':'+(e.type||'punto')).join(' ');
+    return `${n1} vs ${n2} (${(m.sets||[]).map(s=>s.join('-')).join(', ')}) sequenza punti: ${seq}`.slice(0,900);
+  }).join(NL);
+  const pointLog=logTxt?NL+'Registro punto-a-punto delle ultime partite (formato Giocatore:colpo in ordine cronologico):'+NL+logTxt:'';
+  const prompt='Sei un coach di ping pong. In italiano, '+$('aP').value+'. Ecco i dati:'+String.fromCharCode(10)+dataset+pointLog+String.fromCharCode(10)+'Scrivi un report di massimo 180 parole.';
   aiBusyOn('🤖 Il Coach IA sta analizzando…');
   try{const txt=await geminiCall(prompt,600);
     $('aR').innerText=txt||'Nessuna risposta ricevuta (controlla la API Key).';
@@ -1436,10 +1527,10 @@ async function aG(){if(!DB.settings.gemini){toast('Registra prima la tua API Key
 
 /* ================= IMPOSTAZIONI ================= */
 function sTheme(){document.body.dataset.theme=$('cT').value;DB.settings.theme=$('cT').value;save();}
-function tS(){DB.settings.sound=!DB.settings.sound;$('bS').innerText='🔊 SFX: '+(DB.settings.sound?'ON':'OFF');save();}
+function tS(){DB.settings.sound=!DB.settings.sound;$('bS').innerText='🔊 '+(DB.settings.sound?'ON':'OFF');save();}
 function tVoice(){
   DB.settings.voiceOn=!DB.settings.voiceOn;save();
-  $('bV').innerText='🎙️ Voce: '+(DB.settings.voiceOn?'ON':'OFF');
+  $('bV').innerText='🎙️ '+(DB.settings.voiceOn?'ON':'OFF');
   if(!DB.settings.voiceOn&&recogActive){stopVoice();$('micTxt').innerText='Assistente vocale disattivato (riattivalo in Impostazioni)';}
   else if(DB.settings.voiceOn&&LM&&LM.status==='active'&&!recogActive){startVoice();}
   toast('Assistente vocale '+(DB.settings.voiceOn?'attivato':'disattivato'),'🎙️');
@@ -1719,7 +1810,7 @@ const ICON512M="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAMAAADDpi
 /* ================= INIT ================= */
 load();
 document.body.dataset.theme=DB.settings.theme||'dark';$('cT').value=DB.settings.theme||'dark';
-$('bS').innerText='🔊 SFX: '+(DB.settings.sound?'ON':'OFF');$('bV').innerText='🎙️ Voce: '+(DB.settings.voiceOn?'ON':'OFF');$('cG').value=DB.settings.gemini||'';$('cGM').value=DB.settings.geminiModel||'auto';
+$('bS').innerText='🔊 '+(DB.settings.sound?'ON':'OFF');$('bV').innerText='🎙️ '+(DB.settings.voiceOn?'ON':'OFF');$('cG').value=DB.settings.gemini||'';$('cGM').value=DB.settings.geminiModel||'auto';
 if(DB.settings.gemini&&DB.settings.geminiOk){$('gStatus').style.display='block';$('gStatus').innerHTML='✅ <b>Chiave verificata</b> (in un test precedente). Coach IA e interpretazione vocale IA attivi. Premi di nuovo il pulsante per riverificarla.';}
 $('varVid').addEventListener('ended',()=>{varQueueIdx++;if(varQueueIdx<varQueue.length)playVarQueueItem();});
 if(!varSupported()){$('mV').checked=false;$('mV').disabled=true;const lb=$('mV').nextElementSibling;if(lb)lb.innerText='V.A.R. non disponibile su questo dispositivo';}
