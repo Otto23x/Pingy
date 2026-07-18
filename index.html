@@ -1050,7 +1050,14 @@ let recog=null,recogActive=false;
 /* Tollerante anche a "arbitro" con le primissime lettere perse (capita quando il motore
    vocale non ha ancora "agganciato" l'audio: vedi la nota su onstart più sotto) — accetta
    varianti come "rbitro"/"bitro" oltre a "arbitro"/"barbitro"/"l'arbitro". */
-const WAKE_RX=/\b[a-z]{0,2}r?bitr[oiae]\b/;
+/* Accetta anche le trascrizioni sbagliate più comuni di "arbitro": "attrito"/"attrita"
+   (il motore fonde spesso "arbitro dritto" in "attrito"). Parole comunque rarissime nel
+   parlato a bordo tavolo, quindi sicure come attivatori. */
+const WAKE_RX=/\b(?:[a-z]{0,2}r?bitr[oiae]|attrit[oa])\b/;
+const WAKE_RX_G=new RegExp(WAKE_RX.source,'g');
+/* Collassa le sequenze ripetute che il motore Android produce dentro un singolo risultato
+   ("ehi attrito ehi attrito ehi attrito vincente…" → "ehi attrito vincente…"). */
+function collapseRepeats(s){let prev;for(let i=0;i<8;i++){prev=s;s=s.replace(/(\b.{3,}?) \1\b/g,'$1');if(s===prev)break;}return s;}
 async function startVoice(){
   if(!DB.settings.voiceOn){$('micTxt').innerText='Assistente vocale disattivato (riattivalo in Impostazioni → Sistema)';return;}
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
@@ -1071,22 +1078,34 @@ function setVbHeard(t){const el=$('vbHeardEl');if(el)el.innerText=t;}
 function setVbAction(t){const el=$('vbActionEl');if(el)el.innerText=t;}
 let lastFinalIdx=-1; // ultimo indice di risultato FINALE già elaborato in QUESTA sessione di ascolto
 let finalDebounce=null;
-/* BUFFER RICOMPOSITIVO: il motore a volte spezza una frase in più risultati "finali" separati
-   (es. "servizio vincente di bibi" + "arbitro" come due frammenti, specie se la parola di
-   attivazione viene detta in fondo o dopo una micro-pausa). Valutare ogni frammento da solo
-   fallisce sempre: qui i frammenti recenti (entro 4 secondi) vengono CONCATENATI e valutati
-   come un'unica frase. Il buffer si svuota quando un comando va a buon fine, così il testo già
-   consumato non inquina il comando successivo. */
-let voiceBuf=[];
-function voiceBufAdd(txt){const now=Date.now();voiceBuf.push({t:now,txt});voiceBuf=voiceBuf.filter(f=>now-f.t<4000);}
-function voiceBufText(){const now=Date.now();return voiceBuf.filter(f=>now-f.t<4000).map(f=>f.txt).join(' ').trim();}
-function voiceBufClear(){voiceBuf=[];}
+/* BUFFER RICOMPOSITIVO con FUSIONE: il motore emette sia raffinamenti progressivi della stessa
+   frase ("arbitro" → "arbitro servizio" → "arbitro servizio vincente di bibi") sia, a volte,
+   frammenti davvero separati ("servizio vincente di bibi" + "arbitro"). Regola di fusione:
+   - il nuovo testo CONTIENE quello accumulato → è un raffinamento: SOSTITUISCE (non si accoda);
+   - il nuovo testo è già CONTENUTO in quello accumulato → duplicato: si ignora;
+   - altrimenti è un frammento nuovo e disgiunto: si accoda.
+   Senza questa fusione i raffinamenti si incollavano l'uno all'altro producendo frasi-mostro
+   tipo "arbitro arbitro servizio arbitro servizio vincente…" impossibili da interpretare. */
+let voiceBuf={t:0,txt:''};
+function voiceBufAdd(txt){
+  const now=Date.now();const nt=txt.toLowerCase();
+  if(now-voiceBuf.t>4000||!voiceBuf.txt){voiceBuf={t:now,txt};return;} // finestra scaduta: riparto
+  const cur=voiceBuf.txt.toLowerCase();
+  if(nt.includes(cur)){voiceBuf={t:now,txt};return;}       // raffinamento: sostituisce
+  if(cur.includes(nt)){voiceBuf.t=now;return;}             // duplicato/sottoinsieme: ignoro
+  voiceBuf={t:now,txt:voiceBuf.txt+' '+txt};               // frammento disgiunto: accodo
+}
+function voiceBufText(){return (Date.now()-voiceBuf.t<4000)?voiceBuf.txt.trim():'';}
+function voiceBufClear(){voiceBuf={t:0,txt:''};}
 function launchRecog(SR){
   try{recog=new SR();recog.lang='it-IT';lastFinalIdx=-1;clearTimeout(finalDebounce);finalDebounce=null;
-    /* MODALITÀ CONTINUA: il riconoscimento non si spegne durante le pause del gioco.
-       continuous=true evita che una pausa di un paio di secondi chiuda la sessione facendo
-       perdere l'inizio della frase successiva; interimResults mostra la trascrizione live. */
-    recog.continuous=true;recog.interimResults=true;
+    /* continuous=FALSE, deliberatamente: la modalità continua su Chrome Android ha un bug
+       noto per cui i risultati si accumulano DUPLICANDO i frammenti dentro un singolo
+       transcript ("ehi attrito ehi attrito ehi attrito vincente…"). Con sessioni brevi
+       (una per frase) il problema sparisce alla radice; il riavvio automatico dopo ~200ms
+       (in onend) copre le pause di gioco, e il buffer ricompositivo unisce comunque wake
+       word e comando se finiscono in due sessioni diverse. */
+    recog.continuous=false;recog.interimResults=true;
     recog.onresult=e=>{
       let interim='';
       /* FIX PUNTI DOPPI/TRIPLI: non elaboro MAI un risultato definitivo subito; aspetto un
@@ -1112,7 +1131,7 @@ function launchRecog(SR){
       else if(ev.error==='no-speech'||ev.error==='aborted'){} // normale in modalità continua, si riavvia da solo
       else if(ev.error==='network'){$('micTxt').innerText='Serve connessione internet per la voce';setVbHeard('⚠️ Trascrizione non disponibile senza rete');}
     };
-    recog.onend=()=>{if(recogActive){setTimeout(()=>{if(recogActive)launchRecog(SR);},250);}else{$('micDot').classList.remove('ls');}};
+    recog.onend=()=>{if(recogActive){setTimeout(()=>{if(recogActive)launchRecog(SR);},180);}else{$('micDot').classList.remove('ls');}};
     /* FIX PRIMA PAROLA PERSA: prima l'indicatore "in ascolto" scattava subito dopo aver
        chiamato recog.start(), ma il motore vocale (che manda l'audio ai server di Google)
        impiega un istante per iniziare davvero a catturare — se dici "Arbitro..." proprio in
@@ -1259,7 +1278,12 @@ function execVoiceCommand(side,shot,source){
 }
 let voiceLock=false,lockedTxt='',pendingVoiceTxt=null; // vedi handleVoice
 async function handleVoice(txt){
-  txt=(txt||'').toLowerCase(); // normalizzo SEMPRE qui: così anche i comandi ripresi dalla coda (che prima arrivavano con le maiuscole) passano la wake word e il confronto dei nomi
+  txt=collapseRepeats((txt||'').toLowerCase()); // normalizzo e collasso le ripetizioni del motore
+  /* Se la wake word compare più volte (tipico dei risultati "sporchi" di Android, dove i
+     frammenti si accumulano), uso solo la CODA dall'ULTIMA occorrenza: nei pasticci ripetuti
+     la parte finale è sempre la versione più completa della frase. */
+  {let mm,li=-1;WAKE_RX_G.lastIndex=0;while((mm=WAKE_RX_G.exec(txt))!==null)li=mm.index;
+   if(li>0)txt=txt.slice(li);}
   /* FIX PUNTI DOPPI (2° livello, oltre al dedup per indice in launchRecog): se un comando
      è ancora in elaborazione (es. in attesa della risposta IA, che può richiedere qualche
      secondo) e arriva un nuovo risultato:
