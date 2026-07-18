@@ -1098,7 +1098,12 @@ function voiceBufAdd(txt){
 function voiceBufText(){return (Date.now()-voiceBuf.t<4000)?voiceBuf.txt.trim():'';}
 function voiceBufClear(){voiceBuf={t:0,txt:''};}
 function launchRecog(SR){
-  try{recog=new SR();recog.lang='it-IT';lastFinalIdx=-1;clearTimeout(finalDebounce);finalDebounce=null;
+  try{recog=new SR();recog.lang='it-IT';lastFinalIdx=-1;
+    /* NOTA CRITICA: qui NON si tocca finalDebounce. Con le sessioni brevi (continuous=false)
+       il riavvio automatico arriva ~180ms dopo la fine della frase: cancellare qui il timer
+       del comando (che scatta a 450ms) significava ucciderlo SEMPRE prima dell'esecuzione —
+       frase mostrata a schermo ma punteggio mai aggiornato. Il timer viene annullato solo
+       in stopVoice, quando l'ascolto viene fermato davvero. */
     /* continuous=FALSE, deliberatamente: la modalità continua su Chrome Android ha un bug
        noto per cui i risultati si accumulano DUPLICANDO i frammenti dentro un singolo
        transcript ("ehi attrito ehi attrito ehi attrito vincente…"). Con sessioni brevi
