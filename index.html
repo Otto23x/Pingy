@@ -400,7 +400,7 @@ video{width:100%;max-height:48vh;border-radius:14px;background:#000;margin-botto
         <h2>🏓 Come funziona una partita</h2>
         <div class="gd"><h3>1. Setup match</h3><p>In "Gioca → Partita Libera" scegli i due atleti, il formato (1/3/5 set), il punteggio (11 o 21), ogni quanti punti cambia il servizio (2 o 5) e se la partita è <b>Amichevole</b> (non tocca l'ELO) o <b>Ufficiale</b> (fa media per la classifica).</p></div>
         <div class="gd"><h3>2. Cambio battuta ai vantaggi</h3><p>Il turno di servizio segue le tue impostazioni fino al 10-10 (set a 11) o 20-20 (set a 21): da quel momento il cambio scatta automaticamente a ogni punto, come da regolamento ITTF ufficiale, ed è annunciato a voce.</p></div>
-        <div class="gd"><h3>3. Il tracker in campo</h3><p>Prima di premere <b>+1 SX</b> o <b>+1 DX</b> puoi (facoltativo) toccare un tasto colpo (Servizio Vincente, Dritto Vincente, Rovescio Vincente, Colpo Speciale, Schiacciata, Errore Non Forzato, Errore Forzato): il bottone si evidenzia per farti capire cosa hai selezionato, e verrà abbinato al punto successivo che assegni. "Nastro"/"Bordo" segnano un punto fortuna allo stesso modo. "Annulla" toglie l'ultimo punto (anche riaprendo un set appena chiuso per errore).</p></div>
+        <div class="gd"><h3>3. Il tracker in campo</h3><p>Prima di premere <b>+1 SX</b> o <b>+1 DX</b> puoi (facoltativo) toccare un tasto colpo (Servizio Vincente, Dritto Vincente, Rovescio Vincente, Colpo Speciale, Schiacciata, Errore Non Forzato, Errore Forzato): il bottone si evidenzia e verrà abbinato al punto successivo. <b>"Nastro"/"Bordo" sono modificatori, non colpi</b>: si possono selezionare INSIEME a un colpo (es. Dritto Vincente + Nastro), perché un tocco di nastro o bordo è qualcosa che capita dentro un colpo — il punto registra sia il colpo sia il punto fortuna. Usati da soli, segnano il solo punto fortuna come prima. A voce: "Ehi, arbitro, dritto vincente di Lorenzo con nastro". "Annulla" toglie l'ultimo punto (anche riaprendo un set appena chiuso per errore).</p></div>
         <div class="gd"><h3>3bis. A chi va la statistica del colpo?</h3><p>I colpi <b>vincenti</b> (Servizio Vincente, Dritto Vincente, Rovescio Vincente, Colpo Speciale, Schiacciata) vengono accreditati a chi <b>segna</b> il punto. Gli <b>errori</b> (Non Forzato o Forzato) vanno invece a chi <b>sbaglia</b>, cioè all'avversario di chi segna: se assegni il punto a Papo taggandolo come "Errore Non Forzato", è Lorenzo (l'avversario) a incassare la statistica dell'errore, perché è lui che ha sbagliato — anche se il punto in classifica resta di Papo.</p></div>
         <div class="gd"><h3>3ter. Regole per scegliere la dicitura giusta</h3><ul>
           <li><b>Servizio Vincente</b>: il punto è chiuso dal servizio stesso — l'avversario non tocca la palla o non riesce a rimandarla in modo valido.</li>
@@ -409,7 +409,7 @@ video{width:100%;max-height:48vh;border-radius:14px;background:#000;margin-botto
           <li><b>Speciale</b>: colpi fuori dagli schemi classici — tocchi a rete, effetti particolari, soluzioni fantasiose — che non rientrano nelle altre categorie.</li>
           <li><b>Errore Non Forzato</b>: l'avversario sbaglia un colpo gestibile, senza essere stato messo sotto pressione da un tuo colpo particolarmente difficile (es. manda in rete o fuori un pallone comodo).</li>
           <li><b>Errore Forzato</b>: l'avversario sbaglia perché costretto da un tuo colpo aggressivo o difficile da gestire (angolo stretto, velocità, effetto): il merito è per metà tuo.</li>
-          <li><b>Nastro / Bordo</b>: il punto è deciso da un tocco fortuito, indipendentemente dall'intenzione dei giocatori — non è merito né colpa di nessuno dei due.</li>
+          <li><b>Nastro / Bordo</b> (modificatori): la palla ha toccato il nastro o il bordo del tavolo. Si combinano con qualsiasi colpo (il punto fortuna si somma alla statistica del colpo) e vanno sempre a chi vince il punto.</li>
         </ul><p>Nel dubbio tra Dritto/Rovescio Vincente ed Errore Non Forzato (spesso è opinabile se il merito sia di chi ha attaccato o il demerito di chi ha sbagliato), usa questo criterio pratico: se il colpo che ha chiuso il punto era comunque ben giocato e difficile da rimandare, tagga il colpo vincente; se il colpo che ha chiuso il punto era gestibile e l'avversario ha semplicemente sbagliato, tagga l'errore.</p></div>
         <div class="gd"><h3>4. Partite incomplete</h3><p>Dal tasto "Fine/Salva" puoi interrompere e salvare un match a metà: viene segnato con il tag <span class="inc-tag">INC</span>, non modifica l'ELO e non fa avanzare i tornei, ma le statistiche sui colpi restano comunque registrate per la Sabermetrica.</p></div>
         <div class="gd"><h3>5. Overall (OVR) delle Player Card</h3><p>L'OVR non è la media delle 8 statistiche: parte da <b>50</b> quando l'ELO è al valore base (1200) e sale o scende di 1 punto ogni 14 punti ELO di differenza, tra un minimo di 30 e un massimo di 99. Così un atleta con tutte le statistiche a 50 (appena iniziato) ha anche OVR 50, non un numero gonfiato: puoi avere colpi fortissimi, ma se perdi spesso l'OVR non sale, conta il risultato.</p></div>
@@ -797,8 +797,9 @@ function renderShotBar(){$('shotBar').innerHTML=`
   <button class="mb-btn" onclick="pickShot('errNF',this)">📉 Errore Non Forzato</button>
   <button class="mb-btn" onclick="pickShot('errFo',this)">🧯 Errore Forzato</button>`;
 }
-let pendingShot=null;
-function clearShotHighlights(){document.querySelectorAll('#shotBar .mb-btn,.mb .mb-btn.nst,.mb .mb-btn.brd').forEach(b=>b.classList.remove('act'));}
+let pendingShot=null,pendingLuck=null; // pendingLuck: 'nastro'|'bordo'|null — MODIFICATORE combinabile con qualsiasi colpo
+function clearShotHighlights(){document.querySelectorAll('#shotBar .mb-btn').forEach(b=>b.classList.remove('act'));}
+function clearLuckHighlights(){document.querySelectorAll('.mb .mb-btn.nst,.mb .mb-btn.brd').forEach(b=>b.classList.remove('act'));}
 function pickShot(type,btn){pendingShot=(pendingShot===type)?null:type;clearShotHighlights();if(pendingShot)btn.classList.add('act');}
 function curSet(){return LM.sets[LM.sets.length-1];}
 const ERROR_TYPES=['errNF','errFo'];
@@ -815,9 +816,10 @@ function addPoint(side){if(!LM||LM.paused||LM.pendingWinner!=null)return;
   const matchPointFor=[0,1].map(sd=>setPointFor[sd]&&(LM.setsWon[sd]+1)>=needToWin);
   s[side]++;
   const t=elapsedSetSeconds();
-  const entry={side,type:pendingShot||'punto',ts:Date.now(),setIdx:LM.sets.length-1,timeS:t};
+  const entry={side,type:pendingShot||'punto',luck:pendingLuck||null,ts:Date.now(),setIdx:LM.sets.length-1,timeS:t};
   LM.shotLog.push(entry);
   applyShotStat(side,pendingShot);
+  if(pendingLuck){const lucky=pById(side===0?LM.p1:LM.p2);if(lucky){lucky.st.luck++;if(lucky.cardSt)lucky.cardSt.luck++;}} // la fortuna va sempre a chi vince il punto
   const p1=pById(LM.p1),p2=pById(LM.p2);
   if(isClutch){if(p1){p1.st.clutchT++;if(p1.cardSt)p1.cardSt.clutchT++;}if(p2){p2.st.clutchT++;if(p2.cardSt)p2.cardSt.clutchT++;}
     const winP=side===0?p1:p2;if(winP){winP.st.clutchW++;if(winP.cardSt)winP.cardSt.clutchW++;}}
@@ -825,7 +827,7 @@ function addPoint(side){if(!LM||LM.paused||LM.pendingWinner!=null)return;
   else if(setPointFor[1-side]){const saver=side===0?p1:p2;if(saver){saver.st.sps++;if(saver.cardSt)saver.cardSt.sps++;}} // set point (non match point) salvato
   LM.maxDeficit[0]=Math.max(LM.maxDeficit[0],s[1]-s[0]);
   LM.maxDeficit[1]=Math.max(LM.maxDeficit[1],s[0]-s[1]);
-  pendingShot=null;clearShotHighlights();
+  pendingShot=null;pendingLuck=null;clearShotHighlights();clearLuckHighlights();
   const prevServer=LM.server;
   advanceServer();
   const serveChanged=LM.server!==prevServer;
@@ -920,7 +922,10 @@ function renderScore(){const s=curSet();$('sn1').innerText=s[0];$('sn2').innerTe
   $('sd1').innerHTML=Array.from({length:needToWin}).map((_,i)=>`<span class="${i<LM.setsWon[0]?'w':''}"></span>`).join('');
   $('sd2').innerHTML=Array.from({length:needToWin}).map((_,i)=>`<span class="${i<LM.setsWon[1]?'w':''}"></span>`).join('');
 }
-function markLuck(kind,btn){if(!LM)return;pendingShot=(pendingShot==='luck_'+kind)?null:'luck_'+kind;clearShotHighlights();if(pendingShot)btn.classList.add('act');}
+/* Nastro/Bordo non sono colpi a sé: sono cose che CAPITANO dentro un colpo (un dritto vincente
+   che tocca il nastro resta un dritto vincente + un punto fortuna). Quindi qui si comportano da
+   MODIFICATORE: si combinano liberamente con qualunque tasto colpo, con la propria evidenza. */
+function markLuck(kind,btn){if(!LM)return;pendingLuck=(pendingLuck===kind)?null:kind;clearLuckHighlights();if(pendingLuck)btn.classList.add('act');}
 function undoPoint(){if(!LM||!LM.history.length){toast('Niente da annullare','⚠️');return;}
   const wasPending=LM.pendingWinner!=null;
   const prev=LM.history.pop();LM.sets=prev.sets;LM.setsWon=prev.setsWon;LM.server=prev.server;LM.shotLog=prev.shotLog;LM.maxDeficit=prev.maxDeficit||[0,0];
@@ -1035,7 +1040,13 @@ function speak(txt){if(!speechOn||!DB.settings.sound||!('speechSynthesis' in win
     speechQueue.push(u); // trattengo il riferimento finché non ha finito
     const release=()=>{const i=speechQueue.indexOf(u);if(i>=0)speechQueue.splice(i,1);};
     u.onend=release;u.onerror=release;
-    speechSynthesis.cancel();
+    /* FIX "telecronaca che salta": prima ogni annuncio faceva cancel() TRONCANDO a metà la
+       frase precedente quando due annunci arrivavano ravvicinati (punto + cambio palla, o due
+       punti veloci). Ora le frasi si ACCODANO alla coda nativa del sintetizzatore e vengono
+       pronunciate per intero, una dopo l'altra. Lo svuotamento scatta solo se la coda si
+       accumula oltre 3 frasi (raffica di punti): meglio perdere un annuncio vecchio che
+       ritrovarsi la cronaca in ritardo di mezzo minuto. */
+    if(speechQueue.length>3){speechSynthesis.cancel();speechQueue=[u];}
     speechSynthesis.speak(u);
   }catch(e){}}
 
@@ -1161,10 +1172,10 @@ function parseShotKeyword(cmd){
   if(cmd.includes('non forzato'))return{shot:'errNF',label:'errore non forzato'};
   if(cmd.includes('forzato'))return{shot:'errFo',label:'errore forzato'};
   if(cmd.includes('error')||cmd.includes('sbagliat'))return{shot:'errNF',label:'errore non forzato'};
-  if(cmd.includes('nastro'))return{shot:'luck_nastro',label:'punto fortuna (nastro)'};
-  if(cmd.includes('bordo'))return{shot:'luck_bordo',label:'punto fortuna (bordo)'};
   return null;
 }
+/* Nastro/Bordo come modificatore nella frase: "dritto vincente di Bibi con nastro". */
+function parseLuck(cmd){if(cmd.includes('nastro'))return 'nastro';if(cmd.includes('bordo'))return 'bordo';return null;}
 /* ===== CHIAMATA GEMINI ROBUSTA (ispirata al codice di Tappy) =====
    I modelli Gemini vengono spenti e sostituiti nel tempo: gemini-2.0-flash, che questa app
    usava prima, è stato dismesso (ogni richiesta dava errore). Qui si prova una catena di
@@ -1231,7 +1242,7 @@ async function geminiCall(prompt,maxTokens){
 async function aiInterpretVoice(cmd){
   const p1=pById(LM.p1),p2=pById(LM.p2);
   if(!p1||!p2)return null;
-  const prompt='Sei l\'assistente di un arbitro di ping pong. Devi solo ESTRARRE informazioni da una frase, senza decidere a chi va il punto. Giocatore lato SINISTRO (side 0): "'+p1.name+'". Giocatore lato DESTRO (side 1): "'+p2.name+'". Frase in italiano (trascrizione automatica, i nomi possono essere storpiati o troncati: riconoscili foneticamente): "'+cmd+'". Rispondi SOLO con JSON puro, senza markdown, in questo formato: {"named":0 oppure 1 oppure null,"shot":"ace"|"driV"|"rovV"|"spec"|"smash"|"errNF"|"errFo"|"luck_nastro"|"luck_bordo"|"var"|null}. "named" = quale dei due giocatori è NOMINATO nella frase (0 = "'+p1.name+'", 1 = "'+p2.name+'"), tipicamente il nome dopo "di" o "a"; null solo se non riconosci nessuno dei due nomi. NON ragionare su chi vince il punto: indica solo il nome che senti. "shot" = il colpo, con questa mappatura: "servizio vincente"->"ace", "dritto vincente"->"driV", "rovescio vincente"->"rovV", "colpo speciale"->"spec", "schiacciata"->"smash", "errore non forzato"->"errNF", "errore forzato"->"errFo", nastro->"luck_nastro", bordo->"luck_bordo", moviola/VAR->"var", colpo non dichiarato->null.';
+  const prompt='Sei l\'assistente di un arbitro di ping pong. Devi solo ESTRARRE informazioni da una frase, senza decidere a chi va il punto. Giocatore lato SINISTRO (side 0): "'+p1.name+'". Giocatore lato DESTRO (side 1): "'+p2.name+'". Frase in italiano (trascrizione automatica, i nomi possono essere storpiati o troncati: riconoscili foneticamente): "'+cmd+'". Rispondi SOLO con JSON puro, senza markdown, in questo formato: {"named":0 oppure 1 oppure null,"shot":"ace"|"driV"|"rovV"|"spec"|"smash"|"errNF"|"errFo"|"var"|null,"luck":"nastro"|"bordo"|null}. "luck" = se la frase menziona che la palla ha toccato il nastro o il bordo (un modificatore che si somma al colpo, non un colpo a parte: "dritto vincente con nastro" -> shot "driV" e luck "nastro"; se viene detto SOLO il nastro/bordo senza colpo, shot null e luck valorizzato). "named" = quale dei due giocatori è NOMINATO nella frase (0 = "'+p1.name+'", 1 = "'+p2.name+'"), tipicamente il nome dopo "di" o "a"; null solo se non riconosci nessuno dei due nomi. NON ragionare su chi vince il punto: indica solo il nome che senti. "shot" = il colpo, con questa mappatura: "servizio vincente"->"ace", "dritto vincente"->"driV", "rovescio vincente"->"rovV", "colpo speciale"->"spec", "schiacciata"->"smash", "errore non forzato"->"errNF", "errore forzato"->"errFo", nastro->"luck_nastro", bordo->"luck_bordo", moviola/VAR->"var", colpo non dichiarato->null.';
   let txt=await geminiCall(prompt,80);
   txt=txt.replace(/```json|```/g,'').trim();
   const obj=JSON.parse(txt);
@@ -1242,11 +1253,12 @@ async function aiInterpretVoice(cmd){
   const aiNamed=(obj.named===0||obj.named===1)?obj.named:(obj.named==='0'?0:obj.named==='1'?1:null);
   if(named==null&&aiNamed!=null)named=aiNamed;
   const shot=obj.shot||null;
+  const aiLuck=(obj.luck==='nastro'||obj.luck==='bordo')?obj.luck:parseLuck(cmd);
   if(shot==='var')return{side:'var',shot:'var'};
-  if(named==null)return{side:null,shot};
+  if(named==null)return{side:null,shot,luck:aiLuck};
   // REGOLA DI ATTRIBUZIONE DETERMINISTICA (nel codice, non nell'IA):
   const side=ERROR_TYPES.includes(shot)?(1-named):named; // errore → punto all'avversario del nominato
-  return{side,shot};
+  return{side,shot,luck:aiLuck};
 }
 /* Cerca il nome di uno dei due giocatori in campo dentro il testo. Ritorna 0, 1, o null.
    Robusto contro: accenti ("bibì"), spazi accidentali nel nome salvato, nomi troncati dalla
@@ -1274,12 +1286,12 @@ function askShotFor(side){
     if(awaitingShotFor===side){awaitingShotFor=null;setVbAction('⏱️ Nessuna risposta: registrato come errore non forzato');pendingShot='errNF';addPoint(side);}
   },8000);
 }
-function execVoiceCommand(side,shot,source){
-  const label=shot?(SHOT_LABELS[shot]||shot):'punto';
+function execVoiceCommand(side,shot,source,luck){
+  const label=(shot?(SHOT_LABELS[shot]||shot):'punto')+(luck?' + '+luck:'');
   const who=pName(side===0?LM.p1:LM.p2);
   setVbAction((source==='ai'?'🤖 ':'🎙️ ')+'→ '+label+' · punto a '+who);
   toast('Arbitro'+(source==='ai'?' (IA)':'')+': '+label+' per '+who,source==='ai'?'🤖':'🎙️');
-  pendingShot=shot;addPoint(side);
+  pendingShot=shot;pendingLuck=luck||null;addPoint(side);
 }
 let voiceLock=false,lockedTxt='',pendingVoiceTxt=null; // vedi handleVoice
 async function handleVoice(txt){
@@ -1307,10 +1319,11 @@ async function handleVoice(txt){
     clearTimeout(awaitTimeoutHandle);
     const side=awaitingShotFor;awaitingShotFor=null;
     const parsed=parseShotKeyword(txt.toLowerCase());
+    const rLuck=parseLuck(txt.toLowerCase());
     const shot=parsed?parsed.shot:'errNF';
-    const label=parsed?parsed.label:'errore non forzato (non ho capito la risposta)';
+    const label=(parsed?parsed.label:'errore non forzato (non ho capito la risposta)')+(rLuck?' + '+rLuck:'');
     toast('Arbitro: '+label,'🎙️');
-    pendingShot=shot;addPoint(side);
+    pendingShot=shot;if(rLuck)pendingLuck=rLuck;addPoint(side);
     return;
   }
   if(!WAKE_RX.test(txt)){setVbAction('(in attesa della parola "Arbitro"…)');return;}
@@ -1325,10 +1338,16 @@ async function handleVoice(txt){
   if(cmd.includes('var')||cmd.includes('v.a.r')||cmd.includes('moviola')){voiceBufClear();setVbAction('📼 Apro il V.A.R.');openVAR();return;}
   const named=localNameMatch(cmd);
   const parsed=parseShotKeyword(cmd);
+  const luck=parseLuck(cmd);
   if(named!==null&&parsed){
     voiceBufClear();
     const side=ERROR_TYPES.includes(parsed.shot)?(1-named):named;
-    execVoiceCommand(side,parsed.shot,'local');
+    execVoiceCommand(side,parsed.shot,'local',luck);
+    return;
+  }
+  if(named!==null&&!parsed&&luck){ // solo fortuna, nessun colpo dichiarato: punto fortuna semplice al nominato (come prima)
+    voiceBufClear();
+    execVoiceCommand(named,'luck_'+luck,'local');
     return;
   }
   /* ═══ 2° LIVELLO: IA (solo per frasi libere non risolte dal parser) ═══ */
@@ -1342,7 +1361,8 @@ async function handleVoice(txt){
         if(res.shot==='var'){voiceBufClear();setVbAction('📼 Apro il V.A.R.');openVAR();return;}
         if(res.side===0||res.side===1){
           voiceBufClear();
-          if(res.shot){execVoiceCommand(res.side,res.shot,'ai');return;}
+          if(res.shot){execVoiceCommand(res.side,res.shot,'ai',res.luck);return;}
+          if(res.luck){execVoiceCommand(res.side,'luck_'+res.luck,'ai');return;} // solo fortuna dichiarata
           askShotFor(res.side);return;
         }
         setVbAction('🤖 Ho capito il colpo ma non il nome: ripeti dicendo chiaramente il nome del giocatore');return;
