@@ -258,21 +258,22 @@ video{width:100%;max-height:48vh;border-radius:14px;background:#000;margin-botto
 
 <!-- STATS -->
 <div id="sta" class="sec">
-  <div class="sn"><button class="act" onclick="stb('sta','sr',this)">ELO</button><button onclick="stb('sta','ss',this)">Colpi</button><button onclick="stb('sta','sv',this)">VS</button><button onclick="stb('sta','sa',this)">Coach IA</button></div>
+  <div class="sn"><button class="act" onclick="stb('sta','sr',this)">ELO</button><button onclick="stb('sta','ss',this)">Colpi</button><button onclick="stb('sta','sv',this)">VS</button><button onclick="stb('sta','sd',this)">Grafici</button><button onclick="stb('sta','sa',this)">Coach IA</button></div>
   <div id="sr" class="s-sec act">
     <div class="kpi-gr" id="kC"></div>
     <div class="cd"><h2>🌍 Classifica Generale ELO</h2><div class="tb-w"><table id="tE"><thead><tr><th>Rank</th><th>Atleta</th><th>ELO</th><th>V-P</th><th>Win%</th></tr></thead><tbody></tbody></table></div></div>
-    <div class="cd"><h2>📈 Grafico Storico ELO</h2><div style="position:relative;height:280px;width:100%;"><canvas id="cE"></canvas></div></div>
   </div>
   <div id="ss" class="s-sec">
     <div class="cd"><h2>📊 Sabermetrica & Stili</h2>
       <p style="font-size:0.82rem;color:var(--muted);font-weight:700;margin:-6px 0 14px;line-height:1.4;">"Sabermetrica" è un termine preso in prestito dal baseball: indica l'uso di statistiche avanzate (non solo il punteggio finale) per capire il vero rendimento di un atleta. Vedi la Guida per il significato di ogni riga.</p>
-      <label class="fl">Periodo</label>
-      <select id="tF" onchange="rSt();rSh();"><option value="a">Sempre</option><option value="t">Oggi</option><option value="w">Ultimi 7 Giorni</option></select>
-      <div class="tb-w"><table id="tS2"></table></div>
+      <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
+        <div style="flex:1;min-width:140px;"><label class="fl">Periodo</label>
+        <select id="tF" onchange="rSt();rSh();" style="margin-bottom:0;"><option value="a">Sempre</option><option value="t">Oggi</option><option value="w">Ultimi 7 Giorni</option></select></div>
+        <button class="btn" style="background:#3c40c6;width:auto;padding:12px 16px;margin-bottom:0;" onclick="exportStatsCSV()">⬇️ Esporta CSV</button>
+      </div>
+      <div class="tb-w" style="margin-top:14px;"><table id="tS2"></table></div>
     </div>
     <div class="cd"><h2>🎯 Matrice Tecnica Colpi</h2><div class="tb-w"><table id="tS3"></table></div></div>
-    <div class="cd"><h2>📊 Bilancio Colpi</h2><div style="position:relative;height:280px;width:100%;"><canvas id="cR"></canvas></div></div>
   </div>
   <div id="sv" class="s-sec">
     <div class="cd"><h2>⚔️ Analisi Scontri Diretti</h2>
@@ -280,6 +281,27 @@ video{width:100%;max-height:48vh;border-radius:14px;background:#000;margin-botto
         <select id="v1" onchange="rV()" style="margin:0;"></select><span style="font-weight:900;flex-shrink:0;">VS</span><select id="v2" onchange="rV()" style="margin:0;"></select>
       </div>
       <div id="vR"><div class="empty">Seleziona due atleti per confrontarli.</div></div>
+    </div>
+  </div>
+  <div id="sd" class="s-sec">
+    <div class="cd"><h2>📈 Grafici</h2>
+      <p style="font-size:0.82rem;color:var(--muted);font-weight:700;margin:-6px 0 14px;line-height:1.4;">Un grafico solo, personalizzabile: scegli l'atleta, il periodo e spunta una o più metriche da confrontare (es. Dritto e Rovescio insieme, oppure l'ELO da solo). ELO usa un asse a destra perché ha una scala molto diversa dai conteggi dei colpi.</p>
+      <div class="gr2">
+        <div><label class="fl">Atleta</label><select id="tlP" onchange="renderTimeline()"></select></div>
+        <div><label class="fl">Periodo</label><select id="tlPeriod" onchange="onTlPeriodChange()">
+          <option value="3">Ultimi 3 mesi</option>
+          <option value="6">Ultimi 6 mesi</option>
+          <option value="12" selected>Ultimi 12 mesi</option>
+          <option value="custom">Periodo manuale</option>
+        </select></div>
+      </div>
+      <div id="tlCustomRange" class="gr2" style="display:none;">
+        <div><label class="fl">Da</label><input type="date" id="tlFrom" onchange="renderTimeline()"></div>
+        <div><label class="fl">A</label><input type="date" id="tlTo" onchange="renderTimeline()"></div>
+      </div>
+      <label class="fl" style="margin-top:6px;">Metriche da mostrare</label>
+      <div id="tlMetrics" style="display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 14px;"></div>
+      <div style="position:relative;height:280px;width:100%;"><canvas id="cT"></canvas></div>
     </div>
   </div>
   <div id="sa" class="s-sec">
@@ -468,8 +490,7 @@ video{width:100%;max-height:48vh;border-radius:14px;background:#000;margin-botto
           <li><b>🍀 Fortuna</b>: punti vinti grazie a un tocco di nastro o di bordo.</li>
         </ul></div>
         <div class="gd"><h3>Matrice Tecnica Colpi</h3><p>Conteggio assoluto per ogni tipo di colpo taggato nel tracker (o via comando vocale): Ace, vincenti di Dritto e Rovescio, colpi Speciali, Smash, Errori Non Forzati ed Errori Forzati. La tabella è "trasposta": i colpi sono in riga e gli atleti in colonna (i più attivi per primi), così non serve scorrere a destra.</p></div>
-        <div class="gd"><h3>Grafico "Trend ELO"</h3><p>Linea storica del punteggio ELO di ogni atleta, un punto per ogni partita <b>Ufficiale</b> giocata. Le partite Amichevoli non spostano l'ELO e quindi non appaiono nel grafico.</p></div>
-        <div class="gd"><h3>Grafico "Bilancio Colpi"</h3><p>Confronto a barre tra vincenti di Dritto, vincenti di Rovescio ed Errori non forzati di ciascun atleta: utile per capire a colpo d'occhio chi rischia di più e chi gioca sul sicuro.</p></div>
+        <div class="gd"><h3>Grafici</h3><p>Un solo grafico, personalizzabile: in Stats → Grafici scegli l'atleta, il periodo (3/6/12 mesi o un intervallo manuale) e spunta liberamente una o più metriche da confrontare — ELO, Ace, Dritto V, Rovescio V, Speciale, Smash, Errore NF, Errore FO, MP Salvati, SP Salvati, Fortuna. L'ELO usa un asse a destra perché ha una scala molto diversa dai conteggi. Le partite Amichevoli non spostano l'ELO, quindi la linea ELO si muove solo in corrispondenza di partite Ufficiali (o Test).</p></div>
         <div class="gd"><h3>Sistema ELO</h3><p>Stesso algoritmo degli scacchi: si parte tutti da <b>1200 punti</b>. Battere un avversario con ELO più alto del tuo fa guadagnare più punti di quanti ne fai perdendo. Si applica <b>solo</b> alle partite Ufficiali. Formula: K=32, probabilità attesa calcolata sulla differenza ELO tra i due giocatori.</p></div>
         <div class="gd"><h3>Testa a Testa (VS)</h3><p>Confronta due atleti scelti: mostra il bilancio vittorie/sconfitte dirette in percentuale e il totale dei punti scambio fatti nei set giocati l'uno contro l'altro, su tutte le partite registrate tra loro.</p></div>
         <div class="gd"><h3>Trofei — libertà completa</h3><p>Puoi creare un trofeo su <b>qualsiasi</b> statistica tracciata (vittorie, sconfitte, ELO, ogni tipo di colpo, rimonte, MP salvati, fortuna...) con la condizione che preferisci: "almeno" (≥), "al massimo" (≤) o "esattamente" (=) un certo valore. I suggerimenti rapidi in cima al pannello servono solo come punto di partenza: puoi modificarli in tutto e per tutto prima di salvare. Lo sblocco è automatico a fine partita.</p></div>
@@ -628,7 +649,7 @@ function gMres(v){$('gM').style.display='none';if(gMcb)gMcb(v);gMcb=null;}
 
 /* ================= NAV ================= */
 function gt(id,btn){document.querySelectorAll('.sec').forEach(s=>s.classList.remove('act'));$(id).classList.add('act');document.querySelectorAll('nav button').forEach(b=>b.classList.remove('act'));btn.classList.add('act');
-  if(id==='sta'){kpis();rE();rEChart();rSt();rSh();fillVS();}
+  if(id==='sta'){kpis();rE();rSt();rSh();fillVS();fillTimeline();}
   if(id==='pla'){fillSelects();rHist();rTourn();}
   if(id==='imp'){rRoster();rTrophyList();}
 }
@@ -636,7 +657,7 @@ function gtGuide(id,btn){document.querySelectorAll('.gsec').forEach(s=>s.classLi
   btn.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('act'));btn.classList.add('act');}
 function stb(parent,id,btn){document.querySelectorAll('#'+parent+' .s-sec').forEach(s=>s.classList.remove('act'));$(id).classList.add('act');
   const nav=btn.parentElement;nav.querySelectorAll('button').forEach(b=>b.classList.remove('act'));btn.classList.add('act');
-  if(id==='sr'){kpis();rE();rEChart();} if(id==='ss'){rSt();rSh();} if(id==='sv')fillVS(); if(id==='pt')rTourn(); if(id==='ir')rRoster(); if(id==='ia')rTrophyList();
+  if(id==='sr'){kpis();rE();} if(id==='ss'){rSt();rSh();} if(id==='sv')fillVS(); if(id==='sd')fillTimeline(); if(id==='pt')rTourn(); if(id==='ir')rRoster(); if(id==='ia')rTrophyList();
 }
 
 /* ================= IMMAGINI ================= */
@@ -1492,11 +1513,164 @@ function kpis(){const list=DB.players;$('kC').innerHTML=`
 function rE(){const tb=$('tE').querySelector('tbody');const sorted=DB.players.slice().sort((a,b)=>b.elo-a.elo);
   tb.innerHTML=sorted.map((p,i)=>{const tot=p.st.wins+p.st.losses;const wp=tot?Math.round(p.st.wins/tot*100):0;
     return `<tr><td>${i+1}</td><td style="text-align:left;font-weight:800;">${p.name}</td><td class="r-elo">${p.elo}</td><td>${p.st.wins}-${p.st.losses}</td><td>${wp}%</td></tr>`;}).join('')||'<tr><td colspan="5">Nessun dato</td></tr>';}
-let chE=null;
-function rEChart(){const ctx=$('cE');if(chE)chE.destroy();
-  const ds=DB.players.map((p,i)=>({label:p.name,data:p.eloHist.map(h=>h.e),borderColor:`hsl(${i*57%360},70%,55%)`,tension:0.3,fill:false}));
-  const maxLen=Math.max(1,...DB.players.map(p=>p.eloHist.length));
-  chE=new Chart(ctx,{type:'line',data:{labels:Array.from({length:maxLen}).map((_,i)=>i+1),datasets:ds},options:{plugins:{legend:{labels:{color:'#eef3f7'}}},scales:{x:{ticks:{color:'#9fb0c0'}},y:{ticks:{color:'#9fb0c0'}}}}});}
+/* Export CSV delle statistiche: funzione autonoma, sola lettura dei dati esistenti (DB.players),
+   non modifica nulla. Un valore per riga/atleta, con i contatori grezzi e le metriche derivate
+   già presenti in Sabermetrica, cosi' il file si apre bene in Excel/Fogli Google. */
+function csvCell(v){return '"'+String(v==null?'':v).replace(/"/g,'""')+'"';}
+function exportStatsCSV(){
+  if(!DB.players.length){toast('Nessun atleta da esportare','⚠️');return;}
+  const cols=['Nome','ELO','Vittorie','Sconfitte','Partite','Servizio Vinc.','Dritto Vinc.','Rovescio Vinc.','Colpo Speciale','Schiacciata','Errore Non Forzato','Errore Forzato','MP Salvati','SP Salvati','Punti Fortuna','Freddezza %','Eff. Servizio %'];
+  const lines=[cols.map(csvCell).join(',')];
+  DB.players.forEach(p=>{
+    const eff=p.st.ptsPlayed?Math.round((p.st.ace/(p.st.ptsPlayed||1))*100):0;
+    const clu=p.st.clutchT?Math.round(p.st.clutchW/p.st.clutchT*100):0;
+    const row=[p.name,p.elo,p.st.wins,p.st.losses,p.st.matches,p.st.ace,p.st.driV,p.st.rovV,p.st.spec,p.st.smash,p.st.errNF,p.st.errFo,p.st.mps,p.st.sps,p.st.luck,clu,eff];
+    lines.push(row.map(csvCell).join(','));
+  });
+  try{
+    const csv='\ufeff'+lines.join('\r\n'); // BOM per Excel: mostra correttamente gli accenti
+    const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;a.download='pingy_statistiche_'+new Date().toISOString().slice(0,10)+'.csv';
+    document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),2000);
+    toast('Statistiche esportate in CSV','⬇️');
+  }catch(e){toast('Errore durante l\'esportazione','⚠️');}
+}
+/* ═══ GRAFICO "GRAFICI" (unico, dinamico, indipendente dagli altri) ═══
+   Ricostruisce, per l'atleta scelto, l'andamento cumulativo di ogni metrica partita dopo
+   partita, rileggendo lo shotLog già salvato in ogni match (sola lettura: non tocca DB.matches
+   né le statistiche a vita, quindi funziona anche per le partite giocate prima di questo
+   aggiornamento). L'ELO usa invece l'eloHist già esistente. Un asse a destra ospita l'ELO
+   (scala ~1000-1600), uno a sinistra i conteggi dei colpi (scala 0-100 circa). */
+const TIMELINE_METRICS=[
+  {key:'elo',label:'ELO',axis:'y1',color:'#ffcb3d'},
+  {key:'ace',label:'Ace',axis:'y',color:'#3c40c6'},
+  {key:'driV',label:'Dritto V',axis:'y',color:'#ff6b35'},
+  {key:'rovV',label:'Rovescio V',axis:'y',color:'#17c987'},
+  {key:'spec',label:'Speciale',axis:'y',color:'#a29bfe'},
+  {key:'smash',label:'Smash',axis:'y',color:'#e84393'},
+  {key:'errNF',label:'Errore NF',axis:'y',color:'#ef4444'},
+  {key:'errFo',label:'Errore FO',axis:'y',color:'#c0392b'},
+  {key:'mps',label:'MP Salvati',axis:'y',color:'#00b4d8'},
+  {key:'sps',label:'SP Salvati',axis:'y',color:'#8d6e63'},
+  {key:'luck',label:'Fortuna',axis:'y',color:'#00cec9'}
+];
+let tlSelected={elo:true}; // default: solo ELO, per non sorprendere al primo utilizzo
+function toggleTlMetric(key,val){tlSelected[key]=val;renderTimeline();}
+function fillTimeline(){
+  const pSel=$('tlP');if(!pSel)return;
+  const prev=pSel.value;
+  pSel.innerHTML=DB.players.map(p=>`<option value="${p.id}">${p.name}</option>`).join('')||'<option value="">Nessun atleta</option>';
+  if(prev&&DB.players.some(p=>p.id===prev))pSel.value=prev;
+  $('tlMetrics').innerHTML=TIMELINE_METRICS.map(m=>`<label class="chip"><input type="checkbox" ${tlSelected[m.key]?'checked':''} onchange="toggleTlMetric('${m.key}',this.checked)" style="width:16px;height:16px;margin:0;">${m.label}</label>`).join('');
+  onTlPeriodChange(true);
+}
+/* Cambio periodo: mostra/nasconde le due date manuali e, la prima volta che si passa a
+   "manuale", pre-compila un intervallo di default (ultimi 3 mesi) così i campi non sono vuoti. */
+function onTlPeriodChange(skipRender){
+  const isCustom=$('tlPeriod').value==='custom';
+  $('tlCustomRange').style.display=isCustom?'grid':'none';
+  if(isCustom&&!$('tlFrom').value){
+    const to=new Date(),from=new Date();from.setMonth(from.getMonth()-3);
+    $('tlFrom').value=from.toISOString().slice(0,10);$('tlTo').value=to.toISOString().slice(0,10);
+  }
+  if(!skipRender)renderTimeline();
+}
+function tlPeriodRange(){
+  const val=$('tlPeriod').value;
+  const now=Date.now();
+  if(val==='custom'){
+    const from=$('tlFrom').value?new Date($('tlFrom').value+'T00:00:00').getTime():now-90*864e5;
+    const to=$('tlTo').value?new Date($('tlTo').value+'T23:59:59').getTime():now;
+    return{from,to};
+  }
+  const months=+val||12;const from=new Date();from.setMonth(from.getMonth()-months);
+  return{from:from.getTime(),to:now};
+}
+/* Ricostruisce, punto per punto, se un punto ha salvato un match point o un set point per chi
+   l'ha vinto — stessa logica già usata dal vivo in addPoint, duplicata qui in una funzione
+   INDIPENDENTE e di sola lettura (non tocca né richiama il codice della partita live): serve
+   solo a leggere lo storico già salvato (shotLog + punteggi finali dei set), quindi funziona
+   anche per le partite giocate prima di questo aggiornamento. */
+function replaySavesAndLuck(match,pid){
+  const isP1=match.p1===pid;
+  const mode=match.mode||3,pts=match.pts||11,needToWin=Math.ceil(mode/2);
+  const setsWon=[0,0];let mps=0,sps=0,luck=0;
+  const bySet={};
+  (match.shotLog||[]).forEach(e=>{(bySet[e.setIdx]=bySet[e.setIdx]||[]).push(e);});
+  Object.keys(bySet).map(Number).sort((a,b)=>a-b).forEach(si=>{
+    const s=[0,0];
+    bySet[si].forEach(e=>{
+      const side=e.side;
+      const setPointFor=[0,1].map(sd=>{const proj=s.slice();proj[sd]++;return proj[sd]>=pts&&(proj[sd]-proj[1-sd])>=2;});
+      const matchPointFor=[0,1].map(sd=>setPointFor[sd]&&(setsWon[sd]+1)>=needToWin);
+      const isMe=(side===0)===isP1;
+      if(isMe){
+        if(matchPointFor[1-side])mps++;
+        else if(setPointFor[1-side])sps++;
+        if(e.luck)luck++;
+      }
+      s[side]++;
+    });
+    const finalSet=(match.sets||[])[si];
+    if(finalSet){const w=finalSet[0]>finalSet[1]?0:(finalSet[1]>finalSet[0]?1:null);if(w!=null)setsWon[w]++;}
+  });
+  return{mps,sps,luck};
+}
+function buildStatTimeline(pid){
+  const p=pById(pid);if(!p)return null;
+  const matches=DB.matches.filter(m=>!m.incomplete&&(m.p1===pid||m.p2===pid)&&m.shotLog&&m.shotLog.length).sort((a,b)=>a.date-b.date);
+  const cum={ace:0,driV:0,rovV:0,spec:0,smash:0,errNF:0,errFo:0,mps:0,sps:0,luck:0};
+  const series={elo:(p.eloHist||[]).map(h=>({d:h.d,v:h.e})),ace:[],driV:[],rovV:[],spec:[],smash:[],errNF:[],errFo:[],mps:[],sps:[],luck:[]};
+  matches.forEach(m=>{
+    const isP1=m.p1===pid;
+    (m.shotLog||[]).forEach(e=>{
+      // stessa regola di attribuzione usata dal vivo in applyShotStat: i colpi vincenti al
+      // segnatore, gli errori a chi ha sbagliato (l'avversario di chi segna il punto).
+      const scorerIsMe=(e.side===0)===isP1;
+      const isError=e.type==='errNF'||e.type==='errFo';
+      const creditedToMe=isError?!scorerIsMe:scorerIsMe;
+      if(!creditedToMe)return;
+      if(e.type==='ace')cum.ace++;
+      else if(e.type==='driV')cum.driV++;
+      else if(e.type==='rovV')cum.rovV++;
+      else if(e.type==='spec')cum.spec++;
+      else if(e.type==='smash')cum.smash++;
+      else if(e.type==='errNF')cum.errNF++;
+      else if(e.type==='errFo')cum.errFo++;
+    });
+    const saves=replaySavesAndLuck(m,pid);
+    cum.mps+=saves.mps;cum.sps+=saves.sps;cum.luck+=saves.luck;
+    const d=m.date;
+    ['ace','driV','rovV','spec','smash','errNF','errFo','mps','sps','luck'].forEach(k=>series[k].push({d,v:cum[k]}));
+  });
+  return series;
+}
+let chT=null;
+function renderTimeline(){
+  const sel=$('tlP');const ctx=$('cT');if(!sel||!ctx)return;
+  if(chT){chT.destroy();chT=null;}
+  const pid=sel.value;if(!pid)return;
+  const series=buildStatTimeline(pid);if(!series)return;
+  const {from,to}=tlPeriodRange();
+  const active=TIMELINE_METRICS.filter(m=>tlSelected[m.key]);
+  if(!active.length)return;
+  const datasets=active.map(m=>({label:m.label,
+    data:(series[m.key]||[]).filter(pt=>pt.d>=from&&pt.d<=to).map(pt=>({x:pt.d,y:pt.v})),
+    borderColor:m.color,backgroundColor:m.color,tension:0.25,fill:false,pointRadius:3,yAxisID:m.axis}));
+  const usesY=active.some(m=>m.axis==='y'),usesY1=active.some(m=>m.axis==='y1');
+  chT=new Chart(ctx,{type:'line',data:{datasets},
+    options:{parsing:false,plugins:{legend:{labels:{color:'#eef3f7'}}},
+      scales:{
+        /* Asse temporale (x) fissato ai limiti del PERIODO scelto (non solo ai dati disponibili):
+           così il grafico "si adatta" al periodo anche quando ci sono poche o zero partite in quel
+           lasso di tempo, invece di restringersi ad un singolo punto. */
+        x:{type:'linear',min:from,max:to,ticks:{color:'#9fb0c0',callback:v=>new Date(v).toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit'})}},
+        y:{display:usesY,position:'left',ticks:{color:'#9fb0c0',precision:0}},
+        y1:{display:usesY1,position:'right',ticks:{color:'#ffcb3d'},grid:{drawOnChartArea:false}}
+      }}});
+}
 function filterMatches(){const f=$('tF').value;const now=Date.now();
   return DB.matches.filter(m=>{if(f==='a')return true;if(f==='t')return new Date(m.date).toDateString()===new Date().toDateString();if(f==='w')return now-m.date<=7*864e5;return true;});}
 function sortedByActivity(){return DB.players.slice().sort((a,b)=>(b.st.matches||0)-(a.st.matches||0));}
@@ -1516,7 +1690,6 @@ function rSt(){const players=sortedByActivity();const ms=filterMatches();
   const body=rows.map(r=>'<tr><td style="text-align:left;font-weight:800;">'+r.label+'</td>'+players.map(p=>`<td>${r.calc(p)}</td>`).join('')+'</tr>').join('');
   $('tS2').innerHTML='<thead>'+head+'</thead><tbody>'+body+'</tbody>';
 }
-let chR=null;
 function rSh(){const players=sortedByActivity();
   if(!players.length){$('tS3').innerHTML='<tr><td>Nessun atleta</td></tr>';}else{
     const rows=[
@@ -1532,13 +1705,7 @@ function rSh(){const players=sortedByActivity();
     const body=rows.map(r=>'<tr><td style="text-align:left;font-weight:800;">'+r.label+'</td>'+players.map(p=>`<td>${r.calc(p)}</td>`).join('')+'</tr>').join('');
     $('tS3').innerHTML='<thead>'+head+'</thead><tbody>'+body+'</tbody>';
   }
-  const ctx=$('cR');if(chR)chR.destroy();
-  /* Grafico semplificato: 2 sole barre orizzontali per atleta — colpi vincenti totali (verde)
-     contro errori totali (rosso). Prima c'erano 4 serie affiancate, illeggibili sul telefono. */
-  chR=new Chart(ctx,{type:'bar',data:{labels:players.map(p=>p.name),datasets:[
-    {label:'✅ Colpi vincenti (tutti)',data:players.map(p=>p.st.ace+p.st.driV+p.st.rovV+p.st.spec+p.st.smash),backgroundColor:'#17c987'},
-    {label:'❌ Errori (tutti)',data:players.map(p=>p.st.errNF+p.st.errFo),backgroundColor:'#ef4444'}]},
-    options:{indexAxis:'y',plugins:{legend:{labels:{color:'#eef3f7'}}},scales:{x:{ticks:{color:'#9fb0c0',precision:0}},y:{ticks:{color:'#eef3f7',font:{weight:'bold'}}}}}});}
+}
 function fillVS(){const opts=DB.players.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');$('v1').innerHTML=opts;$('v2').innerHTML=opts;
   if(DB.players.length>1)$('v2').selectedIndex=1;rV();}
 function rV(){const id1=$('v1').value,id2=$('v2').value;if(!id1||!id2||id1===id2){$('vR').innerHTML='<div class="empty">Seleziona due atleti diversi.</div>';return;}
