@@ -267,8 +267,10 @@ video{width:100%;max-height:48vh;border-radius:14px;background:#000;margin-botto
     <div class="cd"><h2>📊 Sabermetrica & Stili</h2>
       <p style="font-size:0.82rem;color:var(--muted);font-weight:700;margin:-6px 0 14px;line-height:1.4;">"Sabermetrica" è un termine preso in prestito dal baseball: indica l'uso di statistiche avanzate (non solo il punteggio finale) per capire il vero rendimento di un atleta. Vedi la Guida per il significato di ogni riga.</p>
       <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
-        <div style="flex:1;min-width:140px;"><label class="fl">Periodo</label>
+        <div style="flex:1;min-width:120px;"><label class="fl">Periodo</label>
         <select id="tF" onchange="rSt();rSh();" style="margin-bottom:0;"><option value="a">Sempre</option><option value="t">Oggi</option><option value="w">Ultimi 7 Giorni</option></select></div>
+        <div style="flex:1;min-width:120px;"><label class="fl">Tipo partita</label>
+        <select id="tCat" onchange="rSt();rSh();" style="margin-bottom:0;"><option value="all">Tutte</option><option value="u">Solo Ufficiali</option><option value="a">Solo Amichevoli</option><option value="t">Solo Test</option></select></div>
         <button class="btn" style="background:#3c40c6;width:auto;padding:12px 16px;margin-bottom:0;" onclick="exportStatsCSV()">⬇️ Esporta CSV</button>
       </div>
       <div class="tb-w" style="margin-top:14px;"><table id="tS2"></table></div>
@@ -306,10 +308,30 @@ video{width:100%;max-height:48vh;border-radius:14px;background:#000;margin-botto
   </div>
   <div id="sa" class="s-sec">
     <div class="cd"><h2>🧠 Coach Tecnico Gemini</h2>
+      <label class="fl">Ambito dell'analisi</label>
+      <select id="aScope" onchange="onCoachScopeChange()">
+        <option value="gen">Generale (più partite)</option>
+        <option value="one">Una singola partita</option>
+      </select>
+      <div id="aGenFilters" class="gr2">
+        <div><label class="fl">Tipo partita</label><select id="aCat">
+          <option value="all">Tutte</option><option value="u">Solo Ufficiali</option>
+          <option value="a">Solo Amichevoli</option><option value="t">Solo Test</option>
+        </select></div>
+        <div><label class="fl">Periodo</label><select id="aPeriod">
+          <option value="0">Sempre</option><option value="1">Ultimo mese</option>
+          <option value="3">Ultimi 3 mesi</option><option value="6">Ultimi 6 mesi</option><option value="12">Ultimi 12 mesi</option>
+        </select></div>
+      </div>
+      <div id="aOneWrap" style="display:none;">
+        <label class="fl">Partita da analizzare</label>
+        <select id="aMatch"></select>
+      </div>
       <label class="fl">Tipo di analisi</label>
       <select id="aP">
         <option value="analizza accuratamente i colpi tecnici (Aces, vincenti, errori) identificando lo stile di gioco di ciascuno">Analisi Tecnica e Stile</option>
         <option value="esamina la tenuta mentale (Freddezza nei punti caldi), la stamina e gli eventuali crolli (slumps) di ciascun atleta">Analisi Psicologica e Stress</option>
+        <option value="ricostruisci l'andamento della partita punto per punto: chi ha condotto, i momenti di svolta, le serie di punti consecutivi e dove si e' decisa">Cronaca e Momenti Chiave</option>
         <option value="fai un roast ironico, sarcastico e bonario sui giocatori in base ai loro numeri">Roast Ironico</option>
       </select>
       <button class="btn btn-ai" onclick="aG()">✨ Richiedi Consulto Tattico IA</button>
@@ -427,6 +449,7 @@ video{width:100%;max-height:48vh;border-radius:14px;background:#000;margin-botto
         <div class="gd"><h3>3ter. Regole per scegliere la dicitura giusta</h3><ul>
           <li><b>Servizio Vincente</b>: il punto è chiuso dal servizio stesso — l'avversario non tocca la palla o non riesce a rimandarla in modo valido.</li>
           <li><b>Dritto Vincente / Rovescio Vincente</b>: lo scambio è concluso da un normale colpo di dritto o di rovescio che l'avversario non riesce a rimandare; non è un servizio (altrimenti è Ace) né una schiacciata di potenza (altrimenti è Smash).</li>
+          <li><b>Errore al Servizio</b>: il servizio è sbagliato (fuori, in rete, o fallo): il punto va direttamente all'avversario. A voce: "errore al servizio", "fallo di servizio" o "doppio fallo".</li>
           <li><b>Schiacciata</b>: il punto è chiuso con una schiacciata o un colpo di potenza decisivo su palla alta/comoda, a prescindere che sia dato di dritto o di rovescio.</li>
           <li><b>Speciale</b>: colpi fuori dagli schemi classici — tocchi a rete, effetti particolari, soluzioni fantasiose — che non rientrano nelle altre categorie.</li>
           <li><b>Errore Non Forzato</b>: l'avversario sbaglia un colpo gestibile, senza essere stato messo sotto pressione da un tuo colpo particolarmente difficile (es. manda in rete o fuori un pallone comodo).</li>
@@ -450,6 +473,9 @@ video{width:100%;max-height:48vh;border-radius:14px;background:#000;margin-botto
           <li><b>Mentalità</b> = rimonte×4 + Freddezza%×30 − errori totali×0.4 (recenti)</li>
         </ul></div>
         <div class="gd"><h3>6. Tornei</h3><p><b>Eliminazione diretta</b> (4 o 8 atleti): tabellone a turni, il vincitore avanza in automatico. <b>Girone all'italiana</b> (3-6 atleti): tutti contro tutti, classifica per punti (2 a vittoria). Un torneo può essere sospeso e ripreso in un secondo momento dal tasto ⏸️/▶️ sulla sua scheda.</p></div>
+        <div class="gd"><h3>Statistiche separate per tipo di partita</h3><p>In Stats → Colpi trovi due filtri: <b>Periodo</b> e <b>Tipo partita</b> (Tutte / Solo Ufficiali / Solo Amichevoli / Solo Test). Le tabelle Sabermetrica e Matrice Colpi si ricalcolano di conseguenza, così puoi tenere separati i numeri dell'<b>allenamento</b> (amichevoli) da quelli delle partite <b>ufficiali</b>. Queste tabelle rileggono lo storico delle partite, mentre la Player Card e i Trofei continuano a usare i totali di carriera.</p></div>
+        <div class="gd"><h3>Eliminare una singola partita</h3><p>Nello storico recente ogni partita ha un cestino 🗑️: eliminandola (con conferma) vengono annullati anche i suoi effetti — ELO, vittorie/sconfitte, colpi e statistiche tornano come prima di quella partita, senza dover cancellare l'intera giornata. Per le partite registrate da versioni precedenti l'ELO non è ricostruibile: in quel caso l'app te lo dice prima di procedere e annulla solo il resto.</p></div>
+        <div class="gd"><h3>Coach IA: generale o singola partita</h3><p>In Stats → Coach IA puoi scegliere l'<b>ambito</b>: <i>Generale</i> (con filtri per tipo partita e periodo: sempre / 1, 3, 6, 12 mesi) oppure <i>Una singola partita</i>, selezionandola dall'elenco. Nell'analisi di una singola partita l'IA riceve la <b>sequenza completa dei punti</b> con il colpo di ciascuno, quindi può ricostruire l'andamento e i momenti di svolta — c'è anche un tipo di analisi dedicato, "Cronaca e Momenti Chiave".</p></div>
         <div class="gd"><h3>Partite di Test (cancellabili)</h3><p>Nel setup partita puoi scegliere la categoria <b>Test</b>: la partita viene registrata normalmente e — finché esiste — vale per tutto come una Ufficiale (ELO compreso, statistiche, card). La differenza è che nello storico ha il tag <b>TEST</b> e un cestino 🗑️: eliminandola (con banner di conferma) vengono <b>annullati anche tutti i suoi effetti</b> — ELO, vittorie/sconfitte, colpi e ogni statistica tornano esattamente come prima della partita. Utile per provare l'app o l'arbitro vocale senza sporcare l'archivio. Le partite Amichevoli e Ufficiali non si possono cancellare.</p></div>
         <div class="gd"><h3>Schermo sempre acceso nel tracker</h3><p>Durante una partita live lo schermo non si spegne da solo (Wake Lock): torna a spegnersi normalmente quando chiudi o salvi il match.</p></div>
         <div class="gd"><h3>7. Giocatori eliminati dal roster</h3><p>Se elimini un atleta dal Roster, le sue partite passate restano nello storico: l'avversario le vedrà semplicemente giocate contro "Sconosciuto", senza perdere le proprie statistiche.</p></div>
@@ -484,7 +510,10 @@ video{width:100%;max-height:48vh;border-radius:14px;background:#000;margin-botto
         <div class="gd"><h3>Cos'è la "Sabermetrica"</h3><p>Il termine viene dal baseball (SABR = Society for American Baseball Research): indica l'uso di statistiche avanzate, oltre al semplice punteggio, per leggere il vero rendimento di un atleta. Qui l'abbiamo applicata al ping pong.</p></div>
         <div class="gd"><h3>Le metriche della tabella "Sabermetrica & Stili"</h3><ul>
           <li><b>Eff. Servizio</b>: percentuale di punti vinti direttamente con un Ace sul totale degli scambi giocati.</li>
-          <li><b>Freddezza%</b>: tenuta nei momenti caldi — percentuale di punti vinti quando il punteggio è 8-8 o oltre, oppure ai vantaggi.</li>
+          <li><b>Freddezza%</b>: tenuta nei momenti caldi — percentuale di punti vinti nella "zona calda" del set. La soglia è <b>rapportata alla lunghezza del set</b>, non fissa: su un set a <b>11</b> parte da <b>8-8</b>, su un set a <b>21</b> parte da <b>15-15</b> (stessa proporzione, ~72% del set). Prima era 3 punti dalla fine per entrambi, e sui set a 21 escludeva quasi tutti i finali combattuti.</li>
+          <li><b>🛡️ MP Salvati / 🧱 SP Salvati</b>: punti vinti quando l'avversario era a un solo punto dal chiudere. Se quel punto avrebbe chiuso <b>l'intera partita</b> conta come <b>MP salvato</b>, se avrebbe chiuso <b>solo il set</b> come <b>SP salvato</b> — sono alternativi, mai contati entrambi. Nota: in una partita a <b>set unico</b> ogni set point è anche match point, quindi vedrai solo MP salvati; gli SP compaiono giocando al meglio dei 3 o dei 5.</li>
+          <li><b>🎯 Errore SERV</b>: fallo di servizio (servizio sbagliato o doppio fallo). Come gli altri errori, assegna il punto all'avversario.</li>
+          <li><b>▫️ Punti generici</b>: punti assegnati senza dichiarare il colpo — vengono comunque conteggiati, così il totale dei punti torna sempre.</li>
           <li><b>⏱ Media</b>: tempo medio (in secondi) impiegato per chiudere uno scambio a proprio favore.</li>
           <li><b>🛡️ MP Salvati</b>: quante volte l'atleta ha annullato un Match Point all'avversario.</li>
           <li><b>🍀 Fortuna</b>: punti vinti grazie a un tocco di nastro o di bordo.</li>
@@ -588,8 +617,8 @@ video{width:100%;max-height:48vh;border-radius:14px;background:#000;margin-botto
   </div>
   <div class="mb" id="shotBar"></div>
   <div class="mb">
-    <button class="mb-btn nst" onclick="markLuck('nastro',this)">🍀 Nastro</button>
-    <button class="mb-btn brd" onclick="markLuck('bordo',this)">🍀 Bordo</button>
+    <button class="mb-btn nst" onclick="markLuck('nastro',this)">🍀 NST.F.</button>
+    <button class="mb-btn brd" onclick="markLuck('bordo',this)">🍀 BRD.F.</button>
     <button class="mb-btn" onclick="undoPoint()">↩️ Annulla</button>
   </div>
   <div class="mic" onclick="restartVoiceManually()" style="cursor:pointer;"><div class="mic-d" id="micDot"></div><span id="micTxt">Microfono non attivo</span><span style="opacity:0.6;font-size:0.7rem;margin-left:4px;">(tocca per riavviare)</span></div>
@@ -629,9 +658,9 @@ function migrateDB(){
   DB.players=DB.players||[];DB.matches=DB.matches||[];DB.tournaments=DB.tournaments||[];DB.trophies=DB.trophies||[];DB.settings=DB.settings||{theme:'dark',sound:true,gemini:''};
   if(!DB.settings.geminiModel)DB.settings.geminiModel='auto';
   if(typeof DB.settings.voiceOn!=='boolean')DB.settings.voiceOn=true;
-  DB.players.forEach(p=>{p.st=p.st||{};['ace','driV','rovV','spec','smash','errNF','errFo','mps','sps','luck','wins','losses','ptsWon','ptsPlayed','timeMs','timedPts','clutchW','clutchT','cmb','matches'].forEach(k=>{if(typeof p.st[k]!=='number')p.st[k]=0;});
+  DB.players.forEach(p=>{p.st=p.st||{};['ace','driV','rovV','spec','smash','errNF','errFo','errSv','gen','mps','sps','luck','wins','losses','ptsWon','ptsPlayed','timeMs','timedPts','clutchW','clutchT','cmb','matches'].forEach(k=>{if(typeof p.st[k]!=='number')p.st[k]=0;});
     if(!p.cardSt){p.cardSt={ace:p.st.ace,driV:p.st.driV,rovV:p.st.rovV,spec:p.st.spec,smash:p.st.smash,errNF:p.st.errNF,errFo:p.st.errFo,mps:p.st.mps,luck:p.st.luck,wins:p.st.wins,losses:p.st.losses,clutchW:p.st.clutchW,clutchT:p.st.clutchT,cmb:p.st.cmb};} // prima volta: parte dallo storico esistente, poi decade partita dopo partita
-    ['ace','driV','rovV','spec','smash','errNF','errFo','mps','sps','luck','wins','losses','clutchW','clutchT','cmb'].forEach(k=>{if(typeof p.cardSt[k]!=='number')p.cardSt[k]=0;});
+    ['ace','driV','rovV','spec','smash','errNF','errFo','errSv','gen','mps','sps','luck','wins','losses','clutchW','clutchT','cmb'].forEach(k=>{if(typeof p.cardSt[k]!=='number')p.cardSt[k]=0;});
     delete p.recentResults; // sostituito dal decadimento su cardSt
   });
 }
@@ -657,7 +686,7 @@ function gtGuide(id,btn){document.querySelectorAll('.gsec').forEach(s=>s.classLi
   btn.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('act'));btn.classList.add('act');}
 function stb(parent,id,btn){document.querySelectorAll('#'+parent+' .s-sec').forEach(s=>s.classList.remove('act'));$(id).classList.add('act');
   const nav=btn.parentElement;nav.querySelectorAll('button').forEach(b=>b.classList.remove('act'));btn.classList.add('act');
-  if(id==='sr'){kpis();rE();} if(id==='ss'){rSt();rSh();} if(id==='sv')fillVS(); if(id==='sd')fillTimeline(); if(id==='pt')rTourn(); if(id==='ir')rRoster(); if(id==='ia')rTrophyList();
+  if(id==='sr'){kpis();rE();} if(id==='ss'){rSt();rSh();} if(id==='sv')fillVS(); if(id==='sd')fillTimeline(); if(id==='sa')fillCoachMatches(); if(id==='pt')rTourn(); if(id==='ir')rRoster(); if(id==='ia')rTrophyList();
 }
 
 /* ================= IMMAGINI ================= */
@@ -671,8 +700,8 @@ function upI(inp,prevId){const f=inp.files[0];if(!f)return;const rd=new FileRead
 function ageOf(dob){if(!dob)return '—';const b=new Date(dob),n=new Date();let a=n.getFullYear()-b.getFullYear();const m=n.getMonth()-b.getMonth();if(m<0||(m===0&&n.getDate()<b.getDate()))a--;return a;}
 function addP(){const name=$('pN').value.trim();if(!name){toast('Inserisci un nome','⚠️');return;}
   const p={id:uid(),name,gender:$('pG').value,dob:$('pD').value,hand:$('pH').value,photo:$('pPv').dataset.b64||'',elo:1200,eloHist:[{d:Date.now(),e:1200}],trophies:[],
-    st:{ace:0,driV:0,rovV:0,spec:0,smash:0,errNF:0,errFo:0,mps:0,sps:0,luck:0,wins:0,losses:0,ptsWon:0,ptsPlayed:0,timeMs:0,timedPts:0,clutchW:0,clutchT:0,cmb:0,matches:0},
-    cardSt:{ace:0,driV:0,rovV:0,spec:0,smash:0,errNF:0,errFo:0,mps:0,sps:0,luck:0,wins:0,losses:0,clutchW:0,clutchT:0,cmb:0}};
+    st:{ace:0,driV:0,rovV:0,spec:0,smash:0,errNF:0,errFo:0,errSv:0,gen:0,mps:0,sps:0,luck:0,wins:0,losses:0,ptsWon:0,ptsPlayed:0,timeMs:0,timedPts:0,clutchW:0,clutchT:0,cmb:0,matches:0},
+    cardSt:{ace:0,driV:0,rovV:0,spec:0,smash:0,errNF:0,errFo:0,errSv:0,gen:0,mps:0,sps:0,luck:0,wins:0,losses:0,clutchW:0,clutchT:0,cmb:0}};
   DB.players.push(p);save();$('pN').value='';$('pPv').style.backgroundImage='';$('pPv').innerText='📷';delete $('pPv').dataset.b64;
   rRoster();toast('Atleta aggiunto al roster');}
 function rRoster(){const l=$('pL');if(!DB.players.length){l.innerHTML='<div class="empty">Nessun atleta ancora. Aggiungine uno qui sopra ⤴️</div>';return;}
@@ -792,7 +821,10 @@ function iLM(resumeId){
   LM={id:uid(),p1:p1id,p2:p2id,mode,pts,srvEvery,cat,date:Date.now(),status:'active',
     sets:[[0,0]],setsWon:[0,0],server:firstSrv===''?(Math.random()<0.5?0:1):+firstSrv,startServer:firstSrv,
     varOn,shotLog:[],history:[],elapsedMs:0,runStart:Date.now(),paused:false,tourId:tourMatch,
-    maxDeficit:[0,0],comebackFlag:[false,false],pendingWinner:null,snap};
+    maxDeficit:[0,0],comebackFlag:[false,false],pendingWinner:null,snap,
+    /* azzeramento esplicito del cronometro: ogni partita (anche dentro un torneo) parte da zero */
+    setStart:Date.now(),pausedMs:0,pauseStart:null};
+  clearInterval(clockInt);
   openLM();
 }
 /* WAKE LOCK: durante il live tracker lo schermo resta ACCESO (niente spegnimento automatico
@@ -810,24 +842,30 @@ function rebuildScoreboard(){const p1=pById(LM.p1),p2=pById(LM.p2);
   $('sc1av').style.backgroundImage=p1&&p1.photo?`url(${p1.photo})`:'';$('sc2av').style.backgroundImage=p2&&p2.photo?`url(${p2.photo})`:'';
   renderShotBar();renderScore();}
 function renderShotBar(){$('shotBar').innerHTML=`
-  <button class="mb-btn sht" onclick="pickShot('ace',this)">⚡ Servizio Vinc.</button>
-  <button class="mb-btn sht" onclick="pickShot('driV',this)">💥 Dritto Vinc.</button>
-  <button class="mb-btn sht" onclick="pickShot('rovV',this)">☄️ Rovescio Vinc.</button>
-  <button class="mb-btn spc" onclick="pickShot('spec',this)">🌟 Colpo Speciale</button>
-  <button class="mb-btn sht" onclick="pickShot('smash',this)">💣 Schiacciata</button>
-  <button class="mb-btn" onclick="pickShot('errNF',this)">📉 Errore Non Forzato</button>
-  <button class="mb-btn" onclick="pickShot('errFo',this)">🧯 Errore Forzato</button>`;
+  <button class="mb-btn sht" onclick="pickShot('ace',this)">⚡ SER.V.</button>
+  <button class="mb-btn sht" onclick="pickShot('driV',this)">💥 DRI.V.</button>
+  <button class="mb-btn sht" onclick="pickShot('rovV',this)">☄️ ROV.V.</button>
+  <button class="mb-btn spc" onclick="pickShot('spec',this)">🌟 SPE.V.</button>
+  <button class="mb-btn sht" onclick="pickShot('smash',this)">💣 SMA.V.</button>
+  <button class="mb-btn" onclick="pickShot('errNF',this)">📉 ERR.N.</button>
+  <button class="mb-btn" onclick="pickShot('errFo',this)">🧯 ERR.F.</button>
+  <button class="mb-btn" onclick="pickShot('errSv',this)">🎯 ERR.S.</button>`;
 }
 let pendingShot=null,pendingLuck=null; // pendingLuck: 'nastro'|'bordo'|null — MODIFICATORE combinabile con qualsiasi colpo
 function clearShotHighlights(){document.querySelectorAll('#shotBar .mb-btn').forEach(b=>b.classList.remove('act'));}
 function clearLuckHighlights(){document.querySelectorAll('.mb .mb-btn.nst,.mb .mb-btn.brd').forEach(b=>b.classList.remove('act'));}
 function pickShot(type,btn){pendingShot=(pendingShot===type)?null:type;clearShotHighlights();if(pendingShot)btn.classList.add('act');}
 function curSet(){return LM.sets[LM.sets.length-1];}
-const ERROR_TYPES=['errNF','errFo'];
+const ERROR_TYPES=['errNF','errFo','errSv']; // errSv = errore al servizio (fallo di servizio)
 function addPoint(side){if(!LM||LM.paused||LM.pendingWinner!=null)return;
   LM.history.push(JSON.parse(JSON.stringify({sets:LM.sets,setsWon:LM.setsWon,server:LM.server,shotLog:LM.shotLog,maxDeficit:LM.maxDeficit})));
   const s=curSet();const target=LM.pts;
-  const isClutch=s[0]>=target-3&&s[1]>=target-3; // punto giocato "in the clutch": 8-8 o oltre (su un set a 11), scalato per il set a 21
+  /* FREDDEZZA (clutch): la zona calda va rapportata alla lunghezza del set, non fissata a 3 punti.
+     Su un set a 11 la soglia classica è 8-8 (72% del set); applicando la stessa proporzione, su
+     un set a 21 la zona calda parte da 15-15, non da 18-18 (che sarebbe l'86%, troppo tardi:
+     escludeva quasi tutti i finali combattuti dei set lunghi). */
+  const clutchFrom=target-Math.round(target*3/11); // 11 -> 8, 21 -> 15
+  const isClutch=s[0]>=clutchFrom&&s[1]>=clutchFrom;
   const needToWin=Math.ceil(LM.mode/2);
   /* Match Point Salvato: se PRIMA di questo punto l'avversario era a un punto dal vincere l'INTERA
      partita (non solo il set), e invece il punto lo vinci tu, hai salvato un match point.
@@ -840,6 +878,7 @@ function addPoint(side){if(!LM||LM.paused||LM.pendingWinner!=null)return;
   const entry={side,type:pendingShot||'punto',luck:pendingLuck||null,ts:Date.now(),setIdx:LM.sets.length-1,timeS:t};
   LM.shotLog.push(entry);
   applyShotStat(side,pendingShot);
+  if(!pendingShot){const gp=pById(side===0?LM.p1:LM.p2);if(gp){gp.st.gen++;if(gp.cardSt)gp.cardSt.gen++;}} // punto senza colpo dichiarato: conteggiato come "punto generico"
   if(pendingLuck){const lucky=pById(side===0?LM.p1:LM.p2);if(lucky){lucky.st.luck++;if(lucky.cardSt)lucky.cardSt.luck++;}} // la fortuna va sempre a chi vince il punto
   const p1=pById(LM.p1),p2=pById(LM.p2);
   if(isClutch){if(p1){p1.st.clutchT++;if(p1.cardSt)p1.cardSt.clutchT++;}if(p2){p2.st.clutchT++;if(p2.cardSt)p2.cardSt.clutchT++;}
@@ -908,6 +947,7 @@ function applyShotStat(side,type){if(!type)return;
   else if(type==='smash'){p.st.smash++;if(c)c.smash++;}
   else if(type==='errNF'){p.st.errNF++;if(c)c.errNF++;}
   else if(type==='errFo'){p.st.errFo++;if(c)c.errFo++;}
+  else if(type==='errSv'){p.st.errSv++;if(c)c.errSv++;}
 }
 function elapsedSetSeconds(){return Math.floor((Date.now()-(LM.setStart||LM.runStart))/1000);}
 function advanceServer(){const s=curSet();const total=s[0]+s[1];const deuceZone=(LM.pts===11&&s[0]>=10&&s[1]>=10)||(LM.pts===21&&s[0]>=20&&s[1]>=20);
@@ -1003,10 +1043,21 @@ function computeImpact(){
 /* Elimina una partita di TEST annullandone completamente l'impatto: ELO, statistiche a vita e
    statistiche card tornano esattamente com'erano prima della partita. Solo le partite di Test
    sono cancellabili; chiede sempre conferma con il banner. */
-async function delTestMatch(id){
+async function delTestMatch(id){return delMatch(id);} // compatibilita' con eventuali riferimenti precedenti
+/* Elimina UNA singola partita dallo storico (qualsiasi categoria), annullandone gli effetti.
+   Le partite registrate da questa versione in poi conservano una "fotografia" dell'impatto
+   (differenze di ELO e di ogni statistica) e vengono quindi annullate in modo esatto. Per le
+   partite piu' vecchie, prive di quella fotografia, si annullano i colpi ricavabili dal
+   registro punti e il bilancio vittorie/sconfitte, ma l'ELO non e' ricostruibile: in quel caso
+   l'utente viene avvisato prima di procedere. */
+async function delMatch(id){
   const m=DB.matches.find(x=>x.id===id);
-  if(!m||m.cat!=='t'){toast('Solo le partite di Test si possono eliminare','⚠️');return;}
-  const ok=await askConfirm('Eliminare questa partita di TEST? Verranno annullati anche tutti i suoi effetti: ELO, vittorie/sconfitte, colpi e ogni statistica torneranno come prima della partita.');
+  if(!m){toast('Partita non trovata','⚠️');return;}
+  const hasImpact=!!m.impact;
+  const warn=hasImpact
+    ? 'Eliminare questa partita? Verranno annullati anche tutti i suoi effetti: ELO, vittorie/sconfitte, colpi e ogni statistica torneranno come prima della partita.'
+    : 'Eliminare questa partita? È una partita registrata da una versione precedente: verranno annullati i colpi e il bilancio vittorie/sconfitte, ma il punteggio ELO non è ricostruibile e resterà invariato.';
+  const ok=await askConfirm(warn);
   if(!ok)return;
   if(m.impact){
     [['a'],['b']].forEach(([k])=>{
@@ -1016,10 +1067,41 @@ async function delTestMatch(id){
       Object.keys(rec.stD||{}).forEach(key=>{p.st[key]=Math.max(0,(p.st[key]||0)-rec.stD[key]);});
       Object.keys(rec.cardD||{}).forEach(key=>{if(p.cardSt)p.cardSt[key]=Math.max(0,(p.cardSt[key]||0)-rec.cardD[key]);});
     });
+  }else{
+    // Partita antecedente all'introduzione dello snapshot: annullo cio' che e' ricavabile dal registro punti.
+    [m.p1,m.p2].forEach(pid=>{
+      const p=pById(pid);if(!p)return;
+      const d=replayShotCounts(m,pid);
+      Object.keys(d).forEach(key=>{p.st[key]=Math.max(0,(p.st[key]||0)-d[key]);if(p.cardSt&&typeof p.cardSt[key]==='number')p.cardSt[key]=Math.max(0,p.cardSt[key]-d[key]);});
+      p.st.matches=Math.max(0,(p.st.matches||0)-1);
+      if(m.winnerIdx===0||m.winnerIdx===1){
+        const won=(m.winnerIdx===0)===(m.p1===pid);
+        if(won){p.st.wins=Math.max(0,(p.st.wins||0)-1);if(p.cardSt)p.cardSt.wins=Math.max(0,(p.cardSt.wins||0)-1);}
+        else{p.st.losses=Math.max(0,(p.st.losses||0)-1);if(p.cardSt)p.cardSt.losses=Math.max(0,(p.cardSt.losses||0)-1);}
+      }
+    });
   }
   DB.matches=DB.matches.filter(x=>x.id!==id);
-  save();rHist();rRoster();fillSelects();
-  toast('Partita di test eliminata: statistiche ripristinate','🗑️');
+  save();rHist();rRoster();fillSelects();kpis();rE();
+  toast('Partita eliminata: statistiche aggiornate','🗑️');
+}
+/* Conteggi dei colpi attribuiti a un giocatore in una singola partita, ricavati dal registro
+   punti (sola lettura). Usa la stessa regola di attribuzione del tracker live. */
+function replayShotCounts(match,pid){
+  const isP1=match.p1===pid;const out={};
+  (match.shotLog||[]).forEach(e=>{
+    const scorerIsMe=(e.side===0)===isP1;
+    const isErr=ERROR_TYPES.includes(e.type);
+    const mine=isErr?!scorerIsMe:scorerIsMe;
+    if(!mine)return;
+    const key=(e.type&&e.type!=='punto')?e.type:'gen';
+    if(['ace','driV','rovV','spec','smash','errNF','errFo','errSv','gen'].includes(key))out[key]=(out[key]||0)+1;
+    if(e.luck&&scorerIsMe)out.luck=(out.luck||0)+1;
+  });
+  const sv=replaySavesAndLuck(match,pid);
+  if(sv.mps)out.mps=(out.mps||0)+sv.mps;
+  if(sv.sps)out.sps=(out.sps||0)+sv.sps;
+  return out;
 }
 function eloUpdate(p1,p2,winnerIdx){const K=32;const ea=1/(1+Math.pow(10,(p2.elo-p1.elo)/400));const eb=1-ea;
   const sa=winnerIdx===0?1:0,sb=1-sa;p1.elo=Math.round(p1.elo+K*(sa-ea));p2.elo=Math.round(p2.elo+K*(sb-eb));
@@ -1043,7 +1125,7 @@ function rHist(){const l=$('hM');const list=DB.matches.slice().sort((a,b)=>b.dat
   if(!list.length){l.innerHTML='<div class="empty">Nessuna partita registrata.</div>';return;}
   l.innerHTML=list.map(m=>{const p1=pName(m.p1),p2=pName(m.p2);const d=new Date(m.date).toLocaleDateString('it-IT');
     const catLbl=m.cat==='u'?'Ufficiale':m.cat==='t'?'<b style="color:var(--a);">TEST</b>':'Amichevole';
-    const delBtn=m.cat==='t'?`<button class="ic-btn" style="font-size:1.1rem;" onclick="delTestMatch('${m.id}')" title="Elimina partita di test">🗑️</button>`:'';
+    const delBtn=`<button class="ic-btn" style="font-size:1.1rem;" onclick="delMatch('${m.id}')" title="Elimina questa partita">🗑️</button>`;
     return `<div class="rd"><div><b>${p1}</b> vs <b>${p2}</b> ${m.incomplete?'<span class="inc-tag">INC</span>':''}<div class="p-sub">${d} · ${m.setsWon?m.setsWon.join('-'):'-'} · ${catLbl}</div></div>${delBtn}</div>`;
   }).join('');}
 
@@ -1183,8 +1265,15 @@ function launchRecog(SR){
 function stopVoice(){recogActive=false;clearTimeout(finalDebounce);if(recog){try{recog.stop();}catch(e){}}$('micDot').classList.remove('ls');}
 function restartVoiceManually(){stopVoice();toast('Riavvio riconoscimento vocale…','🎙️');setTimeout(startVoice,300);}
 let awaitingShotFor=null,awaitTimeoutHandle=null;
-const SHOT_LABELS={ace:'servizio vincente',driV:'dritto vincente',rovV:'rovescio vincente',spec:'colpo speciale',smash:'schiacciata',errNF:'errore non forzato',errFo:'errore forzato',luck_nastro:'punto fortuna (nastro)',luck_bordo:'punto fortuna (bordo)'};
+const SHOT_LABELS={ace:'servizio vincente',driV:'dritto vincente',rovV:'rovescio vincente',spec:'colpo speciale',smash:'schiacciata',errNF:'errore non forzato',errFo:'errore forzato',errSv:'errore al servizio',luck_nastro:'punto fortuna (nastro)',luck_bordo:'punto fortuna (bordo)'};
+/* I nomi PRONUNCIATI restano quelli di sempre (servizio vincente, dritto vincente, ...): qui
+   cambiano solo le etichette brevi dei bottoni. Unica novità: "errore al servizio".
+   ATTENZIONE ALL'ORDINE: "errore al servizio" contiene la parola "servizio", quindi va
+   riconosciuto PRIMA della regola che mappa "servizio" su servizio vincente, altrimenti un
+   fallo di servizio verrebbe scambiato per un ace. */
 function parseShotKeyword(cmd){
+  if(/(errore|fallo)\s+(al|di|sul)?\s*servizio/.test(cmd)||cmd.includes('servizio sbagliato')||cmd.includes('errore servizio')||cmd.includes('fallo servizio'))return{shot:'errSv',label:'errore al servizio'};
+  if(cmd.includes('doppio fallo'))return{shot:'errSv',label:'errore al servizio'};
   if(cmd.includes('servizio')||cmd.includes('battuta vincente'))return{shot:'ace',label:'servizio vincente'};
   if(cmd.includes('dritto'))return{shot:'driV',label:'dritto vincente'};
   if(cmd.includes('rovescio'))return{shot:'rovV',label:'rovescio vincente'};
@@ -1263,7 +1352,7 @@ async function geminiCall(prompt,maxTokens){
 async function aiInterpretVoice(cmd){
   const p1=pById(LM.p1),p2=pById(LM.p2);
   if(!p1||!p2)return null;
-  const prompt='Sei l\'assistente di un arbitro di ping pong. Devi solo ESTRARRE informazioni da una frase, senza decidere a chi va il punto. Giocatore lato SINISTRO (side 0): "'+p1.name+'". Giocatore lato DESTRO (side 1): "'+p2.name+'". Frase in italiano (trascrizione automatica, i nomi possono essere storpiati o troncati: riconoscili foneticamente): "'+cmd+'". Rispondi SOLO con JSON puro, senza markdown, in questo formato: {"named":0 oppure 1 oppure null,"shot":"ace"|"driV"|"rovV"|"spec"|"smash"|"errNF"|"errFo"|"var"|null,"luck":"nastro"|"bordo"|null}. "luck" = se la frase menziona che la palla ha toccato il nastro o il bordo (un modificatore che si somma al colpo, non un colpo a parte: "dritto vincente con nastro" -> shot "driV" e luck "nastro"; se viene detto SOLO il nastro/bordo senza colpo, shot null e luck valorizzato). "named" = quale dei due giocatori è NOMINATO nella frase (0 = "'+p1.name+'", 1 = "'+p2.name+'"), tipicamente il nome dopo "di" o "a"; null solo se non riconosci nessuno dei due nomi. NON ragionare su chi vince il punto: indica solo il nome che senti. "shot" = il colpo, con questa mappatura: "servizio vincente"->"ace", "dritto vincente"->"driV", "rovescio vincente"->"rovV", "colpo speciale"->"spec", "schiacciata"->"smash", "errore non forzato"->"errNF", "errore forzato"->"errFo", nastro->"luck_nastro", bordo->"luck_bordo", moviola/VAR->"var", colpo non dichiarato->null.';
+  const prompt='Sei l\'assistente di un arbitro di ping pong. Devi solo ESTRARRE informazioni da una frase, senza decidere a chi va il punto. Giocatore lato SINISTRO (side 0): "'+p1.name+'". Giocatore lato DESTRO (side 1): "'+p2.name+'". Frase in italiano (trascrizione automatica, i nomi possono essere storpiati o troncati: riconoscili foneticamente): "'+cmd+'". Rispondi SOLO con JSON puro, senza markdown, in questo formato: {"named":0 oppure 1 oppure null,"shot":"ace"|"driV"|"rovV"|"spec"|"smash"|"errNF"|"errFo"|"errSv"|"var"|null,"luck":"nastro"|"bordo"|null}. "luck" = se la frase menziona che la palla ha toccato il nastro o il bordo (un modificatore che si somma al colpo, non un colpo a parte: "dritto vincente con nastro" -> shot "driV" e luck "nastro"; se viene detto SOLO il nastro/bordo senza colpo, shot null e luck valorizzato). "named" = quale dei due giocatori è NOMINATO nella frase (0 = "'+p1.name+'", 1 = "'+p2.name+'"), tipicamente il nome dopo "di" o "a"; null solo se non riconosci nessuno dei due nomi. NON ragionare su chi vince il punto: indica solo il nome che senti. "shot" = il colpo, con questa mappatura: "servizio vincente"->"ace", "dritto vincente"->"driV", "rovescio vincente"->"rovV", "colpo speciale"->"spec", "schiacciata"->"smash", "errore non forzato"->"errNF", "errore forzato"->"errFo", "errore al servizio"/"fallo di servizio"/"doppio fallo"->"errSv", nastro->"luck_nastro", bordo->"luck_bordo", moviola/VAR->"var", colpo non dichiarato->null.';
   let txt=await geminiCall(prompt,80);
   txt=txt.replace(/```json|```/g,'').trim();
   const obj=JSON.parse(txt);
@@ -1519,12 +1608,12 @@ function rE(){const tb=$('tE').querySelector('tbody');const sorted=DB.players.sl
 function csvCell(v){return '"'+String(v==null?'':v).replace(/"/g,'""')+'"';}
 function exportStatsCSV(){
   if(!DB.players.length){toast('Nessun atleta da esportare','⚠️');return;}
-  const cols=['Nome','ELO','Vittorie','Sconfitte','Partite','Servizio Vinc.','Dritto Vinc.','Rovescio Vinc.','Colpo Speciale','Schiacciata','Errore Non Forzato','Errore Forzato','MP Salvati','SP Salvati','Punti Fortuna','Freddezza %','Eff. Servizio %'];
+  const cols=['Nome','ELO','Vittorie','Sconfitte','Partite','Servizio Vinc.','Dritto Vinc.','Rovescio Vinc.','Colpo Speciale','Schiacciata','Errore Non Forzato','Errore Forzato','Errore al Servizio','Punti Generici','MP Salvati','SP Salvati','Punti Fortuna','Freddezza %','Eff. Servizio %'];
   const lines=[cols.map(csvCell).join(',')];
   DB.players.forEach(p=>{
     const eff=p.st.ptsPlayed?Math.round((p.st.ace/(p.st.ptsPlayed||1))*100):0;
     const clu=p.st.clutchT?Math.round(p.st.clutchW/p.st.clutchT*100):0;
-    const row=[p.name,p.elo,p.st.wins,p.st.losses,p.st.matches,p.st.ace,p.st.driV,p.st.rovV,p.st.spec,p.st.smash,p.st.errNF,p.st.errFo,p.st.mps,p.st.sps,p.st.luck,clu,eff];
+    const row=[p.name,p.elo,p.st.wins,p.st.losses,p.st.matches,p.st.ace,p.st.driV,p.st.rovV,p.st.spec,p.st.smash,p.st.errNF,p.st.errFo,p.st.errSv,p.st.gen,p.st.mps,p.st.sps,p.st.luck,clu,eff];
     lines.push(row.map(csvCell).join(','));
   });
   try{
@@ -1552,6 +1641,8 @@ const TIMELINE_METRICS=[
   {key:'smash',label:'Smash',axis:'y',color:'#e84393'},
   {key:'errNF',label:'Errore NF',axis:'y',color:'#ef4444'},
   {key:'errFo',label:'Errore FO',axis:'y',color:'#c0392b'},
+  {key:'errSv',label:'Errore SERV',axis:'y',color:'#d35400'},
+  {key:'gen',label:'Punti generici',axis:'y',color:'#95a5a6'},
   {key:'mps',label:'MP Salvati',axis:'y',color:'#00b4d8'},
   {key:'sps',label:'SP Salvati',axis:'y',color:'#8d6e63'},
   {key:'luck',label:'Fortuna',axis:'y',color:'#00cec9'}
@@ -1621,8 +1712,8 @@ function replaySavesAndLuck(match,pid){
 function buildStatTimeline(pid){
   const p=pById(pid);if(!p)return null;
   const matches=DB.matches.filter(m=>!m.incomplete&&(m.p1===pid||m.p2===pid)&&m.shotLog&&m.shotLog.length).sort((a,b)=>a.date-b.date);
-  const cum={ace:0,driV:0,rovV:0,spec:0,smash:0,errNF:0,errFo:0,mps:0,sps:0,luck:0};
-  const series={elo:(p.eloHist||[]).map(h=>({d:h.d,v:h.e})),ace:[],driV:[],rovV:[],spec:[],smash:[],errNF:[],errFo:[],mps:[],sps:[],luck:[]};
+  const cum={ace:0,driV:0,rovV:0,spec:0,smash:0,errNF:0,errFo:0,errSv:0,gen:0,mps:0,sps:0,luck:0};
+  const series={elo:(p.eloHist||[]).map(h=>({d:h.d,v:h.e})),ace:[],driV:[],rovV:[],spec:[],smash:[],errNF:[],errFo:[],errSv:[],gen:[],mps:[],sps:[],luck:[]};
   matches.forEach(m=>{
     const isP1=m.p1===pid;
     (m.shotLog||[]).forEach(e=>{
@@ -1639,11 +1730,13 @@ function buildStatTimeline(pid){
       else if(e.type==='smash')cum.smash++;
       else if(e.type==='errNF')cum.errNF++;
       else if(e.type==='errFo')cum.errFo++;
+      else if(e.type==='errSv')cum.errSv++;
+      else if(e.type==='punto'||!e.type)cum.gen++;
     });
     const saves=replaySavesAndLuck(m,pid);
     cum.mps+=saves.mps;cum.sps+=saves.sps;cum.luck+=saves.luck;
     const d=m.date;
-    ['ace','driV','rovV','spec','smash','errNF','errFo','mps','sps','luck'].forEach(k=>series[k].push({d,v:cum[k]}));
+    ['ace','driV','rovV','spec','smash','errNF','errFo','errSv','gen','mps','sps','luck'].forEach(k=>series[k].push({d,v:cum[k]}));
   });
   return series;
 }
@@ -1672,34 +1765,75 @@ function renderTimeline(){
       }}});
 }
 function filterMatches(){const f=$('tF').value;const now=Date.now();
-  return DB.matches.filter(m=>{if(f==='a')return true;if(f==='t')return new Date(m.date).toDateString()===new Date().toDateString();if(f==='w')return now-m.date<=7*864e5;return true;});}
+  const cat=$('tCat')?$('tCat').value:'all';
+  return DB.matches.filter(m=>{
+    if(cat!=='all'&&(m.cat||'a')!==cat)return false; // separa allenamento (amichevoli) da ufficiali
+    if(f==='t')return new Date(m.date).toDateString()===new Date().toDateString();
+    if(f==='w')return now-m.date<=7*864e5;
+    return true;});}
+/* ═══ STATISTICHE CALCOLATE SU UN INSIEME DI PARTITE ═══
+   Rilegge le partite indicate (sola lettura) e ricostruisce tutti i contatori per un atleta:
+   serve a mostrare le statistiche separate per tipo di partita (Ufficiali / Amichevoli / Test)
+   e per periodo, senza toccare i totali a vita in p.st (che restano il riferimento per card e
+   trofei). Usa le stesse regole del tracker live, compresa la soglia di Freddezza rapportata
+   alla lunghezza del set. */
+function computeStatsFor(pid,matches){
+  const out={ace:0,driV:0,rovV:0,spec:0,smash:0,errNF:0,errFo:0,errSv:0,gen:0,luck:0,mps:0,sps:0,
+    clutchW:0,clutchT:0,wins:0,losses:0,matches:0,ptsWon:0,ptsPlayed:0,timeSum:0,timeN:0};
+  matches.forEach(m=>{
+    if(m.p1!==pid&&m.p2!==pid)return;
+    const isP1=m.p1===pid;
+    out.matches++;
+    if(m.winnerIdx===0||m.winnerIdx===1){if((m.winnerIdx===0)===isP1)out.wins++;else out.losses++;}
+    const counts=replayShotCounts(m,pid);
+    Object.keys(counts).forEach(k=>{if(k in out)out[k]+=counts[k];});
+    const pts=m.pts||11;
+    const clutchFrom=pts-Math.round(pts*3/11);
+    const bySet={};
+    (m.shotLog||[]).forEach(e=>{(bySet[e.setIdx]=bySet[e.setIdx]||[]).push(e);});
+    Object.keys(bySet).map(Number).sort((a,b)=>a-b).forEach(si=>{
+      const s=[0,0];
+      bySet[si].forEach(e=>{
+        if(s[0]>=clutchFrom&&s[1]>=clutchFrom){out.clutchT++;if((e.side===0)===isP1)out.clutchW++;}
+        const won=(e.side===0)===isP1;
+        out.ptsPlayed++;if(won){out.ptsWon++;out.timeSum+=e.timeS||0;out.timeN++;}
+        s[e.side]++;
+      });
+    });
+  });
+  return out;
+}
 function sortedByActivity(){return DB.players.slice().sort((a,b)=>(b.st.matches||0)-(a.st.matches||0));}
 function rSt(){const players=sortedByActivity();const ms=filterMatches();
   if(!players.length){$('tS2').innerHTML='<tr><td>Nessun atleta</td></tr>';return;}
+  const S={};players.forEach(p=>{S[p.id]=computeStatsFor(p.id,ms);});
   const rows=[
-    {label:'Eff. Servizio',calc:p=>{const eff=p.st.ptsPlayed?Math.round((p.st.ace/(p.st.ptsPlayed||1))*100):0;return eff+'%';}},
-    {label:'Freddezza %',calc:p=>{const c=p.st.clutchT?Math.round(p.st.clutchW/p.st.clutchT*100):0;return c+'%';}},
-    {label:'⏱ Media',calc:p=>{let timeSum=0,timeN=0;ms.forEach(m=>{if(m.p1!==p.id&&m.p2!==p.id)return;const isP1=m.p1===p.id;
-      (m.shotLog||[]).forEach(s=>{const won=(s.side===0&&isP1)||(s.side===1&&!isP1);if(won){timeSum+=s.timeS||0;timeN++;}});});
-      return timeN?(timeSum/timeN).toFixed(1)+'s':'—';}},
-    {label:'🛡️ MP Salvati',calc:p=>p.st.mps},
-    {label:'🧱 SP Salvati',calc:p=>p.st.sps},
-    {label:'🍀 Fortuna',calc:p=>p.st.luck},
+    {label:'Partite',calc:p=>S[p.id].matches},
+    {label:'Vinte-Perse',calc:p=>S[p.id].wins+'-'+S[p.id].losses},
+    {label:'Eff. Servizio',calc:p=>{const s=S[p.id];return (s.ptsPlayed?Math.round(s.ace/s.ptsPlayed*100):0)+'%';}},
+    {label:'Freddezza %',calc:p=>{const s=S[p.id];return (s.clutchT?Math.round(s.clutchW/s.clutchT*100):0)+'%';}},
+    {label:'⏱ Media',calc:p=>{const s=S[p.id];return s.timeN?(s.timeSum/s.timeN).toFixed(1)+'s':'—';}},
+    {label:'🛡️ MP Salvati',calc:p=>S[p.id].mps},
+    {label:'🧱 SP Salvati',calc:p=>S[p.id].sps},
+    {label:'🍀 Fortuna',calc:p=>S[p.id].luck},
   ];
   const head='<tr><th>Metrica</th>'+players.map(p=>`<th>${p.name}</th>`).join('')+'</tr>';
   const body=rows.map(r=>'<tr><td style="text-align:left;font-weight:800;">'+r.label+'</td>'+players.map(p=>`<td>${r.calc(p)}</td>`).join('')+'</tr>').join('');
   $('tS2').innerHTML='<thead>'+head+'</thead><tbody>'+body+'</tbody>';
 }
-function rSh(){const players=sortedByActivity();
+function rSh(){const players=sortedByActivity();const ms=filterMatches();
   if(!players.length){$('tS3').innerHTML='<tr><td>Nessun atleta</td></tr>';}else{
+    const S={};players.forEach(p=>{S[p.id]=computeStatsFor(p.id,ms);});
     const rows=[
-      {label:'⚡ Ace',calc:p=>p.st.ace},
-      {label:'💥 Dritto V',calc:p=>p.st.driV},
-      {label:'☄️ Rovescio V',calc:p=>p.st.rovV},
-      {label:'🌟 Speciale',calc:p=>p.st.spec},
-      {label:'💣 Smash',calc:p=>p.st.smash},
-      {label:'📉 Errore NF',calc:p=>p.st.errNF},
-      {label:'🧯 Errore FO',calc:p=>p.st.errFo},
+      {label:'⚡ Ace',calc:p=>S[p.id].ace},
+      {label:'💥 Dritto V',calc:p=>S[p.id].driV},
+      {label:'☄️ Rovescio V',calc:p=>S[p.id].rovV},
+      {label:'🌟 Speciale',calc:p=>S[p.id].spec},
+      {label:'💣 Smash',calc:p=>S[p.id].smash},
+      {label:'📉 Errore NF',calc:p=>S[p.id].errNF},
+      {label:'🧯 Errore FO',calc:p=>S[p.id].errFo},
+      {label:'🎯 Errore SERV',calc:p=>S[p.id].errSv},
+      {label:'▫️ Punti generici',calc:p=>S[p.id].gen},
     ];
     const head='<tr><th>Colpo</th>'+players.map(p=>`<th>${p.name}</th>`).join('')+'</tr>';
     const body=rows.map(r=>'<tr><td style="text-align:left;font-weight:800;">'+r.label+'</td>'+players.map(p=>`<td>${r.calc(p)}</td>`).join('')+'</tr>').join('');
@@ -1719,21 +1853,54 @@ function rV(){const id1=$('v1').value,id2=$('v2').value;if(!id1||!id2||id1===id2
   <div style="text-align:center;margin-top:14px;font-weight:800;color:var(--muted);">Scontri diretti: ${ms.length} · Punti scambio totali ${pName(id1)} ${pts1} - ${pts2} ${pName(id2)}</div>`;}
 
 /* ================= COACH IA (Gemini) ================= */
+/* Mostra i filtri giusti a seconda dell'ambito scelto e popola l'elenco delle partite. */
+function onCoachScopeChange(){
+  const one=$('aScope').value==='one';
+  $('aOneWrap').style.display=one?'block':'none';
+  $('aGenFilters').style.display=one?'none':'grid';
+  if(one)fillCoachMatches();
+}
+function fillCoachMatches(){
+  const sel=$('aMatch');if(!sel)return;
+  const catLbl={u:'Ufficiale',a:'Amichevole',t:'Test'};
+  const list=DB.matches.filter(m=>m.shotLog&&m.shotLog.length).slice().sort((a,b)=>b.date-a.date).slice(0,60);
+  sel.innerHTML=list.map(m=>`<option value="${m.id}">${new Date(m.date).toLocaleDateString('it-IT')} · ${pName(m.p1)} vs ${pName(m.p2)} (${(m.sets||[]).map(s=>s.join('-')).join(' ')}) · ${catLbl[m.cat]||'Amichevole'}${m.incomplete?' · INC':''}</option>`).join('')||'<option value="">Nessuna partita registrata</option>';
+}
 async function aG(){if(!DB.settings.gemini){toast('Registra prima la tua API Key Gemini in Impostazioni','⚠️');return;}
   if(!DB.players.length){toast('Serve almeno un atleta con dati','⚠️');return;}
   $('aR').style.display='block';$('aR').innerText='Analisi in corso...';
-  const dataset=DB.players.map(p=>`${p.name}: ELO ${p.elo}, V-P ${p.st.wins}-${p.st.losses}, Servizi vincenti ${p.st.ace}, Dritto.V ${p.st.driV}, Rovescio.V ${p.st.rovV}, Errori ${p.st.errNF}, MP salvati ${p.st.mps}, SP salvati ${p.st.sps}, Fortuna ${p.st.luck}`).join(String.fromCharCode(10));
-  /* Registro punto-a-punto delle ultime 3 partite complete: permette all'IA analisi molto piu'
-     fini (sequenze di errori, cali nel finale, pattern per set) rispetto ai soli totali. */
   const NL=String.fromCharCode(10);
-  const recent=DB.matches.filter(m=>!m.incomplete&&m.shotLog&&m.shotLog.length).slice(-3);
-  const logTxt=recent.map(m=>{
+  const catLbl={u:'Ufficiale',a:'Amichevole',t:'Test'};
+  const shotLbl=t=>SHOT_LABELS[t]||(t==='punto'||!t?'punto generico':t);
+  let dataset='',pointLog='',ctx='';
+  if($('aScope').value==='one'){
+    /* ── ANALISI DI UNA SINGOLA PARTITA ── */
+    const m=DB.matches.find(x=>x.id===$('aMatch').value);
+    if(!m){toast('Seleziona una partita da analizzare','⚠️');$('aR').innerText='Nessuna partita selezionata.';return;}
     const n1=pName(m.p1),n2=pName(m.p2);
-    const seq=m.shotLog.map(e=>(e.side===0?n1:n2).slice(0,3)+':'+(e.type||'punto')).join(' ');
-    return `${n1} vs ${n2} (${(m.sets||[]).map(s=>s.join('-')).join(', ')}) sequenza punti: ${seq}`.slice(0,900);
-  }).join(NL);
-  const pointLog=logTxt?NL+'Registro punto-a-punto delle ultime partite (formato Giocatore:colpo in ordine cronologico):'+NL+logTxt:'';
-  const prompt='Sei un coach di ping pong. In italiano, '+$('aP').value+'. Ecco i dati:'+String.fromCharCode(10)+dataset+pointLog+String.fromCharCode(10)+'Scrivi un report di massimo 180 parole.';
+    const s1=computeStatsFor(m.p1,[m]),s2=computeStatsFor(m.p2,[m]);
+    const fmt=(n,s)=>`${n}: Ace ${s.ace}, Dritto.V ${s.driV}, Rovescio.V ${s.rovV}, Speciale ${s.spec}, Smash ${s.smash}, Err.NonForzati ${s.errNF}, Err.Forzati ${s.errFo}, Err.Servizio ${s.errSv}, Punti generici ${s.gen}, MP salvati ${s.mps}, SP salvati ${s.sps}, Fortuna ${s.luck}, Freddezza ${(s.clutchT?Math.round(s.clutchW/s.clutchT*100):0)}%, punti vinti ${s.ptsWon}/${s.ptsPlayed}`;
+    ctx=`Partita ${catLbl[m.cat]||'Amichevole'} del ${new Date(m.date).toLocaleDateString('it-IT')} — ${n1} vs ${n2}, set ${(m.sets||[]).map(x=>x.join('-')).join(' | ')}${m.incomplete?' (INCOMPLETA)':''}.`;
+    dataset=fmt(n1,s1)+NL+fmt(n2,s2);
+    const seq=(m.shotLog||[]).map(e=>`${(e.side===0?n1:n2)}:${shotLbl(e.type)}${e.luck?'+'+e.luck:''}`).join(' | ');
+    pointLog=NL+'Sequenza completa dei punti (in ordine): '+seq.slice(0,4000);
+  }else{
+    /* ── ANALISI GENERALE, filtrata per tipo partita e periodo ── */
+    const cat=$('aCat').value,months=+$('aPeriod').value||0;
+    const from=months?Date.now()-months*30.44*864e5:0;
+    const ms=DB.matches.filter(m=>(cat==='all'||(m.cat||'a')===cat)&&m.date>=from);
+    if(!ms.length){$('aR').innerText='Nessuna partita nel filtro selezionato.';return;}
+    ctx=`Analisi su ${ms.length} partite (${cat==='all'?'tutte le categorie':catLbl[cat]}${months?', ultimi '+months+' mesi':', storico completo'}).`;
+    dataset=DB.players.map(p=>{const s=computeStatsFor(p.id,ms);if(!s.matches)return null;
+      return `${p.name}: ELO ${p.elo}, Partite ${s.matches}, V-P ${s.wins}-${s.losses}, Ace ${s.ace}, Dritto.V ${s.driV}, Rovescio.V ${s.rovV}, Speciale ${s.spec}, Smash ${s.smash}, Err.NonForzati ${s.errNF}, Err.Forzati ${s.errFo}, Err.Servizio ${s.errSv}, Punti generici ${s.gen}, MP salvati ${s.mps}, SP salvati ${s.sps}, Fortuna ${s.luck}, Freddezza ${(s.clutchT?Math.round(s.clutchW/s.clutchT*100):0)}%`;
+    }).filter(Boolean).join(NL);
+    const recent=ms.filter(m=>!m.incomplete&&m.shotLog&&m.shotLog.length).slice(-3);
+    const logTxt=recent.map(m=>{const n1=pName(m.p1),n2=pName(m.p2);
+      const seq=m.shotLog.map(e=>(e.side===0?n1:n2).slice(0,3)+':'+shotLbl(e.type)).join(' ');
+      return `${n1} vs ${n2} (${(m.sets||[]).map(s=>s.join('-')).join(', ')}) sequenza punti: ${seq}`.slice(0,900);}).join(NL);
+    pointLog=logTxt?NL+'Registro punto-a-punto delle ultime partite del periodo:'+NL+logTxt:'';
+  }
+  const prompt='Sei un coach di ping pong. In italiano, '+$('aP').value+'. '+ctx+' Ecco i dati:'+NL+dataset+pointLog+NL+'Scrivi un report di massimo 180 parole.';
   aiBusyOn('🤖 Il Coach IA sta analizzando…');
   try{const txt=await geminiCall(prompt,600);
     $('aR').innerText=txt||'Nessuna risposta ricevuta (controlla la API Key).';
