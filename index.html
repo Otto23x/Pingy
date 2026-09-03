@@ -367,7 +367,8 @@ video{width:100%;max-height:52vh;border-radius:16px;background:#000;display:bloc
 .shots .sh-l{font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:var(--st-text-2);margin:2px 0 6px;display:flex;justify-content:space-between;align-items:center;}
 .shots .sh-l .clr{color:var(--gold);font-size:.66rem;text-transform:none;letter-spacing:0;display:none;}
 .shots.has .sh-l .clr{display:inline;}
-.shrow{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:6px;}
+.shrow{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:8px;}
+.sh-g{grid-column:1/-1;font-size:.6rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;opacity:.9;margin:2px 0 -2px;}
 .shrow.e{grid-template-columns:repeat(3,1fr);}
 .shrow.m{grid-template-columns:repeat(3,1fr);margin-bottom:0;}
 .shb{padding:9px 4px;border-radius:11px;background:var(--st-surface-2);border:1.5px solid transparent;color:#fff;font-weight:700;font-size:.72rem;display:flex;flex-direction:column;align-items:center;gap:2px;line-height:1.1;transition:.12s;}
@@ -688,7 +689,7 @@ video{width:100%;max-height:52vh;border-radius:16px;background:#000;display:bloc
           <div class="gh">Partita</div>
           <details class="g"><summary>Setup e regole di gioco</summary><div class="gb"><p>In <b>Gioca</b> scegli i due atleti, il formato (1/3/5 set), i punti per set (11 o 21), ogni quanti punti cambia il servizio (2 o 5) e la categoria: <b>Amichevole</b> (non tocca l'ELO), <b>Ufficiale</b> (conta per la classifica) o <b>Test</b> (come Ufficiale ma cancellabile). Il servizio segue le impostazioni fino al 10-10 (o 20-20): da lì cambia a ogni punto, come da regolamento ITTF, ed è annunciato a voce. A ogni nuovo set il primo servizio si alterna.</p></div></details>
           <details class="g"><summary>Il tracker: tasti e colpi</summary><div class="gb"><p>Tocca il <b>riquadro del giocatore</b> per assegnargli il punto. Prima del tocco puoi (facoltativo) selezionare un <b>colpo</b>: Servizio vincente, Dritto vincente, Rovescio vincente, Smash, Speciale, Errore non forzato, Errore forzato, Errore al servizio. <b>Nastro</b> e <b>Bordo</b> sono modificatori: si combinano con qualsiasi colpo e segnano un punto fortuna a chi vince lo scambio.</p><p><b>Annulla</b> toglie l'ultimo punto e ripristina esattamente lo stato precedente (compresi set appena chiusi): tutte le statistiche vengono calcolate solo al salvataggio, quindi un annullamento non lascia mai residui.</p><p>Se chiudi l'app a metà partita, il match resta salvato: al riavvio trovi il banner <b>"Partita in corso"</b> per riprenderlo da dove eri.</p></div></details>
-          <details class="g"><summary>A chi va la statistica del colpo</summary><div class="gb"><p>I colpi <b>vincenti</b> (servizio, dritto, rovescio, smash, speciale) vengono accreditati a chi <b>segna</b> il punto. Gli <b>errori</b> vanno a chi <b>sbaglia</b>, cioè all'avversario di chi segna: se assegni il punto a Papo con "Errore non forzato", è Lorenzo a incassare l'errore, anche se il punto in classifica resta di Papo.</p><ul><li><b>Servizio vincente</b>: il punto è chiuso dal servizio stesso.</li><li><b>Dritto / Rovescio vincente</b>: scambio chiuso da un colpo normale che l'avversario non rimanda.</li><li><b>Errore al servizio</b>: servizio sbagliato o doppio fallo, punto all'avversario.</li><li><b>Smash</b>: schiacciata o colpo di potenza decisivo.</li><li><b>Speciale</b>: tocchi, effetti, soluzioni fuori dagli schemi.</li><li><b>Errore non forzato</b>: l'avversario sbaglia un colpo gestibile.</li><li><b>Errore forzato</b>: l'avversario sbaglia perché costretto da un tuo colpo difficile.</li></ul></div></details>
+          <details class="g"><summary>A chi va la statistica del colpo</summary><div class="gb"><p>Nel tracker i colpi sono divisi in tre gruppi: <b>Vincente</b> (ace, dritto, rovescio, smash, speciale), <b>Errore</b> (non forzato, forzato, fallo di servizio) e <b>Fortuna</b> (nastro, bordo). In tutti i casi tocchi sempre <b>chi ha vinto il punto</b>. I colpi <b>vincenti</b> vengono accreditati a chi <b>segna</b> il punto: l'<b>ace</b> è il servizio vincente e va quindi a chi ha servito e fatto il punto. Gli <b>errori</b> vanno a chi <b>sbaglia</b>, cioè all'avversario di chi segna: se assegni il punto a Papo con "Errore non forzato", è Lorenzo a incassare l'errore, anche se il punto in classifica resta di Papo.</p><ul><li><b>Servizio vincente</b>: il punto è chiuso dal servizio stesso.</li><li><b>Dritto / Rovescio vincente</b>: scambio chiuso da un colpo normale che l'avversario non rimanda.</li><li><b>Errore al servizio</b>: servizio sbagliato o doppio fallo, punto all'avversario.</li><li><b>Smash</b>: schiacciata o colpo di potenza decisivo.</li><li><b>Speciale</b>: tocchi, effetti, soluzioni fuori dagli schemi.</li><li><b>Errore non forzato</b>: l'avversario sbaglia un colpo gestibile.</li><li><b>Errore forzato</b>: l'avversario sbaglia perché costretto da un tuo colpo difficile.</li></ul></div></details>
           <details class="g"><summary>Partite incomplete, Test ed eliminazione</summary><div class="gb"><p>Da <b>Fine / Salva</b> puoi interrompere un match a metà: viene segnato <b>INC</b>, non tocca ELO né tornei, ma i colpi restano registrati per la Sabermetrica.</p><p>Ogni partita nello storico ha un cestino: eliminandola vengono annullati anche i suoi effetti (ELO, vittorie/sconfitte, colpi, card). Le partite di <b>Test</b> sono pensate proprio per provare l'app senza sporcare l'archivio.</p></div></details>
           <details class="g"><summary>Player card e OVR</summary><div class="gb"><p>L'<b>OVR</b> parte da 50 all'ELO base (1200) e varia di 1 punto ogni 14 punti ELO (min 30, max 99). Le 8 statistiche della card partono da 50 e crescono con i dati registrati, con tre correttivi: <b>fattore di crescita</b> (peso pieno a 10 partite), <b>tetto</b> (+45 max) e <b>decadimento</b> (il contatore della card si riduce del 10% a ogni nuova partita, così pesa il rendimento recente; i totali a vita restano intatti per trofei e tabelle).</p><ul><li>Dritto = vincenti di dritto × 1.8 · Rovescio = vincenti di rovescio × 1.8</li><li>Smash = smash × 2 + ace × 1.2 · Speciale = speciali × 2.2 · Fortuna = nastro/bordo × 3</li><li>Difesa = MP salvati × 2.5 − errori forzati × 0.3 · Focus = vittorie × 2 − errori × 0.5</li><li>Mentalità = rimonte × 4 + freddezza% × 30 − errori × 0.4</li></ul></div></details>
           <details class="g"><summary>Tornei</summary><div class="gb"><p><b>Eliminazione</b> (4 o 8 atleti): tabellone a turni, il vincitore avanza in automatico. <b>Girone</b> (3-6 atleti): tutti contro tutti, 2 punti a vittoria. Puoi scegliere se le partite del torneo contano per l'ELO. Un torneo si può sospendere e riprendere dalla sua scheda.</p></div></details>
@@ -762,7 +763,7 @@ video{width:100%;max-height:52vh;border-radius:16px;background:#000;display:bloc
     <div class="sets-line" id="trSets"></div>
     <div class="tr-status" id="trStatus"></div>
     <div class="shots" id="shots">
-      <div class="sh-l"><span>Colpo del punto <small style="opacity:.6;text-transform:none;letter-spacing:0">(facoltativo, poi tocca il giocatore)</small></span><span class="clr" id="shotSel"></span></div>
+      <div class="sh-l"><span>Colpo del punto <small style="opacity:.6;text-transform:none;letter-spacing:0">(facoltativo: scegli, poi tocca chi ha vinto il punto)</small></span><span class="clr" id="shotSel"></span></div>
       <div class="shrow" id="shotsWin"></div>
       <div class="shrow e" id="shotsErr"></div>
       <div class="shrow m" id="shotsMod"></div>
@@ -946,14 +947,14 @@ const ICON512M="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAMAAADDpi
    una sola volta al salvataggio, dal registro (MatchStats).
    ═══════════════════════════════════════════════════════════════ */
 const SHOT_TYPES={
-  ace:{l:'Servizio vincente',s:'Servizio',em:'⚡',k:'win'},
+  ace:{l:'Servizio vincente (ace)',s:'Ace',em:'⚡',k:'win'},
   driV:{l:'Dritto vincente',s:'Dritto',em:'💥',k:'win'},
   rovV:{l:'Rovescio vincente',s:'Rovescio',em:'☄️',k:'win'},
   smash:{l:'Smash',s:'Smash',em:'💣',k:'win'},
   spec:{l:'Colpo speciale',s:'Speciale',em:'🌟',k:'win'},
   errNF:{l:'Errore non forzato',s:'Non forzato',em:'📉',k:'err'},
   errFo:{l:'Errore forzato',s:'Forzato',em:'🧯',k:'err'},
-  errSv:{l:'Errore al servizio',s:'Servizio',em:'🎯',k:'err'}
+  errSv:{l:'Errore al servizio',s:'Fallo serv.',em:'🎯',k:'err'}
 };
 const ERROR_TYPES=['errNF','errFo','errSv'];
 const isErr=t=>ERROR_TYPES.includes(t);
@@ -1166,9 +1167,10 @@ const Tracker={
   },
   renderShots(){
     const b=(k,cls)=>`<button class="shb ${cls}" data-shot="${k}" onclick="Tracker.pickShot('${k}',this)"><span class="em">${SHOT_TYPES[k].em}</span>${SHOT_TYPES[k].s}</button>`;
-    $('shotsWin').innerHTML=['ace','driV','rovV','smash','spec'].map(k=>b(k,'')).join('');
-    $('shotsErr').innerHTML=`<div style="grid-column:1/-1;font-size:.6rem;font-weight:800;letter-spacing:.08em;color:var(--danger);opacity:.85;margin:2px 0 -2px">ERRORE DELL'AVVERSARIO</div>`+['errNF','errFo','errSv'].map(k=>b(k,'err')).join('');
-    $('shotsMod').innerHTML=`<button class="shb luck" data-luck="nastro" onclick="Tracker.pickLuck('nastro',this)"><span class="em">🍀</span>Nastro</button><button class="shb luck" data-luck="bordo" onclick="Tracker.pickLuck('bordo',this)"><span class="em">🍀</span>Bordo</button><button class="shb undo" onclick="Tracker.clearPick()"><span class="em">✕</span>Nessun colpo</button>`;
+    const lbl=(t,c)=>`<div class="sh-g" style="color:${c}">${t}</div>`;
+    $('shotsWin').innerHTML=lbl('Vincente · di chi fa il punto','var(--ai)')+['ace','driV','rovV','smash','spec'].map(k=>b(k,'')).join('');
+    $('shotsErr').innerHTML=lbl('Errore · di chi perde il punto','var(--danger)')+['errNF','errFo','errSv'].map(k=>b(k,'err')).join('');
+    $('shotsMod').innerHTML=lbl('Fortuna · si somma al colpo, va a chi vince','var(--ok)')+`<button class="shb luck" data-luck="nastro" onclick="Tracker.pickLuck('nastro',this)"><span class="em">🍀</span>Nastro</button><button class="shb luck" data-luck="bordo" onclick="Tracker.pickLuck('bordo',this)"><span class="em">🍀</span>Bordo</button><button class="shb undo" onclick="Tracker.clearPick()"><span class="em">✕</span>Nessun colpo</button>`;
     this.syncPicks();
   },
   syncPicks(){
